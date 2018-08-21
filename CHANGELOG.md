@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - License
 - Use latest Marketplace version of an app
 - [CHANGELOG.md](CHANGELOG.md).
+- Run Jira without any apps installed
 
 ## [0.0.2] - 2018-08-03
 [0.0.2]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.0.2%0Drelease-0.0.1
