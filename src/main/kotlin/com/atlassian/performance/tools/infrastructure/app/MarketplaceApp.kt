@@ -12,6 +12,9 @@ class MarketplaceApp(
     private val key: String,
     private val build: String
 ): AppSource {
+
+    constructor(key: String) : this(key, "latest")
+
     override fun getLabel(): String {
         return "$key:$build"
     }
@@ -19,7 +22,11 @@ class MarketplaceApp(
     override fun acquireFiles(
         directory: File
     ): List<File> {
-        val url = URL("https://marketplace.atlassian.com/download/plugins/$key/version/$build")
+        val url = if (build == "latest") {
+            URL("https://marketplace.atlassian.com/download/plugins/$key")
+        } else {
+            URL("https://marketplace.atlassian.com/download/plugins/$key/version/$build")
+        }
         val file = downloadToDirectory(url, directory)
         return if (file.extension == "obr") {
             ObrApp(file).extractJars(directory)
