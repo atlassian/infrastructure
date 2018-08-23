@@ -9,20 +9,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [0.1.0] - 2018-08-21
 [0.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.1.0%0Drelease-0.0.2
+
 ### Added
-- License
-- Use latest Marketplace version of an app
-- [CHANGELOG.md](CHANGELOG.md).
-- Run Jira without any apps installed
+- License.
+- Use the latest Marketplace version of an app.
+- Add [CHANGELOG.md](CHANGELOG.md).
+- Run Jira without any apps installed.
 
 ## [0.0.2] - 2018-08-03
 [0.0.2]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.0.2%0Drelease-0.0.1
 
 ### Fixed
-- Module name
+- Specify module name.
 
 ## [0.0.1] - 2018-08-03
+[0.0.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.0.1%0Dinitial-commit
 
 ### Added
-- [README.md](README.md).
-- Bitbucket Pipelines.
+- Add [README.md](README.md).
+- Enable Bitbucket Pipelines.
