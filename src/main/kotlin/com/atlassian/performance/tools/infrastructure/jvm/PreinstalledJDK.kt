@@ -1,8 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.jvm
 
+import com.atlassian.performance.tools.infrastructure.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.ssh.SshConnection
 
-class PreinstalledJDK(
+internal class PreinstalledJDK(
     private val javaBin: String
 ) : JavaDevelopmentKit {
     override fun install(connection: SshConnection) {}

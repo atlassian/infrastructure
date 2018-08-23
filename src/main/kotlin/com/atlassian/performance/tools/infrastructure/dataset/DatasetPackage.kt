@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure
+package com.atlassian.performance.tools.infrastructure.dataset
 
 import com.atlassian.performance.tools.ssh.SshConnection
 

@@ -1,5 +1,7 @@
-package com.atlassian.performance.tools.infrastructure
+package com.atlassian.performance.tools.infrastructure.database
 
+import com.atlassian.performance.tools.infrastructure.DockerImage
+import com.atlassian.performance.tools.infrastructure.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.os.Ubuntu
 import com.atlassian.performance.tools.ssh.SshConnection
 import org.apache.logging.log4j.LogManager

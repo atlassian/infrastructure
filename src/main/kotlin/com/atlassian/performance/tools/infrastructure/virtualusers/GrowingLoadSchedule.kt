@@ -49,7 +49,9 @@ class GrowingLoadSchedule(
     fun startingDelay(
         node: Int
     ): Duration {
-        if (node < initialNodes) { return Duration.ZERO }
+        if (node < initialNodes) {
+            return Duration.ZERO
+        }
         val stepNum = node - initialNodes
         return step.multipliedBy(stepNum.toLong())
     }

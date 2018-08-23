@@ -15,5 +15,5 @@ interface VirtualUsers : MeasurementSource {
      * @param jira instance address to apply load on
      * @param loadProfile to be applied
      */
-    fun applyLoad(jira: URI, loadProfile: LoadProfile, scenarioClass : Class<out Scenario>?)
+    fun applyLoad(jira: URI, loadProfile: LoadProfile, scenarioClass: Class<out Scenario>?)
 }

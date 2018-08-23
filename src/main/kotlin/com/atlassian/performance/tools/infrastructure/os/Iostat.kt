@@ -4,7 +4,7 @@ import com.atlassian.performance.tools.ssh.SshConnection
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 
-class Iostat : OsMetric {
+internal class Iostat : OsMetric {
     companion object {
         private val DELAY: Duration = Duration.ofSeconds(2)
         private val LOG_PATH: String = "~/jpt-iostat.log"
@@ -13,7 +13,7 @@ class Iostat : OsMetric {
         private val ADD_TIME =
             "while IFS= read -r line; do " +
                 "echo \"\$($TIME) \$line\"; " +
-            "done"
+                "done"
     }
 
     override fun startMonitoring(

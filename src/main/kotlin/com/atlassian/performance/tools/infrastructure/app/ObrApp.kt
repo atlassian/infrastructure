@@ -4,7 +4,7 @@ import java.io.File
 import java.util.zip.ZipFile
 import kotlin.streams.toList
 
-class ObrApp(
+internal class ObrApp(
     private val file: File
 ) {
     fun extractJars(

@@ -4,7 +4,7 @@ import com.atlassian.performance.tools.infrastructure.os.Ubuntu
 import com.atlassian.performance.tools.ssh.SshConnection
 import java.time.Duration
 
-class Docker {
+internal class Docker {
 
     private val ubuntu = Ubuntu()
 

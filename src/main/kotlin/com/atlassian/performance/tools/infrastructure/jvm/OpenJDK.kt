@@ -21,5 +21,5 @@ class OpenJDK : JavaDevelopmentKit {
         return "java $options"
     }
 
-    fun toPreinstalledJdk(): PreinstalledJDK = PreinstalledJDK(javaBin = "java")
+    fun toPreinstalledJdk(): JavaDevelopmentKit = PreinstalledJDK(javaBin = "java")
 }

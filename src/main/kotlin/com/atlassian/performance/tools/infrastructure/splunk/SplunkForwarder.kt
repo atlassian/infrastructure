@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.jira.splunk
+package com.atlassian.performance.tools.infrastructure.splunk
 
 import com.atlassian.performance.tools.ssh.SshConnection
 

@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.jira.home
+package com.atlassian.performance.tools.infrastructure.jira
 
 import com.atlassian.performance.tools.infrastructure.os.Ubuntu
 import com.atlassian.performance.tools.ssh.SshConnection

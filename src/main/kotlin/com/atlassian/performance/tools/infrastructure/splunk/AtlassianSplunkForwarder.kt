@@ -1,7 +1,7 @@
-package com.atlassian.performance.tools.infrastructure.jira.splunk
+package com.atlassian.performance.tools.infrastructure.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
-import com.atlassian.performance.tools.infrastructure.Sed
+import com.atlassian.performance.tools.infrastructure.os.Sed
 import com.atlassian.performance.tools.io.readResourceText
 import com.atlassian.performance.tools.ssh.SshConnection
 

@@ -1,9 +1,8 @@
-package com.atlassian.performance.tools.infrastructure.jira.splunk
+package com.atlassian.performance.tools.infrastructure.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
-import com.atlassian.performance.tools.infrastructure.Sed
+import com.atlassian.performance.tools.infrastructure.os.Sed
 import com.atlassian.performance.tools.ssh.SshConnection
-
 
 class UniversalSplunkForwarder(
     private val splunkServerIp: String,
@@ -27,7 +26,8 @@ class UniversalSplunkForwarder(
             "--volume $jiraLogsPath:/var/log/jiralogs/",
             "--volume /var/lib/docker/containers:/host/containers:ro",
             "--volume /var/log:/docker/log:ro",
-            "--volume /var/run/docker.sock:/var/run/docker.sock:ro")
+            "--volume /var/run/docker.sock:/var/run/docker.sock:ro"
+        )
 
         splunkForwarderImage.run(sshConnection, parameters.joinToString(" "))
     }
@@ -44,7 +44,4 @@ class UniversalSplunkForwarder(
     override fun getRequiredPorts(): List<Int> {
         return listOf(managementPort, httpEventCollectorPort, indexingReceiverPort)
     }
-
 }
-
-

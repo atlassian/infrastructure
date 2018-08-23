@@ -1,12 +1,11 @@
-package com.atlassian.performance.tools.infrastructure.jira.nodes
+package com.atlassian.performance.tools.infrastructure.jira
 
-import com.atlassian.performance.tools.infrastructure.jira.JiraJvmArgs
-import com.atlassian.performance.tools.infrastructure.jira.splunk.DisabledSplunkForwarder
-import com.atlassian.performance.tools.infrastructure.jira.splunk.SplunkForwarder
 import com.atlassian.performance.tools.infrastructure.jvm.DisabledJvmDebug
 import com.atlassian.performance.tools.infrastructure.jvm.JvmDebug
 import com.atlassian.performance.tools.infrastructure.jvm.jmx.DisabledRemoteJmx
 import com.atlassian.performance.tools.infrastructure.jvm.jmx.RemoteJmx
+import com.atlassian.performance.tools.infrastructure.splunk.DisabledSplunkForwarder
+import com.atlassian.performance.tools.infrastructure.splunk.SplunkForwarder
 
 data class JiraNodeConfig(
     val name: String = "jira-node",

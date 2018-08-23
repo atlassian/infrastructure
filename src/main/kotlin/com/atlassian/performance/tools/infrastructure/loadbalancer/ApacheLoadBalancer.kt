@@ -4,7 +4,7 @@ import com.atlassian.performance.tools.ssh.Ssh
 import java.net.URI
 import java.time.Duration
 
-class ApacheLoadBalancer(
+internal class ApacheLoadBalancer(
     private val nodes: List<URI>,
     private val ssh: Ssh,
     private val httpPort: Int

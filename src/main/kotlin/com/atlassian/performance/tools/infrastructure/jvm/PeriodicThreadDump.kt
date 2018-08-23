@@ -1,7 +1,5 @@
-package com.atlassian.performance.tools.infrastructure
+package com.atlassian.performance.tools.infrastructure.jvm
 
-import com.atlassian.performance.tools.infrastructure.jvm.JavaDevelopmentKit
-import com.atlassian.performance.tools.infrastructure.jvm.OracleJDK
 import com.atlassian.performance.tools.ssh.Ssh
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.apache.logging.log4j.Level
@@ -11,7 +9,7 @@ import java.time.Duration
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 
-class PeriodicThreadDump(
+internal class PeriodicThreadDump(
     private val ssh: Ssh
 ) {
     private val logger: Logger = LogManager.getLogger(this::class.java)

@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.jiraactions.scenario.Scenario
 import java.net.URI
 import java.time.Duration
 
-class VirtualUsersJar {
+internal class VirtualUsersJar {
     fun testingCommand(
         jdk: JavaDevelopmentKit,
         jarName: String,

@@ -1,10 +1,11 @@
-package com.atlassian.performance.tools.infrastructure.jira.home
+package com.atlassian.performance.tools.infrastructure.jira
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
+import com.atlassian.performance.tools.infrastructure.jira.JiraHomeSource
 import com.atlassian.performance.tools.ssh.SshConnection
 import java.time.Duration
 
-data class DockerJiraHome(
+internal data class DockerJiraHome(
     private val image: DockerImage
 ) : JiraHomeSource {
 

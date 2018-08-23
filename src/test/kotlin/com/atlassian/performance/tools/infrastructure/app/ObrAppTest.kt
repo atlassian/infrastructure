@@ -18,10 +18,10 @@ class ObrAppTest {
 
         val extractedJars = tempDir.listFiles().map { it.name }
         assertThat(extractedJars, containsInAnyOrder(
-                "jira-portfolio-2.12.1.jar",
-                "portfolio-plugin-2.12.1.jar",
-                "querydsl-4.0.7-provider-plugin-1.1.jar",
-                "team-management-plugin-2.12.1.jar"
+            "jira-portfolio-2.12.1.jar",
+            "portfolio-plugin-2.12.1.jar",
+            "querydsl-4.0.7-provider-plugin-1.1.jar",
+            "team-management-plugin-2.12.1.jar"
         ))
     }
 }

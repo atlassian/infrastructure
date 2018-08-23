@@ -1,10 +1,7 @@
-package com.atlassian.performance.tools.infrastructure.jira.home
+package com.atlassian.performance.tools.infrastructure.jira
 
-import com.atlassian.performance.tools.infrastructure.Sed
-import com.atlassian.performance.tools.infrastructure.jira.JiraGcLog
-import com.atlassian.performance.tools.infrastructure.jira.JiraJvmArgs
-import com.atlassian.performance.tools.infrastructure.jira.home.SetenvSh.Variables.*
-import com.atlassian.performance.tools.infrastructure.jira.nodes.JiraNodeConfig
+import com.atlassian.performance.tools.infrastructure.os.Sed
+import com.atlassian.performance.tools.infrastructure.jira.SetenvSh.Variables.*
 import com.atlassian.performance.tools.infrastructure.jvm.JvmArg
 import com.atlassian.performance.tools.ssh.SshConnection
 

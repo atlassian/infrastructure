@@ -8,10 +8,10 @@ import java.net.URLConnection
 import java.nio.file.Files
 import java.nio.file.StandardCopyOption
 
-class MarketplaceApp(
+internal class MarketplaceApp(
     private val key: String,
     private val build: String
-): AppSource {
+) : AppSource {
 
     constructor(key: String) : this(key, "latest")
 

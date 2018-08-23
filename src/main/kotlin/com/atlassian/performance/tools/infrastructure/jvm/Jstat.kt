@@ -16,7 +16,7 @@ class Jstat(
         private val ADD_TIME =
             "while IFS= read -r line; do " +
                 "echo \"\$($TIME) \$line\"; " +
-            "done"
+                "done"
     }
 
     fun startMonitoring(
