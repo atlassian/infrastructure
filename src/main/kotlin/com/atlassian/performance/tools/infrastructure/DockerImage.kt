@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Level
 import java.time.Duration
 import java.util.*
 
-class DockerImage(
+internal class DockerImage(
     private val name: String,
     private val pullTimeout: Duration = Duration.ofMinutes(1)
 ) {
