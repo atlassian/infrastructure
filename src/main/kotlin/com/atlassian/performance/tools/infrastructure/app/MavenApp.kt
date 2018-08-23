@@ -4,9 +4,9 @@ import org.jboss.shrinkwrap.resolver.api.maven.Maven
 import java.io.File
 
 class MavenApp(
-    private val groupId: String,
-    private val artifactId: String,
-    private val version: String
+    val groupId: String,
+    val artifactId: String,
+    val version: String
 ) : AppSource {
     override fun getLabel(): String {
         return "$groupId:$artifactId:$version"
