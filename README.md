@@ -2,11 +2,25 @@
 
 Generic testing infrastructure independent of the infrastructure provider (AWS, BTF).
 
-## Releasing
-Versioning, releasing and distribution are managed by the [gradle-release] plugin.
-See the [changelog](CHANGELOG.md).
+## Features
 
-[gradle-release]: https://bitbucket.org/atlassian/gradle-release/src/release-0.0.2/README.md
+- Configures Jira with a dataset
+- Configures Jira with an app
+- Starts Jira
+- Installs Ubuntu packages
+- Gathers action metrics
+- Gathers system metrics
+- Configures Splunk
+- Controls virtual users
+
+## Reporting issues
+
+We track all the changes in a [public issue tracker](https://ecosystem.atlassian.net/secure/RapidBoard.jspa?rapidView=457&projectKey=JPERF).
+All the suggestions and bug reports are welcome.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License
 Copyright (c) 2018 Atlassian and others.
