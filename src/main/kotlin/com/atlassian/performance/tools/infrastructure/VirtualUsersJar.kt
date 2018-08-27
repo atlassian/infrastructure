@@ -13,7 +13,8 @@ internal class VirtualUsersJar {
         jira: URI,
         minimumRun: Duration,
         loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?
+        scenarioClass: Class<out Scenario>?,
+        diagnosticsLimit: Int?
     ): String {
         val params = mutableListOf(
             "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n",
@@ -27,6 +28,10 @@ internal class VirtualUsersJar {
         if (scenarioClass != null) {
             params.add("--scenario=${scenarioClass.canonicalName}")
         }
+        if (diagnosticsLimit != null) {
+            params.add("--diagnostics-limit=$diagnosticsLimit")
+        }
+
         val redirects = listOf(
             "2>virtual-users-error.log",
             "> virtual-users-out.log"

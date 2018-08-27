@@ -17,9 +17,10 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
     override fun applyLoad(
         jira: URI,
         loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?
+        scenarioClass: Class<out Scenario>?,
+        diagnosticsLimit: Int?
     ) {
-        multicast("applyLoad") { it.applyLoad(jira, loadProfile, scenarioClass) }
+        multicast("applyLoad") { it.applyLoad(jira, loadProfile, scenarioClass, diagnosticsLimit) }
     }
 
     private fun multicast(

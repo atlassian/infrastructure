@@ -18,7 +18,10 @@ The API consists of all public Java types from `com.atlassian.performance.tools.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-1.0.0
 
-## Added
+## [1.1.0]
+[1.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.0%0Drelease-1.0.0
+### Added 
+- Add diagnosticsLimit parameter to limit how many times diagnostics can be executed.
 - Explain [contribution guidelines](CONTRIBUTING.md). 
 
 ## [1.0.0] - 2018-08-24

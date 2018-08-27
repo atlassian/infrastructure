@@ -40,7 +40,8 @@ data class SshVirtualUsers(
     override fun applyLoad(
         jira: URI,
         loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?
+        scenarioClass: Class<out Scenario>?,
+        diagnosticsLimit: Int?
     ) {
         val schedule = loadProfile.loadSchedule
         Thread.sleep(schedule.startingDelay(nodeOrder).toMillis())
@@ -55,7 +56,8 @@ data class SshVirtualUsers(
                 jira = jira,
                 minimumRun = minimumRun,
                 loadProfile = loadProfile,
-                scenarioClass = scenarioClass
+                scenarioClass = scenarioClass,
+                diagnosticsLimit = diagnosticsLimit
             )
             it.execute(
                 testingCommand,
