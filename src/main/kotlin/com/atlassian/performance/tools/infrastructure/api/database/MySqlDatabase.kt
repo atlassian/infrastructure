@@ -10,8 +10,12 @@ import java.net.URI
 import java.time.Duration
 import java.time.Instant
 
+/**
+ * @param maxConnections MySQL `max_connections` parameter. Defaults to the MySQL default.
+ */
 class MySqlDatabase(
-    private val source: DatasetPackage
+    private val source: DatasetPackage,
+    private val maxConnections: Int = 151
 ) : Database {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
@@ -23,7 +27,7 @@ class MySqlDatabase(
         image.run(
             ssh = ssh,
             parameters = "-p 3306:3306 -v `realpath $mysqlData`:/var/lib/mysql",
-            arguments = "--skip-grant-tables"
+            arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
         return mysqlData
     }
