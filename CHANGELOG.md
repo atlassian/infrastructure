@@ -18,8 +18,20 @@ The API consists of all public Java types from `com.atlassian.performance.tools.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-1.1.0
 
+## [1.1.1]
+[1.1.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.1%0Drelease-1.1.0
+
+### Fixed
+- Restore binary compatibility with 1.0.0.
+
 ## [1.1.0]
 [1.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.0%0Drelease-1.0.0
+
+### INCOMPATIBILITY WARNING
+Break binary compatibility for `com.atlassian.performance.tools.infrastructure.api.virtualusers.VirtualUsers`.
+Switch to `1.1.1` to restore this compatibility.
+See [JPERF-39](https://ecosystem.atlassian.net/browse/JPERF-39) for details.
+
 ### Added 
 - Add diagnosticsLimit parameter to limit how many times diagnostics can be executed.
 - Add maxConnections parameter to override MySQL max_connections value.

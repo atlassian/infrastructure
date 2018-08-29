@@ -14,8 +14,31 @@ interface VirtualUsers : MeasurementSource {
      *
      * @param jira instance address to apply load on
      * @param loadProfile to be applied
-     * @param scenarioClass test scenario class to be exectued
+     * @param scenarioClass test scenario class to be executed
+     */
+    fun applyLoad(
+        jira: URI,
+        loadProfile: LoadProfile,
+        scenarioClass: Class<out Scenario>?
+    ): Unit = applyLoad(
+        jira,
+        loadProfile,
+        scenarioClass,
+        diagnosticsLimit = null
+    )
+
+    /**
+     * Applies load with [loadProfile] on [jira].
+     *
+     * @param jira instance address to apply load on
+     * @param loadProfile to be applied
+     * @param scenarioClass test scenario class to be executed
      * @param diagnosticsLimit limiting how many times diagnostics can be executed
      */
-    fun applyLoad(jira: URI, loadProfile: LoadProfile, scenarioClass: Class<out Scenario>?, diagnosticsLimit: Int? = null)
+    fun applyLoad(
+        jira: URI,
+        loadProfile: LoadProfile,
+        scenarioClass: Class<out Scenario>?,
+        diagnosticsLimit: Int?
+    )
 }
