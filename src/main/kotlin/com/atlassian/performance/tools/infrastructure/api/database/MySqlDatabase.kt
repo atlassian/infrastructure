@@ -11,16 +11,26 @@ import java.time.Duration
 import java.time.Instant
 
 /**
- * @param maxConnections MySQL `max_connections` parameter. Defaults to the MySQL default.
+ * @param maxConnections MySQL `max_connections` parameter.
  */
 class MySqlDatabase(
     private val source: DatasetPackage,
-    private val maxConnections: Int = 151
+    private val maxConnections: Int
 ) : Database {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     private val image: DockerImage = DockerImage("mysql:5.6.38")
     private val ubuntu = Ubuntu()
+
+    /**
+     * Uses MySQL defaults.
+     */
+    constructor(
+        source: DatasetPackage
+    ) : this(
+        source = source,
+        maxConnections = 151
+    )
 
     override fun setup(ssh: SshConnection): String {
         val mysqlData = source.download(ssh)

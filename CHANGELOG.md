@@ -16,21 +16,32 @@ The API consists of all public Java types from `com.atlassian.performance.tools.
 [behavioral compatibility]: http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#behavioral_compatibility
 
 ## [Unreleased]
-[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-1.1.0
+[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-1.1.2
+
+## [1.1.2]
+[1.1.2]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.2%0Drelease-1.1.1
+
+### Fixed
+- Restore `MyslqDatabase` binary compatibility with 1.0.0.
 
 ## [1.1.1]
 [1.1.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.1%0Drelease-1.1.0
 
 ### Fixed
-- Restore binary compatibility with 1.0.0.
+- Restore `VirtualUsers` binary compatibility with 1.0.0.
 
 ## [1.1.0]
 [1.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.0%0Drelease-1.0.0
 
-### INCOMPATIBILITY WARNING
+### INCOMPATIBILITY BUG
 Break binary compatibility for `com.atlassian.performance.tools.infrastructure.api.virtualusers.VirtualUsers`.
 Switch to `1.1.1` to restore this compatibility.
 See [JPERF-39](https://ecosystem.atlassian.net/browse/JPERF-39) for details.
+
+### INCOMPATIBILITY BUG
+Break binary compatibility for `com.atlassian.performance.tools.infrastructure.api.database.MysqlDatabase`.
+Switch to `1.1.2` to restore this compatibility.
+See [JPERF-40](https://ecosystem.atlassian.net/browse/JPERF-40) for details.
 
 ### Added 
 - Add diagnosticsLimit parameter to limit how many times diagnostics can be executed.
