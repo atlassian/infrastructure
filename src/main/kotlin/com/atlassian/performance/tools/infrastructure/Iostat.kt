@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.os.MonitoringProcess
 import com.atlassian.performance.tools.infrastructure.api.os.OsMetric
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 import java.time.temporal.ChronoUnit
 

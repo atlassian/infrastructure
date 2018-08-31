@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure
 
-import com.atlassian.performance.tools.io.ensureDirectory
+import com.atlassian.performance.tools.io.api.ensureDirectory
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.Assert.assertThat
 import org.junit.Test

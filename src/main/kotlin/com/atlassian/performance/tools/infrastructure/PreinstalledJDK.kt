@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 
 internal class PreinstalledJDK(
     private val javaBin: String

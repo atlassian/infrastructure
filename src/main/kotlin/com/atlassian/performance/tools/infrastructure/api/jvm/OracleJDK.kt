@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.URI
@@ -21,8 +21,7 @@ class OracleJDK : JavaDevelopmentKit {
         connection.execute("echo '${use()}' >> ~/.bashrc")
     }
 
-    override fun use(): String =
-        "export PATH=${'$'}PATH:$jdkBin:$bin"
+    override fun use(): String = "export PATH=${'$'}PATH:$jdkBin:$bin"
 
     override fun command(options: String) = "${jdkBin}java $options"
 

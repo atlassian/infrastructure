@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.dataset
 
-import com.atlassian.performance.tools.jvmtasks.TaskTimer.time
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 import java.time.Duration
 

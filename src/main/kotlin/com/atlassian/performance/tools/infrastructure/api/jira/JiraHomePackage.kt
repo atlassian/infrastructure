@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jira
 
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 
 data class JiraHomePackage(
     private val source: DatasetPackage

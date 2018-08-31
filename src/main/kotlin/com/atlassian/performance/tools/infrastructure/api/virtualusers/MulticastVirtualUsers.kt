@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
-import com.atlassian.performance.tools.concurrency.submitWithLogContext
-import com.atlassian.performance.tools.jiraactions.scenario.Scenario
+import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
+import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import java.net.URI
 import java.util.concurrent.Executors

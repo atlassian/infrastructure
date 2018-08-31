@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
 internal class Docker {

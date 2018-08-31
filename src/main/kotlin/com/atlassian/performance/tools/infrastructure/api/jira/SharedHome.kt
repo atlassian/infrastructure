@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jira
 
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class SharedHome(
     private val ip: String,

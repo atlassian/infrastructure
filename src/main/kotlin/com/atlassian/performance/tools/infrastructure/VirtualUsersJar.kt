@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.virtualusers.LoadProfile
-import com.atlassian.performance.tools.jiraactions.scenario.Scenario
+import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import java.net.URI
 import java.time.Duration
 

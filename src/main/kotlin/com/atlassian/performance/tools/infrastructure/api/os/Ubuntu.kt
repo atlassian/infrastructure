@@ -1,9 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.os
 
 import com.atlassian.performance.tools.infrastructure.Iostat
-import com.atlassian.performance.tools.jvmtasks.ExponentialBackoff
-import com.atlassian.performance.tools.jvmtasks.IdempotentAction
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.Level
 import java.time.Duration
 

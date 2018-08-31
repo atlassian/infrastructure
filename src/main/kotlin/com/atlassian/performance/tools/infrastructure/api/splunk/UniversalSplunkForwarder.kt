@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 
 
 class UniversalSplunkForwarder(

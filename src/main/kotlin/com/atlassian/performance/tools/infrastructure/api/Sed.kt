@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api
 
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class Sed {
     fun replace(

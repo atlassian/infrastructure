@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
 import com.atlassian.performance.tools.infrastructure.api.os.MonitoringProcess
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
 class Jstat(

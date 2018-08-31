@@ -3,9 +3,9 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 import com.atlassian.performance.tools.infrastructure.VirtualUsersJar
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK
-import com.atlassian.performance.tools.jiraactions.scenario.Scenario
-import com.atlassian.performance.tools.jvmtasks.TaskTimer.time
-import com.atlassian.performance.tools.ssh.Ssh
+import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
+import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
+import com.atlassian.performance.tools.ssh.api.Ssh
 import org.apache.logging.log4j.LogManager
 import java.net.URI
 import java.time.Duration

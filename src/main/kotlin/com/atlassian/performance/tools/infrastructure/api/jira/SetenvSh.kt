@@ -3,7 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.jira.SetenvSh.Variables.*
 import com.atlassian.performance.tools.infrastructure.api.jvm.JvmArg
-import com.atlassian.performance.tools.ssh.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
  * https://confluence.atlassian.com/adminjiraserver072/increasing-jira-application-memory-828788060.html
