@@ -11,6 +11,7 @@ dependencies {
     tools("jvm-tasks", "0.0.2")
     tools("ssh", "0.1.0")
     tools("jira-actions", "0.0.1")
+    tools("virtual-users", "0.0.5-SNAPSHOT")
     compile("org.glassfish:javax.json:1.1")
     compile("org.jetbrains.kotlin:kotlin-stdlib-jre8:$kotlinVersion")
     compile("com.google.guava:guava:23.6-jre")

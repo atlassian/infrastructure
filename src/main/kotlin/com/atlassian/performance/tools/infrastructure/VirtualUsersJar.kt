@@ -1,43 +1,25 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
-import com.atlassian.performance.tools.infrastructure.api.virtualusers.LoadProfile
-import com.atlassian.performance.tools.jiraactions.scenario.Scenario
-import java.net.URI
-import java.time.Duration
+import com.atlassian.performance.tools.virtualusers.VirtualUserOptions
 
 internal class VirtualUsersJar {
     fun testingCommand(
-        jdk: JavaDevelopmentKit,
         jarName: String,
-        jira: URI,
-        minimumRun: Duration,
-        loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?,
-        diagnosticsLimit: Int?
+        jdk: JavaDevelopmentKit,
+        options: VirtualUserOptions
     ): String {
-        val params = mutableListOf(
+        val javaParams = mutableListOf(
             "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n",
-            "-jar $jarName",
-            "--jira-address='$jira'",
-            "--minimum-run='${minimumRun.toMinutes()}'",
-            "--virtual-users='${loadProfile.virtualUsersPerNode}'",
-            "--seed=${loadProfile.seed}",
-            "--ramp-up-interval=${loadProfile.rampUpInterval}"
+            "-jar $jarName"
         )
-        if (scenarioClass != null) {
-            params.add("--scenario=${scenarioClass.canonicalName}")
-        }
-        if (diagnosticsLimit != null) {
-            params.add("--diagnostics-limit=$diagnosticsLimit")
-        }
-
+        val cliArgs = options.toCliArgs()
         val redirects = listOf(
             "2>virtual-users-error.log",
             "> virtual-users-out.log"
         )
         return jdk.command(
-            (params + redirects).joinToString(" ")
+            (javaParams + cliArgs + redirects).joinToString(" ")
         )
     }
 }
