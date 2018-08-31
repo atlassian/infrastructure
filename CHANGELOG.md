@@ -41,6 +41,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - Gain freedom from APT `jvm-tasks:0`.
 - Gain freedom from APT `ssh:0`.
 - Gain freedom from APT `jira-actions:0`.
+- Added means to run load test locally.
 
 ## [1.1.2] - 2018-08-30
 [1.1.2]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.2%0Drelease-1.1.1
