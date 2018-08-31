@@ -6,6 +6,8 @@ import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK
 import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import org.apache.logging.log4j.LogManager
 import java.net.URI
 import java.time.Duration
@@ -37,31 +39,48 @@ data class SshVirtualUsers(
      * @param jira instance address to apply load on
      * @param loadProfile to be applied
      */
+    @Deprecated(message = "Do not use.")
     override fun applyLoad(
         jira: URI,
         loadProfile: LoadProfile,
         scenarioClass: Class<out Scenario>?,
         diagnosticsLimit: Int?
     ) {
-        val schedule = loadProfile.loadSchedule
-        Thread.sleep(schedule.startingDelay(nodeOrder).toMillis())
+        var options = VirtualUserOptions(
+            jiraAddress = jira,
+            virtualUserLoad = VirtualUserLoad(
+                virtualUsers = loadProfile.virtualUsersPerNode,
+                hold = loadProfile.loadSchedule.startingDelay(nodeOrder),
+                ramp = loadProfile.rampUpInterval.multipliedBy(loadProfile.virtualUsersPerNode.toLong()),
+                flat = loadProfile.loadSchedule.loadDuration(nodeOrder)
+            )
+        )
+
+        if (diagnosticsLimit != null) {
+            options = options.copy(diagnosticsLimit = diagnosticsLimit)
+        }
+
+        if (scenarioClass != null) {
+            options = options.copy(scenario = scenarioClass.getConstructor().newInstance())
+        }
+
+        applyLoad(options = options)
+    }
+
+    override fun applyLoad(
+        options: VirtualUserOptions
+    ) {
         logger.info("Applying load via $name...")
-        val minimumRun = schedule.loadDuration(nodeOrder)
-        val virtualUsersJar = VirtualUsersJar()
         ssh.newConnection().use {
             jdk.install(it)
-            val testingCommand = virtualUsersJar.testingCommand(
+            val testingCommand = VirtualUsersJar().testingCommand(
                 jdk = jdk,
                 jarName = jarName,
-                jira = jira,
-                minimumRun = minimumRun,
-                loadProfile = loadProfile,
-                scenarioClass = scenarioClass,
-                diagnosticsLimit = diagnosticsLimit
+                options = options
             )
             it.execute(
                 testingCommand,
-                minimumRun + Duration.ofMinutes(5)
+                options.virtualUserLoad.total + Duration.ofMinutes(5)
             )
         }
         logger.info("$name finished applying load")

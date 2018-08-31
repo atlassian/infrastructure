@@ -16,6 +16,8 @@ configurations.all {
                 "org.apache.httpcomponents:httpcore" -> useVersion("4.4.9")
                 "org.codehaus.plexus:plexus-utils" -> useVersion("3.1.0")
                 "org.slf4j:slf4j-api" -> useVersion("1.8.0-alpha2")
+                "com.google.code.gson:gson" -> useVersion("2.8.2")
+                "org.jsoup:jsoup" -> useVersion("1.10.2")
             }
         }
     }
@@ -24,6 +26,7 @@ configurations.all {
 dependencies {
     api("com.atlassian.performance.tools:ssh:[1.0.0,2.0.0)")
     api("com.atlassian.performance.tools:jira-actions:[2.0.0,3.0.0)")
+    api("com.atlassian.performance.tools:virtual-users:[1.0.0,2.0.0)")
 
     implementation("com.atlassian.performance.tools:io:[1.0.0,2.0.0)")
     implementation("com.atlassian.performance.tools:concurrency:[1.0.0,2.0.0)")
