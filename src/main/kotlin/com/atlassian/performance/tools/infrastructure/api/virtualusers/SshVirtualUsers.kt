@@ -52,7 +52,7 @@ data class SshVirtualUsers(
                 virtualUsers = loadProfile.virtualUsersPerNode,
                 hold = loadProfile.loadSchedule.startingDelay(nodeOrder),
                 ramp = loadProfile.rampUpInterval.multipliedBy(loadProfile.virtualUsersPerNode.toLong()),
-                load = loadProfile.loadSchedule.loadDuration(nodeOrder)
+                flat = loadProfile.loadSchedule.loadDuration(nodeOrder)
             )
         )
 
@@ -80,7 +80,7 @@ data class SshVirtualUsers(
             )
             it.execute(
                 testingCommand,
-                options.virtualUserLoad.test + Duration.ofMinutes(5)
+                options.virtualUserLoad.total + Duration.ofMinutes(5)
             )
         }
         logger.info("$name finished applying load")
