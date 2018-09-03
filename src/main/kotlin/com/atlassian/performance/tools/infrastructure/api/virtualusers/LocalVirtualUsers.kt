@@ -2,8 +2,8 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.io.ensureDirectory
 import com.atlassian.performance.tools.jiraactions.scenario.Scenario
-import com.atlassian.performance.tools.virtualusers.VirtualUserOptions
-import com.atlassian.performance.tools.virtualusers.main
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.main
 import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Files

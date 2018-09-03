@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
-import com.atlassian.performance.tools.virtualusers.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 
 internal class VirtualUsersJar {
     fun testingCommand(

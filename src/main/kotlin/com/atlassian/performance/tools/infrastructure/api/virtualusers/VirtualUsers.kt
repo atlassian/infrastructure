@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.infrastructure.api.MeasurementSource
 import com.atlassian.performance.tools.jiraactions.scenario.Scenario
-import com.atlassian.performance.tools.virtualusers.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import java.net.URI
 
 /**

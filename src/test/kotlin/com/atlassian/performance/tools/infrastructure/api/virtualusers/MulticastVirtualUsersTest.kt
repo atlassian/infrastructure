@@ -1,8 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.jiraactions.scenario.Scenario
-import com.atlassian.performance.tools.virtualusers.VirtualUserLoad
-import com.atlassian.performance.tools.virtualusers.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import net.jcip.annotations.NotThreadSafe
 import org.hamcrest.CoreMatchers.*
 import org.junit.Assert.assertThat

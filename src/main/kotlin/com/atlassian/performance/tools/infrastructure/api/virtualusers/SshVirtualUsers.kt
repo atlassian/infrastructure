@@ -6,8 +6,8 @@ import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK
 import com.atlassian.performance.tools.jiraactions.scenario.Scenario
 import com.atlassian.performance.tools.jvmtasks.TaskTimer.time
 import com.atlassian.performance.tools.ssh.Ssh
-import com.atlassian.performance.tools.virtualusers.VirtualUserLoad
-import com.atlassian.performance.tools.virtualusers.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import org.apache.logging.log4j.LogManager
 import java.net.URI
 import java.time.Duration
