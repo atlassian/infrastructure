@@ -26,6 +26,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-2.1.1
 
+### Added
+- Add the `CPU_UTILISATION` dimension.
+
+
 ## [2.1.1] - 2018-09-11
 [2.1.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.1.1%0Drelease-2.1.0
 

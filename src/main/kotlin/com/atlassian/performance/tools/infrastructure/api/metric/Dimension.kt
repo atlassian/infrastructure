@@ -4,6 +4,10 @@ enum class Dimension(
     val description: String,
     val reduction: ReductionType
 ) {
+    CPU_UTILISATION(
+        description = "CPU utilisation",
+        reduction = ReductionType.MEAN
+    ),
     CPU_LOAD(
         description = "CPU load",
         reduction = ReductionType.MEAN
