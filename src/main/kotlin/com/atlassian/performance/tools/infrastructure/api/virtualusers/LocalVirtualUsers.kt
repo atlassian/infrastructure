@@ -1,10 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.io.api.ensureDirectory
-import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import com.atlassian.performance.tools.virtualusers.api.main
-import java.net.URI
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -19,16 +17,6 @@ class LocalVirtualUsers(
 
     override fun applyLoad(options: VirtualUserOptions) {
         main(options.toCliArgs())
-    }
-
-    @Deprecated(message = "Not implemented!")
-    override fun applyLoad(
-        jira: URI,
-        loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?,
-        diagnosticsLimit: Int?
-    ) {
-        throw RuntimeException("Deprecated method not implemented!")
     }
 
     override fun gatherResults() {

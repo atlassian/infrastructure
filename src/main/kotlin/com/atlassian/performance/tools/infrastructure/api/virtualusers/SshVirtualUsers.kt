@@ -3,13 +3,10 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 import com.atlassian.performance.tools.infrastructure.VirtualUsersJar
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK
-import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
-import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import org.apache.logging.log4j.LogManager
-import java.net.URI
 import java.time.Duration
 import java.util.*
 
@@ -32,40 +29,6 @@ data class SshVirtualUsers(
 
     private val logger = LogManager.getLogger(this::class.java)
     private val jdk: JavaDevelopmentKit = OpenJDK()
-
-    /**
-     * Uses [ssh] to apply load with [loadProfile] on [jira]
-     *
-     * @param jira instance address to apply load on
-     * @param loadProfile to be applied
-     */
-    @Deprecated(message = "Do not use.")
-    override fun applyLoad(
-        jira: URI,
-        loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?,
-        diagnosticsLimit: Int?
-    ) {
-        var options = VirtualUserOptions(
-            jiraAddress = jira,
-            virtualUserLoad = VirtualUserLoad(
-                virtualUsers = loadProfile.virtualUsersPerNode,
-                hold = loadProfile.loadSchedule.startingDelay(nodeOrder),
-                ramp = loadProfile.rampUpInterval.multipliedBy(loadProfile.virtualUsersPerNode.toLong()),
-                flat = loadProfile.loadSchedule.loadDuration(nodeOrder)
-            )
-        )
-
-        if (diagnosticsLimit != null) {
-            options = options.copy(diagnosticsLimit = diagnosticsLimit)
-        }
-
-        if (scenarioClass != null) {
-            options = options.copy(scenario = scenarioClass.getConstructor().newInstance())
-        }
-
-        applyLoad(options = options)
-    }
 
     override fun applyLoad(
         options: VirtualUserOptions

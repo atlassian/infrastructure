@@ -32,6 +32,8 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - Require APT `jvm-tasks:1`.
 - Require APT `ssh:1`.
 - Require APT `jira-actions:2`.
+- Require APT `virtual-users:1`
+- Remove `LoadProfile` in favour of new `virtual-users` API
 
 ### Added
 - Include the POM in the compatibility contract.

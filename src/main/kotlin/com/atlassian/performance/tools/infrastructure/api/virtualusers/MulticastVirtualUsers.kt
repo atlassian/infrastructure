@@ -1,11 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
-import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import com.google.common.util.concurrent.ThreadFactoryBuilder
-import java.net.URI
 import java.util.concurrent.Executors
 
 class MulticastVirtualUsers<out T : VirtualUsers>(
@@ -15,18 +13,6 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
     override fun gatherResults() {
         multicast("gatherResults") { node, _ ->
             node.gatherResults()
-        }
-    }
-
-    @Deprecated(message = "Do not use.")
-    override fun applyLoad(
-        jira: URI,
-        loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?,
-        diagnosticsLimit: Int?
-    ) {
-        multicast("applyLoad") { node, _ ->
-            node.applyLoad(jira, loadProfile, scenarioClass, diagnosticsLimit)
         }
     }
 
