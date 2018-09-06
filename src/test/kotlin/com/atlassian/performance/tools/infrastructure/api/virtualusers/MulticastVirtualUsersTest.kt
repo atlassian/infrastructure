@@ -118,15 +118,6 @@ private class SingleUseVirtualUsers : VirtualUsers {
         }
     }
 
-    override fun applyLoad(
-        jira: URI,
-        loadProfile: LoadProfile,
-        scenarioClass: Class<out Scenario>?,
-        diagnosticsLimit: Int?
-    ) {
-        throw Exception("unexpected call")
-    }
-
     override fun gatherResults() {
         throw Exception("unexpected call")
     }
