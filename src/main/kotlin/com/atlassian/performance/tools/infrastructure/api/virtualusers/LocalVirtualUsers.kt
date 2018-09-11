@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 import com.atlassian.performance.tools.io.api.ensureDirectory
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import com.atlassian.performance.tools.virtualusers.api.main
+import org.apache.logging.log4j.LogManager
 import java.nio.file.FileSystems
 import java.nio.file.Files
 import java.nio.file.Path
@@ -16,7 +17,12 @@ class LocalVirtualUsers(
 ) : VirtualUsers {
 
     override fun applyLoad(options: VirtualUserOptions) {
+        useLog4jAutomaticConfiguration()
         main(options.toCliArgs())
+    }
+
+    private fun useLog4jAutomaticConfiguration() {
+        LogManager.getLogger(this::class.java)
     }
 
     override fun gatherResults() {
@@ -26,10 +32,7 @@ class LocalVirtualUsers(
 
         val filesToMove = listOf(
             "test-results",
-            "diagnoses",
-            "virtual-users.log",
-            "virtual-users-out.log",
-            "virtual-users-error.log"
+            "diagnoses"
         )
 
         filesToMove.forEach {
