@@ -12,8 +12,11 @@ class UniversalSplunkForwarder(
     private val indexingReceiverPort: Int = 9997
 ) : SplunkForwarder {
     override fun run(sshConnection: SshConnection, name: String) {
+        run(sshConnection, name, "/home/ubuntu/jirahome/log")
+    }
+
+    override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
         val splunkForwarderImage = DockerImage("splunk/universalforwarder:6.5.3-monitor")
-        val jiraLogsPath = "/home/ubuntu/jirahome/log"
 
         val parameters = listOf(
             "--hostname $name",
@@ -24,7 +27,7 @@ class UniversalSplunkForwarder(
             "--env SPLUNK_ADD='monitor /var/log/jiralogs/'",
             "--env SPLUNK_START_ARGS='--accept-license'",
             "--env SPLUNK_USER=root",
-            "--volume $jiraLogsPath:/var/log/jiralogs/",
+            "--volume $logsPath:/var/log/jiralogs/",
             "--volume /var/lib/docker/containers:/host/containers:ro",
             "--volume /var/log:/docker/log:ro",
             "--volume /var/run/docker.sock:/var/run/docker.sock:ro")

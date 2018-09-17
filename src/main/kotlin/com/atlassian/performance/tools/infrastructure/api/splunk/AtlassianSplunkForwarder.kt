@@ -2,21 +2,29 @@ package com.atlassian.performance.tools.infrastructure.api.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
-import com.atlassian.performance.tools.io.api.readResourceText
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 
 class AtlassianSplunkForwarder(
+    private val additionalEventFields: Map<String, String> = mapOf("serviceId" to "90c41131-2dc2-4cb5-9806-c01b6659817e"),
+    private val kinesisRoleArn: String = "arn:aws:iam::915926889391:role/pipeline-prod-log-producer-545459181881"
 ) : SplunkForwarder {
+
     override fun run(sshConnection: SshConnection, name: String) {
+        run(sshConnection, name, "/home/ubuntu/jirahome/log")
+    }
+
+    override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
         val logstashImage = DockerImage("docker.elastic.co/logstash/logstash-oss:6.2.4")
-        val jiraLogsPath = "/home/ubuntu/jirahome/log/"
         val logstashConfFilePath = "~/logstash.conf"
 
-        createLogstashConfigFile(sshConnection, logstashConfFilePath)
+        sshConnection.execute("""cat > $logstashConfFilePath <<'EOF'
+        |${LogStashConfigBuilder(additionalEventFields, kinesisRoleArn).build()}
+        |EOF""".trimMargin())
+
 
         val parameters = listOf(
-            "--volume $jiraLogsPath:/usr/share/logstash/pipeline/",
+            "--volume $logsPath:/usr/share/logstash/pipeline/",
             "--volume /var/lib/docker/containers:/host/containers:ro",
             "--volume /var/run/docker.sock:/var/run/docker.sock:ro",
             "-v $logstashConfFilePath:/usr/share/logstash/config/logstash.conf")
@@ -40,13 +48,51 @@ class AtlassianSplunkForwarder(
     override fun getRequiredPorts(): List<Int> {
         return emptyList()
     }
+}
 
-    private fun createLogstashConfigFile(sshConnection: SshConnection, logstashConfFilePath: String) {
-        val logstashConf = readResourceText("splunk/logstash.conf")
-        sshConnection.execute(
-            """cat > $logstashConfFilePath <<'EOF'
-                |$logstashConf
-                |EOF""".trimMargin()
-        )
+internal class LogStashConfigBuilder(private val additionalEventFields: Map<String, String>, private val kinesisRoleArn: String) {
+    private fun input(): String {
+        return """input {
+        |   file {
+        |       path => "/usr/share/logstash/pipeline/*"
+        |       start_position => "beginning"
+        |   }
+        |}""".trimIndent().trimMargin()
+    }
+
+    private fun filter(additionalEventFields: Map<String, String>): String {
+        var additionalEventFieldsString = ""
+        for ((k, v) in additionalEventFields) {
+            additionalEventFieldsString += "\"$k\" => \"$v\"\n"
+        }
+
+        return """filter {
+        |   json{
+        |       source => "message"
+        |       target => "message_json"
+        |   }
+        |   mutate {
+        |       add_field => {
+        |           $additionalEventFieldsString
+        |       }
+        |   }
+        |}""".trimIndent().trimMargin()
+    }
+
+
+    private fun output(kinesisRoleArn: String): String {
+        return """output {
+        |   kinesis {
+        |       role_arn => "$kinesisRoleArn"
+        |       metrics_level => "none"
+        |       stream_name => "prod-logs"
+        |       region => "us-east-1"
+        |       randomized_partition_key => true
+        |   }
+        |}""".trimIndent().trimMargin()
+    }
+
+    fun build(): String {
+        return input() + "\n" + filter(additionalEventFields) + "\n" + output(kinesisRoleArn)
     }
 }
