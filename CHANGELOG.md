@@ -28,10 +28,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Added
 - Add the `CPU_UTILISATION` dimension.
-
-### Changed
-- Changes in `SplunkForwarder`. Added explicit parameter with logs path. Added explicit parameters to `AtlassianSplunkForwarder` constructor.
-
+- Parametrize the log path for Splunk forwarding.
+- Parametrize the Atlassian Splunk forwarder log fields.
+- Parametrize the Atlassian Splunk forwarder Kinesis ARN.
 
 ## [2.1.1] - 2018-09-11
 [2.1.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.1.1%0Drelease-2.1.0

@@ -6,9 +6,17 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 
 class AtlassianSplunkForwarder(
-    private val additionalEventFields: Map<String, String> = mapOf("serviceId" to "90c41131-2dc2-4cb5-9806-c01b6659817e"),
-    private val kinesisRoleArn: String = "arn:aws:iam::915926889391:role/pipeline-prod-log-producer-545459181881"
+    private val additionalEventFields: Map<String, String>,
+    private val kinesisRoleArn: String
 ) : SplunkForwarder {
+
+    @Deprecated(
+        message = "Use the parameterless constructor"
+    )
+    constructor() : this(
+        additionalEventFields = mapOf("serviceId" to "90c41131-2dc2-4cb5-9806-c01b6659817e"),
+        kinesisRoleArn = "arn:aws:iam::915926889391:role/pipeline-prod-log-producer-545459181881"
+    )
 
     override fun run(sshConnection: SshConnection, name: String) {
         run(sshConnection, name, "/home/ubuntu/jirahome/log")
