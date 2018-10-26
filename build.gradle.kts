@@ -19,6 +19,9 @@ configurations.all {
                 "org.slf4j:slf4j-api" -> useVersion("1.8.0-alpha2")
                 "com.google.code.gson:gson" -> useVersion("2.8.2")
                 "org.jsoup:jsoup" -> useVersion("1.10.2")
+                "org.jetbrains:annotations" -> useVersion("15.0")
+                "com.google.code.findbugs:jsr305" -> useVersion("3.0.2")
+                "org.apache.commons:commons-compress" -> useVersion("1.9")
             }
         }
     }
@@ -44,6 +47,7 @@ dependencies {
 
     testCompile("junit:junit:4.12")
     testCompile("org.hamcrest:hamcrest-library:1.3")
+    testCompile("org.testcontainers:testcontainers:1.9.1")
 }
 
 fun log4j(

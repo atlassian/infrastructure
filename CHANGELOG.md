@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-2.2.0
 
+### Added
+- Chromium support which resolves [JPERF-238].
+
+[JPERF-238]: https://ecosystem.atlassian.net/browse/JPERF-238
+
 ## [2.2.0] - 2018-09-21
 [2.2.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.2.0%0Drelease-2.1.1
 
