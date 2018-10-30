@@ -63,6 +63,7 @@ org.apache.maven:maven-repository-metadata:3.5.2
 org.apache.maven:maven-resolver-provider:3.5.2
 org.apache.maven:maven-settings-builder:3.5.2
 org.apache.maven:maven-settings:3.5.2
+org.assertj:assertj-core:3.11.1
 org.bouncycastle:bcpkix-jdk15on:1.56
 org.bouncycastle:bcprov-jdk15on:1.56
 org.checkerframework:checker-compat-qual:2.0.0

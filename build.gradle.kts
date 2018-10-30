@@ -48,6 +48,7 @@ dependencies {
     testCompile("junit:junit:4.12")
     testCompile("org.hamcrest:hamcrest-library:1.3")
     testCompile("org.testcontainers:testcontainers:1.9.1")
+    testCompile("org.assertj:assertj-core:3.11.1")
 }
 
 fun log4j(
