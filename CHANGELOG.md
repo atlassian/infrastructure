@@ -39,7 +39,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 [JPERF-242]: https://ecosystem.atlassian.net/browse/JPERF-242
 
-## [2.3.0] - 2018-09-26
+## [2.3.0] - 2018-10-26
 [2.3.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.3.0%0Drelease-2.2.0
 
 ### Added
