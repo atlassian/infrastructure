@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-2.3.1
 
+### Added
+- Customisable timeouts for Jira launch which is required for [JPERF-216].
+
+[JPERF-216]: https://ecosystem.atlassian.net/browse/JPERF-216
+
 ## [2.3.1] - 2018-10-30
 [2.3.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.3.1%0Drelease-2.3.0
 
