@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-2.4.0
 
+### Fixed
+- Fix chromium installation flakes. Fix [JPERF-250].
+
+[JPERF-250]: https://ecosystem.atlassian.net/browse/JPERF-250
+
 ## [2.4.0] - 2018-10-31
 [2.4.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.4.0%0Drelease-2.3.0
 
