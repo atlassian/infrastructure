@@ -28,8 +28,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Fix chromium installation flakes. Fix [JPERF-250].
+- Avoid `VirtualUserOptions.copy`. Avoid [JPERF-253].
 
 [JPERF-250]: https://ecosystem.atlassian.net/browse/JPERF-250
+[JPERF-253]: https://ecosystem.atlassian.net/browse/JPERF-253
 
 ## [2.4.0] - 2018-10-31
 [2.4.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.4.0%0Drelease-2.3.0

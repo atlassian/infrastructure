@@ -55,13 +55,20 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         val rampPerNode = load.ramp.dividedBy(nodeCount.toLong())
         multicast("apply load") { node, index ->
             node.applyLoad(
-                options.copy(
+                VirtualUserOptions(
                     virtualUserLoad = VirtualUserLoad(
                         virtualUsers = vusPerNode,
                         hold = load.hold + rampPerNode.multipliedBy(index),
                         ramp = rampPerNode,
                         flat = load.flat + rampPerNode.multipliedBy(nodeCount - index - 1)
-                    )
+                    ),
+                    help = false,
+                    scenario = options.scenario,
+                    seed = options.seed,
+                    jiraAddress = options.jiraAddress,
+                    adminLogin = options.adminLogin,
+                    adminPassword = options.adminPassword,
+                    diagnosticsLimit = options.diagnosticsLimit
                 )
             )
         }
