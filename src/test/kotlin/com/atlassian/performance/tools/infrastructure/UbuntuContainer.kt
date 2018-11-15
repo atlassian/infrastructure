@@ -29,10 +29,11 @@ class UbuntuContainer {
                         key = privateKey
                     )
                 )
-                val sshConnection = ssh.newConnection()
-                sshConnection.execute("apt-get update -qq", Duration.ofMinutes(1))
-                sshConnection.execute("apt-get install sudo -y -qq")
-                action(sshConnection)
+                ssh.newConnection().use { sshConnection ->
+                    sshConnection.execute("apt-get update -qq", Duration.ofMinutes(1))
+                    sshConnection.execute("apt-get install sudo -y -qq")
+                    action(sshConnection)
+                }
             }
     }
 
