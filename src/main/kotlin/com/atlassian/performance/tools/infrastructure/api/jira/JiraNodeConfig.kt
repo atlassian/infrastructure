@@ -45,7 +45,8 @@ data class JiraNodeConfig(
         launchTimeouts = JiraLaunchTimeouts(
             offlineTimeout = Duration.ofMinutes(8),
             initTimeout = Duration.ofMinutes(4),
-            upgradeTimeout = Duration.ofMinutes(8)
+            upgradeTimeout = Duration.ofMinutes(8),
+            unresponsivenessTimeout = Duration.ofMinutes(4)
         )
     )
 
