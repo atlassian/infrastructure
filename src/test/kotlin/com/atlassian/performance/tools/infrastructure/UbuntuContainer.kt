@@ -7,7 +7,7 @@ import net.schmizz.sshj.SSHClient
 import net.schmizz.sshj.xfer.FileSystemFile
 import org.testcontainers.containers.GenericContainer
 import org.testcontainers.containers.wait.strategy.Wait
-import java.nio.file.Paths
+import java.io.File
 import java.time.Duration
 
 class UbuntuContainer {
@@ -18,7 +18,7 @@ class UbuntuContainer {
             .waitingFor(Wait.forListeningPort()).use { ubuntuContainer ->
                 ubuntuContainer.start()
                 val mappedSshPort = ubuntuContainer.getMappedPort(sshPort)
-                val privateKey = Paths.get(javaClass.getResource("ssh_key").path)
+                val privateKey = File(javaClass.getResource("ssh_key").toURI()).toPath()
                 val ipAddress = ubuntuContainer.containerIpAddress
                 copyAuthFile(ipAddress, mappedSshPort)
                 val ssh = Ssh(
@@ -36,10 +36,10 @@ class UbuntuContainer {
             }
     }
 
-    private fun copyAuthFile(ipAdress: String, port: Int) {
+    private fun copyAuthFile(ipAddress: String, port: Int) {
         SSHClient().use { sshClient ->
             sshClient.addHostKeyVerifier { _, _, _ -> true }
-            sshClient.connect(ipAdress, port)
+            sshClient.connect(ipAddress, port)
             sshClient.authPassword("root", "root")
             sshClient.newSCPFileTransfer().newSCPUploadClient().copy(
                 FileSystemFile(javaClass.getResource("authorized_keys").path),
