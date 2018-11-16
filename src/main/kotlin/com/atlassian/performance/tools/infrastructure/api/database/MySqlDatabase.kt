@@ -19,7 +19,10 @@ class MySqlDatabase(
 ) : Database {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    private val image: DockerImage = DockerImage("mysql:5.6.38")
+    private val image: DockerImage = DockerImage(
+        name = "mysql:5.6.38",
+        pullTimeout = Duration.ofMinutes(5)
+    )
     private val ubuntu = Ubuntu()
 
     /**
