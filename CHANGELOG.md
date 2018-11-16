@@ -31,9 +31,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Increase pull timeout for MySQL docker image. Fix [JPERF-265].
+- Increase Docker install timeout. Fix [JPERF-264].
 
 [JPERF-271]: https://ecosystem.atlassian.net/browse/JPERF-271
 [JPERF-265]: https://ecosystem.atlassian.net/browse/JPERF-265
+[JPERF-264]: https://ecosystem.atlassian.net/browse/JPERF-264
 
 ## [2.4.1] - 2018-11-02
 [2.4.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.4.1%0Drelease-2.4.0

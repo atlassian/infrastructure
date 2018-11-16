@@ -32,7 +32,7 @@ internal class Docker {
         ubuntu.install(
             ssh = ssh,
             packages = listOf("docker-ce=$version"),
-            timeout = Duration.ofSeconds(90)
+            timeout = Duration.ofSeconds(180)
         )
     }
 }
