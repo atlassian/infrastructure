@@ -10,18 +10,6 @@ class AtlassianSplunkForwarder(
     private val kinesisRoleArn: String
 ) : SplunkForwarder {
 
-    @Deprecated(
-        message = "Use the parameterless constructor"
-    )
-    constructor() : this(
-        additionalEventFields = mapOf("serviceId" to "90c41131-2dc2-4cb5-9806-c01b6659817e"),
-        kinesisRoleArn = "arn:aws:iam::915926889391:role/pipeline-prod-log-producer-545459181881"
-    )
-
-    override fun run(sshConnection: SshConnection, name: String) {
-        run(sshConnection, name, "/home/ubuntu/jirahome/log")
-    }
-
     override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
         val logstashImage = DockerImage("docker.elastic.co/logstash/logstash-oss:6.2.4")
         val logstashConfFilePath = "~/logstash.conf"

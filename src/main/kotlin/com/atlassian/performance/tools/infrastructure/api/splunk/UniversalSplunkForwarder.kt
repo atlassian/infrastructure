@@ -11,9 +11,6 @@ class UniversalSplunkForwarder(
     private val httpEventCollectorPort: Int = 8088,
     private val indexingReceiverPort: Int = 9997
 ) : SplunkForwarder {
-    override fun run(sshConnection: SshConnection, name: String) {
-        run(sshConnection, name, "/home/ubuntu/jirahome/log")
-    }
 
     override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
         val splunkForwarderImage = DockerImage("splunk/universalforwarder:6.5.3-monitor")
