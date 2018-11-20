@@ -1,7 +1,7 @@
-val kotlinVersion = "1.2.30"
+val kotlinVersion = "1.2.70"
 
 plugins {
-    kotlin("jvm").version("1.2.30")
+    kotlin("jvm").version("1.2.70")
     `java-library`
     id("com.atlassian.performance.tools.gradle-release").version("0.4.3")
 }
@@ -23,12 +23,16 @@ configurations.all {
                 "com.google.code.findbugs:jsr305" -> useVersion("3.0.2")
                 "org.apache.commons:commons-compress" -> useVersion("1.9")
             }
+            when (requested.group) {
+                "org.jetbrains.kotlin" -> useVersion(kotlinVersion)
+            }
+
         }
     }
 }
 
 dependencies {
-    api("com.atlassian.performance.tools:ssh:[1.0.0,2.0.0)")
+    api("com.atlassian.performance.tools:ssh:[2.0.0,3.0.0)")
     api("com.atlassian.performance.tools:jira-actions:[2.0.0,3.0.0)")
     api("com.atlassian.performance.tools:virtual-users:[1.0.0,3.0.0)")
 

@@ -22,7 +22,8 @@ internal class DockerImage(
         ssh.execute(
             cmd = "sudo docker pull $name",
             timeout = pullTimeout,
-            stdout = Level.TRACE
+            stdout = Level.TRACE,
+            stderr = Level.WARN
         )
         ssh.execute("sudo docker run -d $parameters --name $containerName $name $arguments")
         return containerName

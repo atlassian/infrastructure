@@ -28,10 +28,14 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Added
 - Customisable status timeout for Jira upgrades endpoint which is required for [JPERF-271].
+- Support `ssh:2`
 
 ### Fixed
 - Increase pull timeout for MySQL docker image. Fix [JPERF-265].
 - Increase Docker install timeout. Fix [JPERF-264].
+
+### Removed
+- Drop support of `ssh:1`
 
 [JPERF-271]: https://ecosystem.atlassian.net/browse/JPERF-271
 [JPERF-265]: https://ecosystem.atlassian.net/browse/JPERF-265
