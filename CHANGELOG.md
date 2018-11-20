@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-2.4.1
+[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-3.0.0
+
+## [3.0.0] - 2018-11-20
+[3.0.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-3.0.0%0Drelease-2.4.1
 
 ### Added
 - Customisable status timeout for Jira upgrades endpoint which is required for [JPERF-271].
