@@ -19,7 +19,7 @@ import java.util.*
  * @param jarName of the virtual users executable
  * @param ssh used for communication
  */
-data class SshVirtualUsers(
+class SshVirtualUsers(
     private val name: String = UUID.randomUUID().toString(),
     private val nodeOrder: Int,
     private val resultsTransport: ResultsTransport,
@@ -77,5 +77,9 @@ data class SshVirtualUsers(
                 )
             }
         }
+    }
+
+    override fun toString(): String {
+        return "SshVirtualUsers(name='$name', nodeOrder=$nodeOrder, resultsTransport=$resultsTransport, jarName='$jarName', ssh=$ssh, logger=$logger, jdk=$jdk)"
     }
 }

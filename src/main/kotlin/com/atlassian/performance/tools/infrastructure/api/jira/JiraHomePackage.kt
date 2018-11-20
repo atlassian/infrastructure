@@ -3,7 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-data class JiraHomePackage(
+class JiraHomePackage(
     private val source: DatasetPackage
 ) : JiraHomeSource {
 
@@ -11,5 +11,9 @@ data class JiraHomePackage(
         ssh: SshConnection
     ): String {
         return source.download(ssh)
+    }
+
+    override fun toString(): String {
+        return "JiraHomePackage(source=$source)"
     }
 }

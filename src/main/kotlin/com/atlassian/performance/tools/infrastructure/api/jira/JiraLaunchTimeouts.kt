@@ -10,7 +10,7 @@ import java.time.Duration
  * @param upgradeTimeout is the duration JPT waits for Jira to finish upgrade tasks
  * @param unresponsivenessTimeout is the duration JPT would tolerate Jira not responding to status query on upgrades endpoint
  */
-data class JiraLaunchTimeouts(
+class JiraLaunchTimeouts(
     val offlineTimeout: Duration,
     val initTimeout: Duration,
     val upgradeTimeout: Duration,
@@ -26,4 +26,8 @@ data class JiraLaunchTimeouts(
         upgradeTimeout = upgradeTimeout,
         unresponsivenessTimeout = Duration.ofMinutes(4)
     )
+
+    override fun toString(): String {
+        return "JiraLaunchTimeouts(offlineTimeout=$offlineTimeout, initTimeout=$initTimeout, upgradeTimeout=$upgradeTimeout, unresponsivenessTimeout=$unresponsivenessTimeout)"
+    }
 }

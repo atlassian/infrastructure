@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.nio.file.Path
 
-data class DirectResultsTransport(
+class DirectResultsTransport(
     private val localDestination: Path
 ) : ResultsTransport {
 
@@ -19,5 +19,9 @@ data class DirectResultsTransport(
         logger.info("Downloading results to $localDestination")
         localDestination.toFile().ensureParentDirectory()
         sshConnection.download("$targetDirectory/*", localDestination)
+    }
+
+    override fun toString(): String {
+        return "DirectResultsTransport(localDestination=$localDestination, logger=$logger)"
     }
 }

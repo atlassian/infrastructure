@@ -8,7 +8,7 @@ import com.atlassian.performance.tools.infrastructure.api.splunk.DisabledSplunkF
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
 import java.time.Duration
 
-data class JiraNodeConfig(
+class JiraNodeConfig(
     val name: String,
     val debug: JvmDebug,
     val remoteJmx: RemoteJmx,
@@ -52,5 +52,18 @@ data class JiraNodeConfig(
 
     fun clone(
         times: Int
-    ): List<JiraNodeConfig> = (1..times).map { copy(name = "$name-$it") }
+    ): List<JiraNodeConfig> = (1..times).map {
+        JiraNodeConfig(
+            name = "$name-$it",
+            debug = debug,
+            remoteJmx = remoteJmx,
+            jvmArgs = jvmArgs,
+            splunkForwarder= splunkForwarder,
+            launchTimeouts = launchTimeouts
+        )
+    }
+
+    override fun toString(): String {
+        return "JiraNodeConfig(name='$name', debug=$debug, remoteJmx=$remoteJmx, jvmArgs=$jvmArgs, splunkForwarder=$splunkForwarder, launchTimeouts=$launchTimeouts)"
+    }
 }

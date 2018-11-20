@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 import java.time.Duration
 
-data class HttpDatasetPackage(
+class HttpDatasetPackage(
     private val downloadPath: String,
     private val unpackedPath: String? = null,
     private val downloadTimeout: Duration
@@ -21,5 +21,9 @@ data class HttpDatasetPackage(
             ssh.execute("wget -qO - ${datasetBucket.resolve(downloadPath)} | $unzipCommand", downloadTimeout)
         }
         return unpackedPath!!
+    }
+
+    override fun toString(): String {
+        return "HttpDatasetPackage(downloadPath='$downloadPath', unpackedPath=$unpackedPath, downloadTimeout=$downloadTimeout, datasetBucket=$datasetBucket)"
     }
 }

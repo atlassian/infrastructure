@@ -1,6 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-data class JvmArg(
+class JvmArg(
     val key: String,
     val value: String = ""
-)
+) {
+
+    override fun toString(): String {
+        return "JvmArg(key='$key', value='$value')"
+    }
+}
