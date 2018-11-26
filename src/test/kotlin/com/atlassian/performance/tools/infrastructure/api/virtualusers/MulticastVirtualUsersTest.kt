@@ -1,13 +1,12 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
-import com.atlassian.performance.tools.jiraactions.api.scenario.Scenario
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import net.jcip.annotations.NotThreadSafe
-import org.hamcrest.CoreMatchers.*
-import org.junit.Assert.assertThat
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.iterable.Extractor
 import org.junit.Test
-import java.net.URI
+import java.time.Duration
 import java.time.Duration.ofSeconds
 
 class MulticastVirtualUsersTest {
@@ -27,36 +26,19 @@ class MulticastVirtualUsersTest {
         val virtualUsers = MulticastVirtualUsers(nodes)
 
         virtualUsers.applyLoad(options)
-
-        assertThat(
-            nodes.map { it.lastOptions!!.virtualUserLoad },
-            hasItems(
-                VirtualUserLoad(
-                    virtualUsers = 3,
-                    hold = ofSeconds(10),
-                    ramp = ofSeconds(4),
-                    flat = ofSeconds(67)
-                ),
-                VirtualUserLoad(
-                    virtualUsers = 3,
-                    hold = ofSeconds(14),
-                    ramp = ofSeconds(4),
-                    flat = ofSeconds(63)
-                ),
-                VirtualUserLoad(
-                    virtualUsers = 3,
-                    hold = ofSeconds(18),
-                    ramp = ofSeconds(4),
-                    flat = ofSeconds(59)
-                ),
-                VirtualUserLoad(
-                    virtualUsers = 3,
-                    hold = ofSeconds(22),
-                    ramp = ofSeconds(4),
-                    flat = ofSeconds(55)
-                )
+        val virtualUserLoad = nodes.map { it.lastOptions!!.virtualUserLoad }
+        assertThat(virtualUserLoad)
+            .extracting(
+                Extractor<VirtualUserLoad, ComparableLoad> {
+                    ComparableLoad(it)
+                }
             )
-        )
+            .contains(
+                ComparableLoad(3, ofSeconds(10), ofSeconds(4), ofSeconds(67)),
+                ComparableLoad(3, ofSeconds(14), ofSeconds(4), ofSeconds(63)),
+                ComparableLoad(3, ofSeconds(18), ofSeconds(4), ofSeconds(59)),
+                ComparableLoad(3, ofSeconds(22), ofSeconds(4), ofSeconds(55))
+            )
     }
 
     @Test
@@ -66,7 +48,11 @@ class MulticastVirtualUsersTest {
 
         virtualUsers.applyLoad(options)
 
-        assertThat(node.lastOptions!!.virtualUserLoad, equalTo(load))
+        assertThat(node.lastOptions!!.virtualUserLoad)
+            .extracting {
+                ComparableLoad(it.virtualUsers, it.hold, it.ramp, it.flat)
+            }
+            .isEqualTo(ComparableLoad(load))
     }
 
     @Test
@@ -76,9 +62,13 @@ class MulticastVirtualUsersTest {
 
         virtualUsers.applyLoad(options)
 
-        nodes
+        val virtualUserLoad = nodes
             .map { it.lastOptions!!.virtualUserLoad }
-            .forEach { assertThat(it.total, equalTo(load.total)) }
+        assertThat(virtualUserLoad)
+            .extracting(Extractor<VirtualUserLoad, Duration> {
+                it.total
+            })
+            .contains(load.total)
     }
 
     @Test
@@ -94,13 +84,25 @@ class MulticastVirtualUsersTest {
             e
         }
 
-        assertThat(exception, notNullValue())
-        assertThat(
-            exception!!.message,
-            equalTo("12 virtual users are not enough to spread into $tooManyNodes nodes")
-        )
+        assertThat(exception).isNotNull()
+        assertThat(exception!!.message)
+            .isEqualTo("12 virtual users are not enough to spread into $tooManyNodes nodes")
     }
 
+}
+
+private data class ComparableLoad(
+    val virtualUsers: Int,
+    val hold: Duration,
+    val ramp: Duration,
+    val flat: Duration
+) {
+    constructor(load: VirtualUserLoad) : this(
+        virtualUsers = load.virtualUsers,
+        hold = load.hold,
+        ramp = load.ramp,
+        flat = load.flat
+    )
 }
 
 @NotThreadSafe
