@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-3.0.0
+[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-3.1.0
+
+## [3.1.0] - 2018-11-26
+[3.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-3.1.0%0Drelease-3.0.0
 
 ### Added
 - Add support for jira-actions:3
