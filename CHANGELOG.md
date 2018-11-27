@@ -33,10 +33,13 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Added
 - Separate Chromium implementations, like `Chromium69` or `Chromium70`. Resolve [JPERF-350].
 - Install Chromium with a compatible chromedriver. Resolve [JPERF-352].
+- Add a way to specify how to download an archive.
+- Add a way to download a public Jira Software tar.gz distribution. Resolve [JPERF-277].
 
 ## Deprecated
 - Deprecate Chromium in favor of specific implementations like Chromium69 or Chromium70.
 
+[JPERF-277]:https://ecosystem.atlassian.net/browse/JPERF-277
 [JPERF-345]:https://ecosystem.atlassian.net/browse/JPERF-345
 [JPERF-346]:https://ecosystem.atlassian.net/browse/JPERF-346
 [JPERF-350]:https://ecosystem.atlassian.net/browse/JPERF-350
