@@ -46,7 +46,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
 
     override fun applyLoad(options: VirtualUserOptions) {
         val nodeCount = nodes.size
-        val load = options.virtualUserLoad
+        val load = options.behavior.load
         val virtualUsers = load.virtualUsers
         if (nodeCount > virtualUsers) {
             throw Exception("$virtualUsers virtual users are not enough to spread into $nodeCount nodes")
@@ -56,19 +56,15 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         multicast("apply load") { node, index ->
             node.applyLoad(
                 VirtualUserOptions(
-                    virtualUserLoad = VirtualUserLoad(
-                        virtualUsers = vusPerNode,
-                        hold = load.hold + rampPerNode.multipliedBy(index),
-                        ramp = rampPerNode,
-                        flat = load.flat + rampPerNode.multipliedBy(nodeCount - index - 1)
-                    ),
-                    help = false,
-                    scenario = options.scenario,
-                    seed = options.seed,
-                    jiraAddress = options.jiraAddress,
-                    adminLogin = options.adminLogin,
-                    adminPassword = options.adminPassword,
-                    diagnosticsLimit = options.diagnosticsLimit
+                    target = options.target,
+                    behavior = options.behavior.withLoad(
+                        VirtualUserLoad(
+                            virtualUsers = vusPerNode,
+                            hold = load.hold + rampPerNode.multipliedBy(index),
+                            ramp = rampPerNode,
+                            flat = load.flat + rampPerNode.multipliedBy(nodeCount - index - 1)
+                        )
+                    )
                 )
             )
         }

@@ -1,11 +1,16 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
+import com.atlassian.performance.tools.jirasoftwareactions.api.JiraSoftwareScenario
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.browsers.GoogleChrome
+import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserBehavior
+import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserTarget
 import net.jcip.annotations.NotThreadSafe
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.iterable.Extractor
 import org.junit.Test
+import java.net.URI
 import java.time.Duration
 import java.time.Duration.ofSeconds
 
@@ -17,7 +22,18 @@ class MulticastVirtualUsersTest {
         flat = ofSeconds(55)
     )
     private val options = VirtualUserOptions(
-        virtualUserLoad = load
+        behavior = VirtualUserBehavior(
+            load = load,
+            browser = GoogleChrome::class.java,
+            scenario = JiraSoftwareScenario::class.java,
+            diagnosticsLimit = 1,
+            seed = 123
+        ),
+        target = VirtualUserTarget(
+            webApplication = URI("http://localhost:8080/"),
+            userName = "abc",
+            password = "xyz"
+        )
     )
 
     @Test
@@ -26,7 +42,7 @@ class MulticastVirtualUsersTest {
         val virtualUsers = MulticastVirtualUsers(nodes)
 
         virtualUsers.applyLoad(options)
-        val virtualUserLoad = nodes.map { it.lastOptions!!.virtualUserLoad }
+        val virtualUserLoad = nodes.map { it.getLastAppliedLoad() }
         assertThat(virtualUserLoad)
             .extracting(
                 Extractor<VirtualUserLoad, ComparableLoad> {
@@ -48,7 +64,7 @@ class MulticastVirtualUsersTest {
 
         virtualUsers.applyLoad(options)
 
-        assertThat(node.lastOptions!!.virtualUserLoad)
+        assertThat(node.getLastAppliedLoad())
             .extracting {
                 ComparableLoad(it.virtualUsers, it.hold, it.ramp, it.flat)
             }
@@ -62,8 +78,7 @@ class MulticastVirtualUsersTest {
 
         virtualUsers.applyLoad(options)
 
-        val virtualUserLoad = nodes
-            .map { it.lastOptions!!.virtualUserLoad }
+        val virtualUserLoad = nodes.map { it.getLastAppliedLoad() }
         assertThat(virtualUserLoad)
             .extracting(Extractor<VirtualUserLoad, Duration> {
                 it.total
@@ -108,7 +123,7 @@ private data class ComparableLoad(
 @NotThreadSafe
 private class SingleUseVirtualUsers : VirtualUsers {
 
-    var lastOptions: VirtualUserOptions? = null
+    private var lastOptions: VirtualUserOptions? = null
 
     override fun applyLoad(
         options: VirtualUserOptions
@@ -123,4 +138,8 @@ private class SingleUseVirtualUsers : VirtualUsers {
     override fun gatherResults() {
         throw Exception("unexpected call")
     }
+
+    internal fun getLastAppliedLoad() = getLastAppliedOptions().behavior.load
+
+    private fun getLastAppliedOptions(): VirtualUserOptions = lastOptions ?: throw Exception("Load was not applied yet")
 }
