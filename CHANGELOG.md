@@ -26,6 +26,12 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.0.0
 
+## Added
+- Add builder for `JiraNodeConfig` which is part of [JPERF-282].
+- Add builder for `JiraLaunchTimeouts` which is part of [JPERF-282].
+
+[JPERF-282]: https://ecosystem.atlassian.net/browse/JPERF-282
+
 ## [4.0.0] - 2018-11-28
 [4.0.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.0.0%0Drelease-3.1.0
 

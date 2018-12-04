@@ -7,7 +7,7 @@ import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.RemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.splunk.DisabledSplunkForwarder
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
 
-class JiraNodeConfig(
+class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead.") constructor(
     val name: String,
     val debug: JvmDebug,
     val remoteJmx: RemoteJmx,
@@ -15,6 +15,9 @@ class JiraNodeConfig(
     val splunkForwarder: SplunkForwarder,
     val launchTimeouts: JiraLaunchTimeouts
 ) {
+
+    @Suppress("DEPRECATION")
+    @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
     constructor(
         name: String,
         jvmArgs: JiraJvmArgs,
@@ -28,20 +31,58 @@ class JiraNodeConfig(
         launchTimeouts = launchTimeouts
     )
 
+    @Deprecated(message = "Use JiraNodeConfig.Builder instead.",
+        replaceWith = ReplaceWith(
+            "(1..times).map { Builder(jiraNodeConfig).name(\"\$name-\$it\").build() }",
+            "com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig.Builder"
+        )
+    )
     fun clone(
         times: Int
     ): List<JiraNodeConfig> = (1..times).map {
-        JiraNodeConfig(
-            name = "$name-$it",
-            debug = debug,
-            remoteJmx = remoteJmx,
-            jvmArgs = jvmArgs,
-            splunkForwarder= splunkForwarder,
-            launchTimeouts = launchTimeouts
-        )
+        Builder(this)
+            .name("$name-$it")
+            .build()
     }
 
     override fun toString(): String {
         return "JiraNodeConfig(name='$name', debug=$debug, remoteJmx=$remoteJmx, jvmArgs=$jvmArgs, splunkForwarder=$splunkForwarder, launchTimeouts=$launchTimeouts)"
+    }
+
+    class Builder() {
+        private var name: String = "jira-node"
+        private var debug: JvmDebug = DisabledJvmDebug()
+        private var remoteJmx: RemoteJmx = DisabledRemoteJmx()
+        private var jvmArgs: JiraJvmArgs = JiraJvmArgs()
+        private var splunkForwarder: SplunkForwarder = DisabledSplunkForwarder()
+        private var launchTimeouts: JiraLaunchTimeouts = JiraLaunchTimeouts.Builder().build()
+
+        constructor(
+            jiraNodeConfig: JiraNodeConfig
+        ) : this() {
+            name = jiraNodeConfig.name
+            debug = jiraNodeConfig.debug
+            remoteJmx = jiraNodeConfig.remoteJmx
+            jvmArgs = jiraNodeConfig.jvmArgs
+            splunkForwarder = jiraNodeConfig.splunkForwarder
+            launchTimeouts = jiraNodeConfig.launchTimeouts
+        }
+
+        fun name(name: String) = apply { this.name = name }
+        fun debug(debug: JvmDebug) = apply { this.debug = debug }
+        fun remoteJmx(remoteJmx: RemoteJmx) = apply { this.remoteJmx = remoteJmx }
+        fun jvmArgs(jvmArgs: JiraJvmArgs) = apply { this.jvmArgs = jvmArgs }
+        fun splunkForwarder(splunkForwarder: SplunkForwarder) = apply { this.splunkForwarder = splunkForwarder }
+        fun launchTimeouts(launchTimeouts: JiraLaunchTimeouts) = apply { this.launchTimeouts = launchTimeouts }
+
+        @Suppress("DEPRECATION")
+        fun build() = JiraNodeConfig(
+            name = name,
+            debug = debug,
+            remoteJmx = remoteJmx,
+            jvmArgs = jvmArgs,
+            splunkForwarder = splunkForwarder,
+            launchTimeouts = launchTimeouts
+        )
     }
 }
