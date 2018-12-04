@@ -34,6 +34,25 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
         launchTimeouts = launchTimeouts
     )
 
+    @Suppress("DEPRECATION")
+    @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
+    constructor(
+        name: String,
+        debug: JvmDebug,
+        remoteJmx: RemoteJmx,
+        jvmArgs: JiraJvmArgs,
+        splunkForwarder: SplunkForwarder,
+        launchTimeouts: JiraLaunchTimeouts
+    ) : this(
+        name = name,
+        debug = debug,
+        remoteJmx = remoteJmx,
+        jvmArgs = jvmArgs,
+        collectdConfigs = DEFAULT_COLLECTD_CONFIGS,
+        splunkForwarder = splunkForwarder,
+        launchTimeouts = launchTimeouts
+    )
+
     @Deprecated(message = "Use JiraNodeConfig.Builder instead.",
         replaceWith = ReplaceWith(
             "(1..times).map { Builder(jiraNodeConfig).name(\"\$name-\$it\").build() }",
