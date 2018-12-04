@@ -24,7 +24,12 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
+### Added
+- Add support for providing collectd configurations for Jira nodes by adding the `collectdConfigs` field to 
+  `JiraNodeConfig` ([JPERF-285])
+
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.1.0
+[JPERF-285]: https://ecosystem.atlassian.net/browse/JPERF-285
 
 ## [4.1.0] - 2018-12-04
 [4.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.1.0%0Drelease-4.0.0

@@ -21,7 +21,7 @@ class OracleJDK : JavaDevelopmentKit {
         connection.execute("echo '${use()}' >> ~/.bashrc")
     }
 
-    override fun use(): String = "export PATH=${'$'}PATH:$jdkBin:$bin"
+    override fun use(): String = "export PATH=$jdkBin:$bin:${'$'}PATH"
 
     override fun command(options: String) = "${jdkBin}java $options"
 
