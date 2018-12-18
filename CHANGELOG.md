@@ -28,6 +28,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Added
 - Jstat support for every JavaDevelopmentKit.
+- Support for provisioning Jira on AdoptOpenJDK. Resolve [JPERF-305]
+
+[JPERF-305]:https://ecosystem.atlassian.net/browse/JPERF-305
 
 ## [4.2.0] - 2018-12-04
 [4.2.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.2.0%0Drelease-4.1.0
