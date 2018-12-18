@@ -1,10 +1,12 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
+import com.atlassian.performance.tools.infrastructure.api.jvm.Jstat
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 internal class PreinstalledJDK(
-    private val javaBin: String
+    private val javaBin: String,
+    override val jstatMonitoring: Jstat
 ) : JavaDevelopmentKit {
     override fun install(connection: SshConnection) {}
 

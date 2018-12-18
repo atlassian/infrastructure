@@ -7,7 +7,7 @@ import org.junit.Assert
 import org.junit.Test
 
 
-class ChromeTest {
+class ChromeIT {
 
     @Test
     fun shouldInstallChromeBrowser() {
@@ -29,5 +29,4 @@ class ChromeTest {
             .output
             .contains("installed")
     }
-
 }

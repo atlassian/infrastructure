@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.2.0
 
+### Added
+- Jstat support for every JavaDevelopmentKit.
+
 ## [4.2.0] - 2018-12-04
 [4.2.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.2.0%0Drelease-4.1.0
 

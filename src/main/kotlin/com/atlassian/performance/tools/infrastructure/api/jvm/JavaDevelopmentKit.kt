@@ -6,4 +6,5 @@ interface JavaDevelopmentKit {
     fun install(connection: SshConnection)
     fun use(): String
     fun command(options: String): String
+    val jstatMonitoring: Jstat
 }

@@ -7,7 +7,17 @@ All the changes are welcome. Please help us to improve code, examples and docume
 
 ## Testing 
 
-    ./gradlew test
+### Unit tests
+
+```
+./gradlew test
+```
+
+### Integration tests
+
+```
+./gradlew testIntegration
+```
     
 ## Developer’s environment
 

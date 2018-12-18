@@ -8,8 +8,7 @@ import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
 
-
-class ChromiumTest {
+class ChromiumIT {
 
     @Test
     fun shouldInstallChromium69Browser() {
@@ -59,5 +58,4 @@ class ChromiumTest {
                     .contains("/root/chrome-linux/chrome")
             )
     }
-
 }

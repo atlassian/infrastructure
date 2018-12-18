@@ -13,7 +13,13 @@ class OracleJDK : JavaDevelopmentKit {
     private val jdkUrl = URI.create("https://download.oracle.com/otn-pub/java/jdk/8u$jdkUpdate-b11/d54c1d3a095b4ff2b6607d096fa80163/$jdkArchive")
     private val jdkBin = "~/jdk1.8.0_$jdkUpdate/jre/bin/"
     private val bin = "~/jdk1.8.0_$jdkUpdate/bin/"
-    val jstat = Jstat(bin)
+    override val jstatMonitoring = Jstat(bin)
+
+    @Deprecated(
+        message = "Use JavaDevelopmentKit.jstatMonitoring instead.",
+        replaceWith = ReplaceWith("jstatMonitoring")
+    )
+    val jstat = jstatMonitoring
 
     override fun install(connection: SshConnection) {
         download(connection)

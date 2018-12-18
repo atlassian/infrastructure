@@ -6,6 +6,8 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
 class OpenJDK : JavaDevelopmentKit {
+    override val jstatMonitoring: Jstat = Jstat("")
+
     override fun install(connection: SshConnection) {
         Ubuntu().install(
             connection,
@@ -22,5 +24,5 @@ class OpenJDK : JavaDevelopmentKit {
         return "java $options"
     }
 
-    fun toPreinstalledJdk(): JavaDevelopmentKit = PreinstalledJDK(javaBin = "java")
+    fun toPreinstalledJdk(): JavaDevelopmentKit = PreinstalledJDK(javaBin = "java", jstatMonitoring = jstatMonitoring)
 }

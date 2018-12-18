@@ -61,6 +61,21 @@ fun log4j(
     "org.apache.logging.log4j:log4j-$module:2.10.0"
 }
 
+tasks.getByName("test", Test::class).apply {
+    filter {
+        exclude("**/*IT.class")
+    }
+}
+
+val testIntegration = task<Test>("testIntegration") {
+    filter {
+        include("**/*IT.class")
+    }
+    maxParallelForks = 4
+}
+
+tasks["check"].dependsOn(testIntegration)
+
 task<Wrapper>("wrapper") {
     gradleVersion = "4.9"
     distributionType = Wrapper.DistributionType.ALL
