@@ -26,12 +26,15 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.3.0
 
+### Added
+- Expose API for choosing JDK Jira will run on. Resolve [JPERF-305].
+
 ## [4.3.0] - 2018-12-18
 [4.3.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.3.0%0Drelease-4.2.0
 
 ### Added
 - Jstat support for every JavaDevelopmentKit.
-- Support for provisioning Jira on AdoptOpenJDK. Resolve [JPERF-305]
+- Support for provisioning Jira on AdoptOpenJDK. Resolve [JPERF-305].
 
 [JPERF-305]:https://ecosystem.atlassian.net/browse/JPERF-305
 

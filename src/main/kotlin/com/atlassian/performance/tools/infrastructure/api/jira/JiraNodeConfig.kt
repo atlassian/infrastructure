@@ -1,24 +1,46 @@
 package com.atlassian.performance.tools.infrastructure.api.jira
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.DisabledJvmDebug
+import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.JvmDebug
+import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.DisabledRemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.RemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.splunk.DisabledSplunkForwarder
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
 import java.net.URI
 
-class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead.") constructor(
+class JiraNodeConfig private constructor(
     val name: String,
     val debug: JvmDebug,
     val remoteJmx: RemoteJmx,
     val jvmArgs: JiraJvmArgs,
     val collectdConfigs: List<URI>,
     val splunkForwarder: SplunkForwarder,
-    val launchTimeouts: JiraLaunchTimeouts
+    val launchTimeouts: JiraLaunchTimeouts,
+    val jdk: JavaDevelopmentKit
 ) {
 
-    @Suppress("DEPRECATION")
+    @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
+    constructor(
+        name: String,
+        debug: JvmDebug,
+        remoteJmx: RemoteJmx,
+        jvmArgs: JiraJvmArgs,
+        collectdConfigs: List<URI>,
+        splunkForwarder: SplunkForwarder,
+        launchTimeouts: JiraLaunchTimeouts
+    ) : this(
+        name = name,
+        debug = debug,
+        remoteJmx = remoteJmx,
+        jvmArgs = jvmArgs,
+        collectdConfigs = collectdConfigs,
+        splunkForwarder = splunkForwarder,
+        launchTimeouts = launchTimeouts,
+        jdk = OracleJDK()
+    )
+
     @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
     constructor(
         name: String,
@@ -31,10 +53,10 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
         jvmArgs = jvmArgs,
         collectdConfigs = DEFAULT_COLLECTD_CONFIGS,
         splunkForwarder = DisabledSplunkForwarder(),
-        launchTimeouts = launchTimeouts
+        launchTimeouts = launchTimeouts,
+        jdk = OracleJDK()
     )
 
-    @Suppress("DEPRECATION")
     @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
     constructor(
         name: String,
@@ -50,10 +72,12 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
         jvmArgs = jvmArgs,
         collectdConfigs = DEFAULT_COLLECTD_CONFIGS,
         splunkForwarder = splunkForwarder,
-        launchTimeouts = launchTimeouts
+        launchTimeouts = launchTimeouts,
+        jdk = OracleJDK()
     )
 
-    @Deprecated(message = "Use JiraNodeConfig.Builder instead.",
+    @Deprecated(
+        message = "Use JiraNodeConfig.Builder instead.",
         replaceWith = ReplaceWith(
             "(1..times).map { Builder(jiraNodeConfig).name(\"\$name-\$it\").build() }",
             "com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig.Builder"
@@ -80,6 +104,7 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
         private var collectdConfigs: List<URI> = DEFAULT_COLLECTD_CONFIGS
         private var splunkForwarder: SplunkForwarder = DisabledSplunkForwarder()
         private var launchTimeouts: JiraLaunchTimeouts = JiraLaunchTimeouts.Builder().build()
+        private var jdk: JavaDevelopmentKit = OracleJDK()
 
         constructor(
             jiraNodeConfig: JiraNodeConfig
@@ -90,6 +115,7 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
             jvmArgs = jiraNodeConfig.jvmArgs
             splunkForwarder = jiraNodeConfig.splunkForwarder
             launchTimeouts = jiraNodeConfig.launchTimeouts
+            jdk = jiraNodeConfig.jdk
         }
 
         fun name(name: String) = apply { this.name = name }
@@ -99,6 +125,7 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
         fun splunkForwarder(splunkForwarder: SplunkForwarder) = apply { this.splunkForwarder = splunkForwarder }
         fun launchTimeouts(launchTimeouts: JiraLaunchTimeouts) = apply { this.launchTimeouts = launchTimeouts }
         fun collectdConfig(collectdConfigs: List<URI>) = apply { this.collectdConfigs = collectdConfigs }
+        fun jdk(jdk: JavaDevelopmentKit) = apply { this.jdk = jdk }
 
         @Suppress("DEPRECATION")
         fun build() = JiraNodeConfig(
@@ -108,13 +135,15 @@ class JiraNodeConfig @Deprecated(message = "Use JiraNodeConfig.Builder instead."
             jvmArgs = jvmArgs,
             splunkForwarder = splunkForwarder,
             collectdConfigs = collectdConfigs,
-            launchTimeouts = launchTimeouts
+            launchTimeouts = launchTimeouts,
+            jdk = jdk
         )
     }
 
     private companion object {
         private val DEFAULT_COLLECTD_CONFIGS = listOf(
             JiraNodeConfig::class.java.getResource("/collectd/conf/common.conf").toURI(),
-            JiraNodeConfig::class.java.getResource("/collectd/conf/jira-default.conf").toURI())
+            JiraNodeConfig::class.java.getResource("/collectd/conf/jira-default.conf").toURI()
+        )
     }
 }
