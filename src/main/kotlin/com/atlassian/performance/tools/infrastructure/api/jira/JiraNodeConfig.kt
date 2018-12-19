@@ -6,8 +6,10 @@ import com.atlassian.performance.tools.infrastructure.api.jvm.JvmDebug
 import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.DisabledRemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.RemoteJmx
+import com.atlassian.performance.tools.infrastructure.api.profiler.Profiler
 import com.atlassian.performance.tools.infrastructure.api.splunk.DisabledSplunkForwarder
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
+import com.atlassian.performance.tools.infrastructure.profiler.DisabledProfiler
 import java.net.URI
 
 class JiraNodeConfig private constructor(
@@ -18,7 +20,8 @@ class JiraNodeConfig private constructor(
     val collectdConfigs: List<URI>,
     val splunkForwarder: SplunkForwarder,
     val launchTimeouts: JiraLaunchTimeouts,
-    val jdk: JavaDevelopmentKit
+    val jdk: JavaDevelopmentKit,
+    val profiler: Profiler
 ) {
 
     @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
@@ -38,7 +41,8 @@ class JiraNodeConfig private constructor(
         collectdConfigs = collectdConfigs,
         splunkForwarder = splunkForwarder,
         launchTimeouts = launchTimeouts,
-        jdk = OracleJDK()
+        jdk = OracleJDK(),
+        profiler = DisabledProfiler()
     )
 
     @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
@@ -54,7 +58,8 @@ class JiraNodeConfig private constructor(
         collectdConfigs = DEFAULT_COLLECTD_CONFIGS,
         splunkForwarder = DisabledSplunkForwarder(),
         launchTimeouts = launchTimeouts,
-        jdk = OracleJDK()
+        jdk = OracleJDK(),
+        profiler = DisabledProfiler()
     )
 
     @Deprecated(message = "Use JiraNodeConfig.Builder instead.")
@@ -73,7 +78,8 @@ class JiraNodeConfig private constructor(
         collectdConfigs = DEFAULT_COLLECTD_CONFIGS,
         splunkForwarder = splunkForwarder,
         launchTimeouts = launchTimeouts,
-        jdk = OracleJDK()
+        jdk = OracleJDK(),
+        profiler = DisabledProfiler()
     )
 
     @Deprecated(
@@ -92,8 +98,7 @@ class JiraNodeConfig private constructor(
     }
 
     override fun toString(): String {
-        return "JiraNodeConfig(name='$name', debug=$debug, remoteJmx=$remoteJmx, jvmArgs=$jvmArgs, " +
-            "collectdConfigs=$collectdConfigs, splunkForwarder=$splunkForwarder, launchTimeouts=$launchTimeouts)"
+        return "JiraNodeConfig(name='$name', debug=$debug, remoteJmx=$remoteJmx, jvmArgs=$jvmArgs, collectdConfigs=$collectdConfigs, splunkForwarder=$splunkForwarder, launchTimeouts=$launchTimeouts, jdk=$jdk, profiler=$profiler)"
     }
 
     class Builder() {
@@ -105,6 +110,7 @@ class JiraNodeConfig private constructor(
         private var splunkForwarder: SplunkForwarder = DisabledSplunkForwarder()
         private var launchTimeouts: JiraLaunchTimeouts = JiraLaunchTimeouts.Builder().build()
         private var jdk: JavaDevelopmentKit = OracleJDK()
+        private var profiler: Profiler = DisabledProfiler()
 
         constructor(
             jiraNodeConfig: JiraNodeConfig
@@ -116,6 +122,7 @@ class JiraNodeConfig private constructor(
             splunkForwarder = jiraNodeConfig.splunkForwarder
             launchTimeouts = jiraNodeConfig.launchTimeouts
             jdk = jiraNodeConfig.jdk
+            profiler = jiraNodeConfig.profiler
         }
 
         fun name(name: String) = apply { this.name = name }
@@ -126,8 +133,8 @@ class JiraNodeConfig private constructor(
         fun launchTimeouts(launchTimeouts: JiraLaunchTimeouts) = apply { this.launchTimeouts = launchTimeouts }
         fun collectdConfig(collectdConfigs: List<URI>) = apply { this.collectdConfigs = collectdConfigs }
         fun jdk(jdk: JavaDevelopmentKit) = apply { this.jdk = jdk }
+        fun profiler(profiler: Profiler) = apply { this.profiler = profiler }
 
-        @Suppress("DEPRECATION")
         fun build() = JiraNodeConfig(
             name = name,
             debug = debug,
@@ -136,7 +143,8 @@ class JiraNodeConfig private constructor(
             splunkForwarder = splunkForwarder,
             collectdConfigs = collectdConfigs,
             launchTimeouts = launchTimeouts,
-            jdk = jdk
+            jdk = jdk,
+            profiler = profiler
         )
     }
 

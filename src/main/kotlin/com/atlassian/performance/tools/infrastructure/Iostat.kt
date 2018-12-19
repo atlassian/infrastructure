@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.os.MonitoringProcess
 import com.atlassian.performance.tools.infrastructure.api.os.OsMetric
+import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitoringProcess
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 import java.time.temporal.ChronoUnit
@@ -21,6 +22,12 @@ internal class Iostat : OsMetric {
     override fun startMonitoring(
         connection: SshConnection
     ): MonitoringProcess {
+        val seconds = DELAY.get(ChronoUnit.SECONDS)
+        val process = connection.startProcess("iostat -d $seconds -x | $ADD_TIME > $LOG_PATH")
+        return MonitoringProcess(process, LOG_PATH)
+    }
+
+    override fun start(connection: SshConnection): RemoteMonitoringProcess {
         val seconds = DELAY.get(ChronoUnit.SECONDS)
         val process = connection.startProcess("iostat -d $seconds -x | $ADD_TIME > $LOG_PATH")
         return MonitoringProcess(process, LOG_PATH)

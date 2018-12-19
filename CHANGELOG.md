@@ -26,6 +26,17 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.4.0
 
+### Added
+- Expose SPI for profiler. Resolve [JPERF-318].
+- Add profiler implementation (`AsyncProfiler`).
+
+## Deprecated
+- `startMonitoring` method in `Jstat`.
+- `startMonitoring` method in `OsMetric`.
+- MonitoringProcess class.
+
+[JPERF-318]:https://ecosystem.atlassian.net/browse/JPERF-318
+
 ## [4.4.0] - 2018-12-19
 [4.4.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.4.0%0Drelease-4.3.0
 

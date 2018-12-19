@@ -29,16 +29,16 @@ class JstatSupport(
                 maxAttempts = 3,
                 backoff = ExponentialBackoff(baseBackoff = Duration.ofSeconds(1))
             )
-            val jstatMonitoring = jdk.jstatMonitoring.startMonitoring(ssh, pid)
+            val jstatMonitoring = jdk.jstatMonitoring.start(ssh, pid.toInt())
             waitForJstatToCollectSomeData()
-            ssh.stopProcess(jstatMonitoring.process)
-            val jstatLog = ssh.execute("cat ${jstatMonitoring.logFile}").output
+            jstatMonitoring.stop(ssh)
+            val jstatLog = ssh.execute("cat ${jstatMonitoring.getResultPath()}").output
             val jstatHeader = jstatLog.substring(timestampLength, jstatLog.indexOf('\n'))
             Assert.assertThat(jstatHeader, startsWith(this.expectedJstatHeader))
         }
     }
 
     private fun waitForJstatToCollectSomeData() {
-        Thread.sleep(4*1000)
+        Thread.sleep(4 * 1000)
     }
 }
