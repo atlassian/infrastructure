@@ -30,7 +30,7 @@ class UbuntuContainer {
                     )
                 )
                 ssh.newConnection().use { sshConnection ->
-                    sshConnection.execute("apt-get update -qq", Duration.ofMinutes(1))
+                    sshConnection.execute("apt-get update -qq", Duration.ofMinutes(2))
                     sshConnection.execute("apt-get install sudo -y -qq")
                     action(sshConnection)
                 }

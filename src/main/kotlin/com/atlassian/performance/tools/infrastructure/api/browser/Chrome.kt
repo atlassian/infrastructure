@@ -13,6 +13,6 @@ class Chrome : Browser {
         ssh.execute("wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add")
         ssh.execute("echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee -a /etc/apt/sources.list.d/google-chrome.list")
         val ubuntu = Ubuntu()
-        ubuntu.install(ssh, listOf("google-chrome-stable"), ofMinutes(2))
+        ubuntu.install(ssh, listOf("google-chrome-stable"), ofMinutes(3))
     }
 }

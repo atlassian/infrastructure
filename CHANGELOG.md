@@ -35,6 +35,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - `startMonitoring` method in `OsMetric`.
 - MonitoringProcess class.
 
+## Fixed
+- Increase `Chrome` download timeout.
+
 [JPERF-318]:https://ecosystem.atlassian.net/browse/JPERF-318
 
 ## [4.4.0] - 2018-12-19
