@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.5.0
 
+### Fixed
+ - Use latest chromedriver for Chrome Browser. Resolves [JPERF-331].
+
+[JPERF-331]:https://ecosystem.atlassian.net/browse/JPERF-331
+
 ## [4.5.0] - 2018-12-20
 [4.5.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.5.0%0Drelease-4.4.0
 

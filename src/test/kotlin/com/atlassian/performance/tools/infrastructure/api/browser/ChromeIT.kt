@@ -20,6 +20,7 @@ class ChromeIT {
 
             Assert.assertThat(wasInstalledBefore, Matchers.`is`(false))
             Assert.assertThat(isInstalledAfter, Matchers.`is`(true))
+            Assert.assertThat(isChromedriverInstalled(ssh), Matchers.`is`(true))
         }
     }
 
@@ -28,5 +29,16 @@ class ChromeIT {
             .execute("apt list google-chrome-stable")
             .output
             .contains("installed")
+    }
+
+    private fun isChromedriverInstalled(ssh: SshConnection): Boolean {
+        val result = ssh
+            .safeExecute("./chromedriver --version")
+        return result.isSuccessful()
+            .and(
+                result
+                    .output
+                    .contains(Regex("ChromeDriver [0-9]+\\.[0-9]+\\.[0-9]+"))
+            )
     }
 }
