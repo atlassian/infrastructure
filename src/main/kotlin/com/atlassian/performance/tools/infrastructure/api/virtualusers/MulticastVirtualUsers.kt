@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
+import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserBehavior.Builder
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import java.util.concurrent.Executors
 
@@ -57,14 +58,15 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
             node.applyLoad(
                 VirtualUserOptions(
                     target = options.target,
-                    behavior = options.behavior.withLoad(
-                        VirtualUserLoad(
+                    behavior = Builder(options.behavior)
+                        .load(VirtualUserLoad(
                             virtualUsers = vusPerNode,
                             hold = load.hold + rampPerNode.multipliedBy(index),
                             ramp = rampPerNode,
                             flat = load.flat + rampPerNode.multipliedBy(nodeCount - index - 1)
-                        )
-                    )
+                        ))
+                        .let { if (index > 0) it.skipSetup(true) else it }
+                        .build()
                 )
             )
         }

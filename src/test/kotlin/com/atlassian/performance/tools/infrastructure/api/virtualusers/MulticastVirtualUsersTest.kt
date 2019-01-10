@@ -22,13 +22,12 @@ class MulticastVirtualUsersTest {
         flat = ofSeconds(55)
     )
     private val options = VirtualUserOptions(
-        behavior = VirtualUserBehavior(
-            load = load,
-            browser = GoogleChrome::class.java,
-            scenario = JiraSoftwareScenario::class.java,
-            diagnosticsLimit = 1,
-            seed = 123
-        ),
+        behavior = VirtualUserBehavior.Builder(JiraSoftwareScenario::class.java)
+            .load(load)
+            .browser(GoogleChrome::class.java)
+            .diagnosticsLimit(1)
+            .seed(123)
+            .build(),
         target = VirtualUserTarget(
             webApplication = URI("http://localhost:8080/"),
             userName = "abc",

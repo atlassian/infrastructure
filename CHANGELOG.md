@@ -28,8 +28,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Bump MySQL to 5.6.42. Resolve [JPERF-345].
+- Set up VUs only once per node in `MulticastVirtualUsers`. Fix [JPERF-346].
  
 [JPERF-345]:https://ecosystem.atlassian.net/browse/JPERF-345
+[JPERF-346]:https://ecosystem.atlassian.net/browse/JPERF-346
 
 ## [4.5.1] - 2019-01-04
 [4.5.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.5.1%0Drelease-4.5.0
