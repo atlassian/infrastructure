@@ -26,11 +26,16 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.5.1
 
+### Fixed
+- Bump MySQL to 5.6.42. Resolve [JPERF-345].
+ 
+[JPERF-345]:https://ecosystem.atlassian.net/browse/JPERF-345
+
 ## [4.5.1] - 2019-01-04
 [4.5.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.5.1%0Drelease-4.5.0
 
 ### Fixed
- - Use latest chromedriver for Chrome Browser. Resolves [JPERF-331].
+- Use latest chromedriver for Chrome Browser. Resolve [JPERF-331].
 
 [JPERF-331]:https://ecosystem.atlassian.net/browse/JPERF-331
 
