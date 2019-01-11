@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.storage
 
-import com.atlassian.performance.tools.infrastructure.UbuntuContainer
+import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
@@ -8,7 +8,7 @@ class PublicJiraSoftwareDistributionsIT {
 
     @Test
     fun shouldDownloadJiraSoftware() {
-        UbuntuContainer().run { ssh ->
+        SshUbuntuContainer().run { ssh ->
             val jiraDistribution: ProductDistribution = PublicJiraSoftwareDistributions().get("7.2.0")
             val targetFolder = "test"
             ssh.execute("mkdir $targetFolder")

@@ -29,7 +29,7 @@ internal class ChromiumInstaller(private val uri: URI) {
             ),
             Duration.ofMinutes(5)
         )
-        ssh.execute("""wget -q "${uri}" -O chromium.zip""", Duration.ofMinutes(1))
+        ssh.execute("""wget -q "${uri}" -O chromium.zip""", Duration.ofMinutes(2))
         ssh.execute("unzip chromium.zip")
         ssh.execute("sudo ln -s `pwd`/chrome-linux/chrome /usr/bin/chrome")
     }

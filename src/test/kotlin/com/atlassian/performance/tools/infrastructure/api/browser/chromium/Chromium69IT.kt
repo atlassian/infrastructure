@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
-import com.atlassian.performance.tools.infrastructure.UbuntuContainer
+import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.hamcrest.Matchers
 import org.junit.Assert
@@ -10,7 +10,7 @@ class Chromium69IT {
 
     @Test
     fun shouldInstallBrowser() {
-        UbuntuContainer().run { ssh ->
+        SshUbuntuContainer().run { ssh ->
             val wasInstalledBefore = isChromiumInstalled(ssh)
 
             Chromium69().install(ssh)
@@ -20,6 +20,11 @@ class Chromium69IT {
             Assert.assertThat(wasInstalledBefore, Matchers.`is`(false))
             Assert.assertThat(isInstalledAfter, Matchers.`is`(true))
         }
+    }
+
+    @Test
+    fun shouldRecoverFromPageLoadTimeout() {
+        PageLoadTimeoutRecoveryTest().run(Chromium69())
     }
 
     private fun isChromiumInstalled(ssh: SshConnection): Boolean {

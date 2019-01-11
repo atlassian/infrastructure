@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.browser
 
-import com.atlassian.performance.tools.infrastructure.UbuntuContainer
+import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.hamcrest.Matchers
 import org.junit.Assert
@@ -11,7 +11,7 @@ class ChromeIT {
 
     @Test
     fun shouldInstallChromeBrowser() {
-        UbuntuContainer().run { ssh ->
+        SshUbuntuContainer().run { ssh ->
             val wasInstalledBefore = isChromeInstalled(ssh)
 
             Chrome().install(ssh)

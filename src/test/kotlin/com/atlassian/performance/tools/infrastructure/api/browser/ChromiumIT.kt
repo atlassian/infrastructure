@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.browser
 
-import com.atlassian.performance.tools.infrastructure.UbuntuContainer
+import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
@@ -12,7 +12,7 @@ class ChromiumIT {
 
     @Test
     fun shouldInstallChromium69Browser() {
-        UbuntuContainer().run { ssh ->
+        SshUbuntuContainer().run { ssh ->
             val wasInstalledBefore = isChromiumInstalled(ssh)
 
             Chromium("69").install(ssh)
@@ -26,7 +26,7 @@ class ChromiumIT {
 
     @Test
     fun shouldInstallChromium70Browser() {
-        UbuntuContainer().run { ssh ->
+        SshUbuntuContainer().run { ssh ->
             val wasInstalledBefore = isChromiumInstalled(ssh)
 
             Chromium("70").install(ssh)
@@ -40,7 +40,7 @@ class ChromiumIT {
 
     @Test
     fun shouldFailFastOnIncompatibleChromiumVersion() {
-        UbuntuContainer().run { ssh ->
+        SshUbuntuContainer().run { ssh ->
             val thrown = catchThrowable { Chromium("68").install(ssh) }
 
             assertThat(thrown)
