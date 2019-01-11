@@ -104,6 +104,22 @@ class MulticastVirtualUsersTest {
             .isEqualTo("12 virtual users are not enough to spread into $tooManyNodes nodes")
     }
 
+    @Test
+    fun shouldSetUpJiraOnlyOnTheFirstNode() {
+        val nodes = (1..5).map { SingleUseVirtualUsers() }
+        val virtualUsers = MulticastVirtualUsers(nodes)
+
+        virtualUsers.applyLoad(options)
+
+        val firstNode = nodes.first()
+        val theRest = nodes.subList(1, 5)
+        assertThat(firstNode.hasSetUpJira())
+            .`as`("the first node should set up Jira")
+            .isTrue()
+        assertThat(theRest.map { it.hasSetUpJira() })
+            .`as`("the rest of the nodes should NOT set up Jira")
+            .noneMatch { it == true }
+    }
 }
 
 private data class ComparableLoad(
@@ -140,6 +156,8 @@ private class SingleUseVirtualUsers : VirtualUsers {
     }
 
     internal fun getLastAppliedLoad() = getLastAppliedOptions().behavior.load
+
+    internal fun hasSetUpJira(): Boolean = getLastAppliedOptions().toCliArgs().none { it == "--skip-setup" }
 
     private fun getLastAppliedOptions(): VirtualUserOptions = lastOptions ?: throw Exception("Load was not applied yet")
 }
