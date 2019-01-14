@@ -11,14 +11,14 @@ class Chromium69IT {
     @Test
     fun shouldInstallBrowser() {
         SshUbuntuContainer().run { ssh ->
-            val wasInstalledBefore = isChromiumInstalled(ssh)
+            val installedBefore = isChromiumInstalled(ssh)
 
             Chromium69().install(ssh)
 
-            val isInstalledAfter = isChromiumInstalled(ssh)
+            val installedAfter = isChromiumInstalled(ssh)
 
-            Assert.assertThat(wasInstalledBefore, Matchers.`is`(false))
-            Assert.assertThat(isInstalledAfter, Matchers.`is`(true))
+            Assert.assertThat(installedBefore, Matchers.`is`(false))
+            Assert.assertThat(installedAfter, Matchers.`is`(true))
         }
     }
 
