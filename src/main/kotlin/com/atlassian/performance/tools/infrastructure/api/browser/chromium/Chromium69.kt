@@ -8,7 +8,7 @@ import java.net.URI
 
 class Chromium69 : Browser {
     private val chromiumUri = URI("https://www.googleapis.com/download/storage/v1/b/chromium-browser-snapshots/o/Linux_x64%2F576753%2Fchrome-linux.zip?generation=1532051976706023&alt=media")
-    private val chromedriverUri = URI("https://chromedriver.storage.googleapis.com/2.43/chromedriver_linux64.zip")
+    private val chromedriverUri = URI("https://s3.eu-central-1.amazonaws.com/jpt-chromedriver/2.43/chromedriver.zip")
 
     /**
      * Installs chromium 69 with a compatible chromedriver.
