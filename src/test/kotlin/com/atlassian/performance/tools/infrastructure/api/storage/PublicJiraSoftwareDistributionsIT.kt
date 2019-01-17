@@ -9,7 +9,7 @@ class PublicJiraSoftwareDistributionsIT {
     @Test
     fun shouldDownloadJiraSoftware() {
         UbuntuContainer().run { ssh ->
-            val jiraDistribution: JiraDistribution = PublicJiraSoftwareDistributions().get("7.2.0")
+            val jiraDistribution: ProductDistribution = PublicJiraSoftwareDistributions().get("7.2.0")
             val targetFolder = "test"
             ssh.execute("mkdir $targetFolder")
 

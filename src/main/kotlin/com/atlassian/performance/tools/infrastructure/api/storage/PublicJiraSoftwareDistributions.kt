@@ -8,8 +8,8 @@ import java.time.Duration
  * Downloads Jira installers from the official Jira downloads site.
  */
 class PublicJiraSoftwareDistributions {
-    fun get(version: String): JiraDistribution {
-        return object : JiraDistribution {
+    fun get(version: String): ProductDistribution {
+        return object : ProductDistribution {
             override fun install(ssh: SshConnection, destination: String): String {
                 download(ssh, destination)
                 unpack(ssh, destination)
