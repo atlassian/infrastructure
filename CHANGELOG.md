@@ -32,7 +32,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Fixed
 - Bump MySQL to 5.6.42. Resolve [JPERF-345].
 - Set up VUs only once per node in `MulticastVirtualUsers`. Fix [JPERF-346].
-- Chromedriver continues to work after a page load timeout. Fix [JPERF-349].
+- Chromedriver continues to work after a page load timeout. Fix [JPERF-249].
 
 ### Added
 - Separate Chromium implementations, like `Chromium69` or `Chromium70`. Resolve [JPERF-350].
@@ -43,12 +43,12 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## Deprecated
 - Deprecate Chromium in favor of specific implementations like Chromium69 or Chromium70.
 
-[JPERF-277]:https://ecosystem.atlassian.net/browse/JPERF-277
-[JPERF-345]:https://ecosystem.atlassian.net/browse/JPERF-345
-[JPERF-346]:https://ecosystem.atlassian.net/browse/JPERF-346
-[JPERF-350]:https://ecosystem.atlassian.net/browse/JPERF-350
-[JPERF-352]:https://ecosystem.atlassian.net/browse/JPERF-352
-[JPERF-349]:https://ecosystem.atlassian.net/browse/JPERF-349
+[JPERF-249]: https://ecosystem.atlassian.net/browse/JPERF-249
+[JPERF-277]: https://ecosystem.atlassian.net/browse/JPERF-277
+[JPERF-345]: https://ecosystem.atlassian.net/browse/JPERF-345
+[JPERF-346]: https://ecosystem.atlassian.net/browse/JPERF-346
+[JPERF-350]: https://ecosystem.atlassian.net/browse/JPERF-350
+[JPERF-352]: https://ecosystem.atlassian.net/browse/JPERF-352
 
 ## [4.5.1] - 2019-01-04
 [4.5.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.5.1%0Drelease-4.5.0
