@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.6.0
 
+### Fixed
+- Bump Oracle JDK download timeout. Fix [JPERF-374].
+
+[JPERF-374]: https://ecosystem.atlassian.net/browse/JPERF-374
+
 ## [4.6.0] - 2019-01-18
 [4.6.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.6.0%0Drelease-4.5.1
 
