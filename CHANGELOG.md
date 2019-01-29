@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.6.0
+[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.7.0
+
+## [4.7.0] - 2019-01-29
+[4.7.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.7.0%0Drelease-4.6.1
 
 ### Added
 - Support for OpenJDK 11.  Resolve [JPERF-370].
