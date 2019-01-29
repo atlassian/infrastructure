@@ -9,11 +9,11 @@ import java.io.File
 import java.time.Duration
 
 class JstatSupport(
-    private val jdk: JavaDevelopmentKit
+    private val jdk: JavaDevelopmentKit,
+    private val expectedJstatHeader: String = "Timestamp         S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT"
 ) {
     private val jarName = "hello-world-after-1m-wait.jar"
     private val jar = "/com/atlassian/performance/tools/infrastructure/api/jvm/$jarName"
-    private val expectedJstatHeader = "Timestamp         S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT"
     private val timestampLength = "2018-12-17T14:10:44+00:00 ".length
 
     fun shouldSupportJstat() {
