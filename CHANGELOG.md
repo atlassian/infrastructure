@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.7.0
+[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.8.0
+
+## [4.8.0] - 2019-02-22
+[4.8.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.8.0%0Drelease-4.7.0
 
 ### Added
 - Support for Jira Service Desk installer. Unlocks JPERF-277.
