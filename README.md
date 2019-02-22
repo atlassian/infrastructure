@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/atlassian/infrastructure.svg?branch=master)](https://travis-ci.com/atlassian/infrastructure)
+
 ## JPT infrastructure
 
 Generic testing infrastructure independent of the infrastructure provider (AWS, BTF).
