@@ -24,10 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://bitbucket.org/atlassian/infrastructure/branches/compare/master%0Drelease-4.8.0
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.8.0...master
 
 ## [4.8.0] - 2019-02-22
-[4.8.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.8.0%0Drelease-4.7.0
+[4.8.0]: https://github.com/atlassian/infrastructure/compare/release-4.7.0...release-4.8.0
 
 ### Added
 - Support for Jira Service Desk installer. Unlocks JPERF-277.
@@ -39,7 +39,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-277]: https://ecosystem.atlassian.net/browse/JPERF-277
 
 ## [4.7.0] - 2019-01-29
-[4.7.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.7.0%0Drelease-4.6.1
+[4.7.0]: https://github.com/atlassian/infrastructure/compare/release-4.6.1...release-4.7.0
 
 ### Added
 - Support for OpenJDK 11.  Resolve [JPERF-370].
@@ -47,7 +47,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-370]: https://ecosystem.atlassian.net/browse/JPERF-370
 
 ## [4.6.1] - 2019-01-28
-[4.6.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.6.1%0Drelease-4.6.0
+[4.6.1]: https://github.com/atlassian/infrastructure/compare/release-4.6.0...release-4.6.1
 
 ### Fixed
 - Bump Oracle JDK download timeout. Fix [JPERF-374].
@@ -55,7 +55,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-374]: https://ecosystem.atlassian.net/browse/JPERF-374
 
 ## [4.6.0] - 2019-01-18
-[4.6.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.6.0%0Drelease-4.5.1
+[4.6.0]: https://github.com/atlassian/infrastructure/compare/release-4.5.1...release-4.6.0
 
 ### Fixed
 - Bump MySQL to 5.6.42. Resolve [JPERF-345].
@@ -79,7 +79,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-352]: https://ecosystem.atlassian.net/browse/JPERF-352
 
 ## [4.5.1] - 2019-01-04
-[4.5.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.5.1%0Drelease-4.5.0
+[4.5.1]: https://github.com/atlassian/infrastructure/compare/release-4.5.0...release-4.5.1
 
 ### Fixed
 - Use latest chromedriver for Chrome Browser. Resolve [JPERF-331].
@@ -87,7 +87,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-331]:https://ecosystem.atlassian.net/browse/JPERF-331
 
 ## [4.5.0] - 2018-12-20
-[4.5.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.5.0%0Drelease-4.4.0
+[4.5.0]: https://github.com/atlassian/infrastructure/compare/release-4.4.0...release-4.5.0
 
 ### Added
 - Expose SPI for profiler. Resolve [JPERF-318].
@@ -104,13 +104,13 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-318]:https://ecosystem.atlassian.net/browse/JPERF-318
 
 ## [4.4.0] - 2018-12-19
-[4.4.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.4.0%0Drelease-4.3.0
+[4.4.0]: https://github.com/atlassian/infrastructure/compare/release-4.3.0...release-4.4.0
 
 ### Added
 - Expose API for choosing JDK Jira will run on. Resolve [JPERF-305].
 
 ## [4.3.0] - 2018-12-18
-[4.3.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.3.0%0Drelease-4.2.0
+[4.3.0]: https://github.com/atlassian/infrastructure/compare/release-4.2.0...release-4.3.0
 
 ### Added
 - Jstat support for every JavaDevelopmentKit.
@@ -119,7 +119,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-305]:https://ecosystem.atlassian.net/browse/JPERF-305
 
 ## [4.2.0] - 2018-12-04
-[4.2.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.2.0%0Drelease-4.1.0
+[4.2.0]: https://github.com/atlassian/infrastructure/compare/release-4.1.0...release-4.2.0
 
 ### Added
 - Support providing collectd configurations via `collectdConfigs` in `JiraNodeConfig`. Unblock [JPERF-285].
@@ -127,7 +127,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-285]: https://ecosystem.atlassian.net/browse/JPERF-285
 
 ## [4.1.0] - 2018-12-04
-[4.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.1.0%0Drelease-4.0.0
+[4.1.0]: https://github.com/atlassian/infrastructure/compare/release-4.0.0...release-4.1.0
 
 ## Added
 - Add builder for `JiraNodeConfig` which is part of [JPERF-282].
@@ -136,7 +136,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-282]: https://ecosystem.atlassian.net/browse/JPERF-282
 
 ## [4.0.0] - 2018-11-28
-[4.0.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-4.0.0%0Drelease-3.1.0
+[4.0.0]: https://github.com/atlassian/infrastructure/compare/release-3.1.0...release-4.0.0
 
 ### Removed
 - Drop support of `virtual-users:1`.
@@ -149,14 +149,14 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-252]: https://ecosystem.atlassian.net/browse/JPERF-252
 
 ## [3.1.0] - 2018-11-26
-[3.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-3.1.0%0Drelease-3.0.0
+[3.1.0]: https://github.com/atlassian/infrastructure/compare/release-3.0.0...release-3.1.0
 
 ### Added
 - Add support for jira-actions:3
 - Add support for virtual-users:3
 
 ## [3.0.0] - 2018-11-20
-[3.0.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-3.0.0%0Drelease-2.4.1
+[3.0.0]: https://github.com/atlassian/infrastructure/compare/release-2.4.1...release-3.0.0
 
 ### Added
 - Customisable status timeout for Jira upgrades endpoint which is required for [JPERF-271].
@@ -176,7 +176,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-264]: https://ecosystem.atlassian.net/browse/JPERF-264
 
 ## [2.4.1] - 2018-11-02
-[2.4.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.4.1%0Drelease-2.4.0
+[2.4.1]: https://github.com/atlassian/infrastructure/compare/release-2.4.0...release-2.4.1
 
 ### Fixed
 - Fix chromium installation flakes. Fix [JPERF-250].
@@ -186,7 +186,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-253]: https://ecosystem.atlassian.net/browse/JPERF-253
 
 ## [2.4.0] - 2018-10-31
-[2.4.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.4.0%0Drelease-2.3.0
+[2.4.0]: https://github.com/atlassian/infrastructure/compare/release-2.3.0...release-2.4.0
 
 ### Added
 - Customisable timeouts for Jira launch which is required for [JPERF-216].
@@ -194,7 +194,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-216]: https://ecosystem.atlassian.net/browse/JPERF-216
 
 ## [2.3.1] - 2018-10-30
-[2.3.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.3.1%0Drelease-2.3.0
+[2.3.1]: https://github.com/atlassian/infrastructure/compare/release-2.3.0...release-2.3.1
 
 ### Fixed
 - Download chromium v69. Fix [JPERF-242].
@@ -202,7 +202,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-242]: https://ecosystem.atlassian.net/browse/JPERF-242
 
 ## [2.3.0] - 2018-10-26
-[2.3.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.3.0%0Drelease-2.2.0
+[2.3.0]: https://github.com/atlassian/infrastructure/compare/release-2.2.0...release-2.3.0
 
 ### Added
 - Chromium support which resolves [JPERF-238].
@@ -210,7 +210,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [JPERF-238]: https://ecosystem.atlassian.net/browse/JPERF-238
 
 ## [2.2.0] - 2018-09-21
-[2.2.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.2.0%0Drelease-2.1.1
+[2.2.0]: https://github.com/atlassian/infrastructure/compare/release-2.1.1...release-2.2.0
 
 ### Added
 - Add the `CPU_UTILISATION` dimension.
@@ -219,19 +219,19 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - Parametrize the Atlassian Splunk forwarder Kinesis ARN.
 
 ## [2.1.1] - 2018-09-11
-[2.1.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.1.1%0Drelease-2.1.0
+[2.1.1]: https://github.com/atlassian/infrastructure/compare/release-2.1.0...release-2.1.1
 
 ### Fixed
 - Respect customer's log configuration. Fix [JPERF-11](https://ecosystem.atlassian.net/browse/JPERF-11).
 
 ## [2.1.0] - 2018-09-06
-[2.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.1.0%0Drelease-2.0.0
+[2.1.0]: https://github.com/atlassian/infrastructure/compare/release-2.0.0...release-2.1.0
 
 ### Added
 - Add `virtual-users:2` compatibility.
 
 ## [2.0.0] - 2018-09-04
-[2.0.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-2.0.0%0Drelease-1.1.2
+[2.0.0]: https://github.com/atlassian/infrastructure/compare/release-1.1.2...release-2.0.0
 
 ### Changed
 - Require APT `io:1`.
@@ -253,19 +253,19 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - Added means to run load test locally.
 
 ## [1.1.2] - 2018-08-30
-[1.1.2]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.2%0Drelease-1.1.1
+[1.1.2]: https://github.com/atlassian/infrastructure/compare/release-1.1.1...release-1.1.2
 
 ### Fixed
 - Restore `MyslqDatabase` binary compatibility with 1.0.0.
 
 ## [1.1.1] - 2018-08-29
-[1.1.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.1%0Drelease-1.1.0
+[1.1.1]: https://github.com/atlassian/infrastructure/compare/release-1.1.0...release-1.1.1
 
 ### Fixed
 - Restore `VirtualUsers` binary compatibility with 1.0.0.
 
 ## [1.1.0] - 2018-08-28
-[1.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.1.0%0Drelease-1.0.0
+[1.1.0]: https://github.com/atlassian/infrastructure/compare/release-1.0.0...release-1.1.0
 
 ### INCOMPATIBILITY BUG
 Break binary compatibility for `com.atlassian.performance.tools.infrastructure.api.virtualusers.VirtualUsers`.
@@ -283,19 +283,19 @@ See [JPERF-40](https://ecosystem.atlassian.net/browse/JPERF-40) for details.
 - Explain [contribution guidelines](CONTRIBUTING.md). 
 
 ## [1.0.0] - 2018-08-24
-[1.0.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-1.0.0%0Drelease-0.2.0
+[1.0.0]: https://github.com/atlassian/infrastructure/compare/release-0.2.0...release-1.0.0
 
 ### Changed
 - Define the public API.
 
 ## [0.2.0] - 2018-08-24
-[0.2.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.2.0%0Drelease-0.1.0
+[0.2.0]: https://github.com/atlassian/infrastructure/compare/release-0.1.0...release-0.2.0
 
 ### Added
 - Grant access to `MavenApp` fields.
 
 ## [0.1.0] - 2018-08-21
-[0.1.0]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.1.0%0Drelease-0.0.2
+[0.1.0]: https://github.com/atlassian/infrastructure/compare/release-0.0.2...release-0.1.0
 
 ### Added
 - License.
@@ -304,13 +304,13 @@ See [JPERF-40](https://ecosystem.atlassian.net/browse/JPERF-40) for details.
 - Run Jira without any apps installed.
 
 ## [0.0.2] - 2018-08-03
-[0.0.2]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.0.2%0Drelease-0.0.1
+[0.0.2]: https://github.com/atlassian/infrastructure/compare/release-0.0.1...release-0.0.2
 
 ### Fixed
 - Specify module name.
 
 ## [0.0.1] - 2018-08-03
-[0.0.1]: https://bitbucket.org/atlassian/infrastructure/branches/compare/release-0.0.1%0Dinitial-commit
+[0.0.1]: https://github.com/atlassian/infrastructure/compare/initial-commit...release-0.0.1
 
 ### Added
 - Add [README.md](README.md).
