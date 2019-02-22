@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.api.storage
+package com.atlassian.performance.tools.infrastructure.api.distribution
 
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
@@ -7,9 +7,8 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
  * [ProductDistribution] can be used to install an Atlassian product (for example Jira, Confluence, Bitbucket)
  * on a remote system.
  *
- * @since 4.6.0
+ * @since 4.8.0
  */
-@Deprecated("Use `ProductDistribution` from `com.atlassian.performance.tools.infrastructure.api.distribution` package.")
 interface ProductDistribution {
     /**
      * Installs a product distribution on a remote system via SSH.
@@ -22,7 +21,7 @@ interface ProductDistribution {
      *         For example: `atlassian-jira-software-7.13.0-standalone`.
      *         Should be a subdirectory of [destination]. Should be relative to the current [ssh] working directory.
      *
-     * @since 4.6.0
+     * @since 4.8.0
      */
     fun install(
         ssh: SshConnection,

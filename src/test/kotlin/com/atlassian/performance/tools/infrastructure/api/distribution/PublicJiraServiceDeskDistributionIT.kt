@@ -1,19 +1,19 @@
-package com.atlassian.performance.tools.infrastructure.api.storage
+package com.atlassian.performance.tools.infrastructure.api.distribution
 
 import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-class PublicJiraSoftwareDistributionsIT {
+class PublicJiraServiceDeskDistributionIT {
 
     @Test
-    fun shouldDownloadJiraSoftware() {
+    fun shouldDownloadJiraServiceDesk() {
         SshUbuntuContainer().run { ssh ->
-            @Suppress("DEPRECATION") val jiraDistribution: ProductDistribution = PublicJiraSoftwareDistributions().get("7.2.0")
+            val serviceDeskDistribution: ProductDistribution = PublicJiraServiceDeskDistribution("4.0.1")
             val targetFolder = "test"
             ssh.execute("mkdir $targetFolder")
 
-            val remoteDirectory = jiraDistribution
+            val remoteDirectory = serviceDeskDistribution
                 .install(ssh, targetFolder)
 
             val directories = ssh.execute("ls $remoteDirectory").output
