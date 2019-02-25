@@ -49,10 +49,19 @@ dependencies {
         "slf4j-impl"
     ).forEach { implementation(it) }
 
+    webdriver().forEach { testCompile(it) }
     testCompile("junit:junit:4.12")
+    testCompile("com.atlassian.performance.tools:jira-software-actions:[1.0.0,2.0.0)")
     testCompile("org.hamcrest:hamcrest-library:1.3")
     testCompile("org.testcontainers:testcontainers:1.9.1")
     testCompile("org.assertj:assertj-core:3.11.1")
+}
+
+fun webdriver(): List<String> = listOf(
+    "selenium-support",
+    "selenium-chrome-driver"
+).map { module ->
+    "org.seleniumhq.selenium:$module:3.11.0"
 }
 
 fun log4j(
