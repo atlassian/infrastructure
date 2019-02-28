@@ -2,9 +2,9 @@ package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
 import com.atlassian.performance.tools.infrastructure.api.browser.Browser
 import com.atlassian.performance.tools.infrastructure.browser.SshChromium
-import com.atlassian.performance.tools.infrastructure.docker.ForwardedPort
-import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
 import com.atlassian.performance.tools.infrastructure.mock.MockHttpServer
+import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import com.sun.net.httpserver.HttpExchange
 import org.assertj.core.api.Assertions
 import org.openqa.selenium.TimeoutException
@@ -15,33 +15,34 @@ import java.util.concurrent.TimeUnit
 internal class PageLoadTimeoutRecoveryTest {
 
     internal fun run(chromium: Browser) {
-        val chromedriverPort = 9515
+        val remoteChromedriverPort = 9515
+        val localChromedriverPort = 9525
         val mockServerPort = 8500
-        SshUbuntuContainer(
-            publishing = listOf(chromedriverPort),
-            forwarding = listOf(
-                ForwardedPort(
-                    remotePort = mockServerPort,
-                    localPort = mockServerPort
-                )
-            )
-        ).run { ssh, bindings ->
-            chromium.install(ssh)
-            val chromedriverHostPort = bindings.getHostPort(chromedriverPort)
-            val chromedriverUri = URI("http://${bindings.ipAddress}:$chromedriverHostPort")
-            SshChromium(ssh, chromedriverUri).start().use { sshDriver ->
-                val driver = sshDriver.getDriver()
-                setPageLoadTimeout(driver)
-                val httpServer = MockHttpServer(mockServerPort)
-                val fastResource = httpServer.register(FastResponse())
-                val slowResource = httpServer.register(SlowResponse())
-                httpServer.start().use {
-                    driver.get(fastResource.toString())
-                    val slowResourceException = Assertions.catchThrowable { driver.get(slowResource.toString()) }
-                    Assertions.assertThat(slowResourceException).isInstanceOf(TimeoutException::class.java)
-                    val fastResourceException = Assertions.catchThrowable { driver.get(fastResource.toString()) }
+        val remoteMockServerPort = 8500
+        val httpServer = MockHttpServer(mockServerPort)
+        val fastResource = httpServer.register(FastResponse())
+        val slowResource = httpServer.register(SlowResponse())
+        httpServer.start().use {
+            SshUbuntuContainer().start().use { sshUbuntu ->
+                val ssh = sshUbuntu.toSsh()
+                ssh.forwardRemotePort(mockServerPort, remoteMockServerPort).use {
+                    ssh.forwardLocalPort(localChromedriverPort, remoteChromedriverPort).use {
+                        ssh.newConnection().use { connection ->
+                            chromium.install(connection)
+                        }
+                        val chromedriverUri = URI("http://localhost:$localChromedriverPort")
+                        SshChromium(ssh.newConnection(), chromedriverUri).start().use { sshDriver ->
+                            val driver = sshDriver.getDriver()
+                            setPageLoadTimeout(driver)
 
-                    Assertions.assertThat(fastResourceException).doesNotThrowAnyException()
+                            driver.get(fastResource.toString())
+                            val slowResourceException = Assertions.catchThrowable { driver.get(slowResource.toString()) }
+                            Assertions.assertThat(slowResourceException).isInstanceOf(TimeoutException::class.java)
+                            val fastResourceException = Assertions.catchThrowable { driver.get(fastResource.toString()) }
+
+                            Assertions.assertThat(fastResourceException).doesNotThrowAnyException()
+                        }
+                    }
                 }
             }
         }

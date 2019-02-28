@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure
 
-import com.atlassian.performance.tools.infrastructure.docker.SshUbuntuContainer
+import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.net.URI
@@ -10,12 +10,14 @@ class ChromedriverInstallerTest {
 
     @Test
     fun shouldInstallChromedriver() {
-        SshUbuntuContainer().run { ssh ->
-            val chromedriverUri = URI("https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip")
-            ChromedriverInstaller(chromedriverUri).install(ssh)
-            val result = ssh.safeExecute("./chromedriver --version")
-            Assertions.assertThat(result.isSuccessful()).isTrue()
-            Assertions.assertThat(result.output).contains(version)
+        SshUbuntuContainer().start().use { sshUbuntu ->
+            sshUbuntu.toSsh().newConnection().use { connection ->
+                val chromedriverUri = URI("https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip")
+                ChromedriverInstaller(chromedriverUri).install(connection)
+                val result = connection.safeExecute("./chromedriver --version")
+                Assertions.assertThat(result.isSuccessful()).isTrue()
+                Assertions.assertThat(result.output).contains(version)
+            }
         }
     }
 }
