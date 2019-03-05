@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.DisabledJvmDebug
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
+import com.atlassian.performance.tools.infrastructure.api.jvm.VersionedJavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.JvmDebug
 import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.DisabledRemoteJmx
@@ -110,6 +111,7 @@ class JiraNodeConfig private constructor(
         private var splunkForwarder: SplunkForwarder = DisabledSplunkForwarder()
         private var launchTimeouts: JiraLaunchTimeouts = JiraLaunchTimeouts.Builder().build()
         private var jdk: JavaDevelopmentKit = OracleJDK()
+        private var versionedJdk: VersionedJavaDevelopmentKit? = null
         private var profiler: Profiler = DisabledProfiler()
 
         constructor(
@@ -133,6 +135,7 @@ class JiraNodeConfig private constructor(
         fun launchTimeouts(launchTimeouts: JiraLaunchTimeouts) = apply { this.launchTimeouts = launchTimeouts }
         fun collectdConfig(collectdConfigs: List<URI>) = apply { this.collectdConfigs = collectdConfigs }
         fun jdk(jdk: JavaDevelopmentKit) = apply { this.jdk = jdk }
+        fun versionedJdk(versionedJdk: VersionedJavaDevelopmentKit) = apply { this.versionedJdk = versionedJdk }
         fun profiler(profiler: Profiler) = apply { this.profiler = profiler }
 
         fun build() = JiraNodeConfig(
@@ -143,7 +146,7 @@ class JiraNodeConfig private constructor(
             splunkForwarder = splunkForwarder,
             collectdConfigs = collectdConfigs,
             launchTimeouts = launchTimeouts,
-            jdk = jdk,
+            jdk = if (versionedJdk != null) versionedJdk as JavaDevelopmentKit else jdk,
             profiler = profiler
         )
     }

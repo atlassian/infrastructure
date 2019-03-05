@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.10.0...master
 
+### Added
+- Set GC params based on Java version. Resolve [JPERF-408].
+
+[JPERF-408]: https://ecosystem.atlassian.net/browse/JPERF-408
+
 ## [4.10.0] - 2019-03-07
 [4.10.0]: https://github.com/atlassian/infrastructure/compare/release-4.9.0...release-4.10.0
 
