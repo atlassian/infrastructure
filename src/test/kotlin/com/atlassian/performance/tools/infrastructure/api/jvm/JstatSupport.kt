@@ -10,7 +10,7 @@ import java.io.File
 import java.time.Duration
 
 class JstatSupport(
-    private val jdk: JavaDevelopmentKit,
+    private val jdk: VersionedJavaDevelopmentKit,
     private val expectedJstatHeader: String = "Timestamp         S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT"
 ) {
     private val jarName = "hello-world-after-1m-wait.jar"

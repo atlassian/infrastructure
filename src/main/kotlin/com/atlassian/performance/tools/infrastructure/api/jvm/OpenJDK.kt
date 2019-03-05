@@ -5,8 +5,10 @@ import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
-class OpenJDK : JavaDevelopmentKit {
+class OpenJDK : VersionedJavaDevelopmentKit {
     override val jstatMonitoring: Jstat = Jstat("")
+
+    override fun getMajorVersion() = 8
 
     override fun install(connection: SshConnection) {
         Ubuntu().install(

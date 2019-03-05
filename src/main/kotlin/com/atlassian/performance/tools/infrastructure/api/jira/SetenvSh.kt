@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.jira.SetenvSh.Variables.*
 import com.atlassian.performance.tools.infrastructure.api.jvm.JvmArg
+import com.atlassian.performance.tools.infrastructure.api.jvm.VersionedJavaDevelopmentKit
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
@@ -28,14 +29,17 @@ class SetenvSh(
         gcLog: JiraGcLog,
         jiraIp: String
     ) {
+        val jdkVersion = if (config.jdk is VersionedJavaDevelopmentKit) config.jdk.getMajorVersion() else 8
         val args = config.jvmArgs
         val original = connection.execute("cat ${this.location}").output
         setMemory(connection, args, original)
-        val jvmArgs = args.arguments(
+        var jvmArgs = args.arguments(
             debug = config.debug,
             jmx = config.remoteJmx,
-            jiraIp = jiraIp
-        ) + gcLog.jvmArg()
+            jiraIp = jiraIp,
+            jdkVersion = jdkVersion
+        )
+        if (jdkVersion == 8) jvmArgs += gcLog.jvmArg()
         setArguments(connection, jvmArgs, original)
     }
 

@@ -6,7 +6,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 import java.time.Duration
 
-class AdoptOpenJDK11 : JavaDevelopmentKit {
+class AdoptOpenJDK11 : VersionedJavaDevelopmentKit {
     private val jdkVersion = "-11.0.1+13"
     private val jdkArchive = "OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz"
     /**
@@ -19,6 +19,8 @@ class AdoptOpenJDK11 : JavaDevelopmentKit {
     private val jreBin = "~/jdk$jdkVersion/jre/bin/"
     private val jdkBin = "~/jdk$jdkVersion/bin/"
     override val jstatMonitoring: Jstat = Jstat(jdkBin)
+
+    override fun getMajorVersion() = 11
 
     override fun install(connection: SshConnection) {
         download(connection)

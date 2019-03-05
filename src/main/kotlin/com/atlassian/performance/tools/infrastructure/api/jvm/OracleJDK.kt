@@ -6,7 +6,7 @@ import org.apache.logging.log4j.Logger
 import java.net.URI
 import java.time.Duration
 
-class OracleJDK : JavaDevelopmentKit {
+class OracleJDK : VersionedJavaDevelopmentKit {
     private val logger: Logger = LogManager.getLogger(this::class.java)
     private val jdkUpdate = 131
     private val jdkArchive = "jdk-8u$jdkUpdate-linux-x64.tar.gz"
@@ -20,6 +20,8 @@ class OracleJDK : JavaDevelopmentKit {
         replaceWith = ReplaceWith("jstatMonitoring")
     )
     val jstat = jstatMonitoring
+
+    override fun getMajorVersion() = 8
 
     override fun install(connection: SshConnection) {
         download(connection)
