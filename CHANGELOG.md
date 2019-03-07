@@ -26,6 +26,12 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.9.0...master
 
+### Added
+- Add `HttpDatasetPackage` constructor which enables performance improvements ([JPERF-412], [JPERF-413]). 
+
+### Deprecated
+- Deprecate `HttpDatasetPackage` three-parameter constructor in favor of two-parameter constructor.
+
 ### Fixed
 - Download HTTP resources in parallel instead of on a single thread. Resolve [JPERF-412].
 - Unzip tar.bz2 archive files in parallel. Resolve [JPERF-413].

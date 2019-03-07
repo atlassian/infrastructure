@@ -1,29 +1,49 @@
 package com.atlassian.performance.tools.infrastructure.api.dataset
 
-import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
+import com.atlassian.performance.tools.infrastructure.dataset.HttpDatasetPackage
+import com.atlassian.performance.tools.infrastructure.dataset.ObsoleteHttpDatasetPackage
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 import java.time.Duration
 
-class HttpDatasetPackage(
-    private val downloadPath: String,
-    private val unpackedPath: String? = null,
-    private val downloadTimeout: Duration
+/**
+ * Downloads and unzips dataset on the remote machine.
+ */
+class HttpDatasetPackage private constructor(
+    private val datasetPackage: DatasetPackage
 ) : DatasetPackage {
 
-    private val datasetBucket = URI("https://s3.eu-central-1.amazonaws.com/jira-soke-tests-eu/")
+    @Suppress("DEPRECATION")
+    @Deprecated("Use two-parameters constructor.")
+    constructor(
+        downloadPath: String,
+        unpackedPath: String? = null,
+        downloadTimeout: Duration
+    ) : this(
+        ObsoleteHttpDatasetPackage(
+            downloadPath = downloadPath,
+            unpackedPath = unpackedPath,
+            downloadTimeout = downloadTimeout
+        )
+    )
+
+    constructor(
+        uri: URI,
+        downloadTimeout: Duration
+    ) : this(
+        HttpDatasetPackage(
+            uri = uri,
+            timeout = downloadTimeout
+        )
+    )
 
     override fun download(
         ssh: SshConnection
     ): String {
-        val unzipCommand = FileArchiver().pipeUnzip(ssh)
-        time("download") {
-            ssh.execute("wget -qO - ${datasetBucket.resolve(downloadPath)} | $unzipCommand", downloadTimeout)
-        }
-        return unpackedPath!!
+        return datasetPackage.download(ssh)
     }
 
     override fun toString(): String {
-        return "HttpDatasetPackage(downloadPath='$downloadPath', unpackedPath=$unpackedPath, downloadTimeout=$downloadTimeout, datasetBucket=$datasetBucket)"
+        return datasetPackage.toString()
     }
 }
