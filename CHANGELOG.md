@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.9.0...master
 
+### Fixed
+- Download HTTP resources in parallel instead of on a single thread. Resolve [JPERF-412].
+
+[JPERF-412]: https://ecosystem.atlassian.net/browse/JPERF-412
+
 ## [4.9.0] - 2019-02-28
 [4.9.0]: https://github.com/atlassian/infrastructure/compare/release-4.8.0...release-4.9.0
 
