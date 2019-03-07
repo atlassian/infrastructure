@@ -15,7 +15,8 @@ internal class PublicAtlassianProduct(
 
     private fun download(sshConnection: SshConnection) {
         val jiraArchiveUri = URI("https://product-downloads.atlassian.com/software/jira/downloads/$archiveName")
-        sshConnection.execute("wget -P $destination -q $jiraArchiveUri", Duration.ofMinutes(5))
+        sshConnection.execute("mkdir -p $destination")
+        HttpResource(jiraArchiveUri).download(sshConnection, "$destination/$archiveName", Duration.ofMinutes(5))
     }
 
     private fun unpack(sshConnection: SshConnection) {

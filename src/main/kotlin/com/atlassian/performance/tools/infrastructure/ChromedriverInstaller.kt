@@ -7,7 +7,7 @@ import java.time.Duration
 
 internal class ChromedriverInstaller(private val uri: URI) {
     internal fun install(ssh: SshConnection) {
-        ssh.execute("wget -q \"$uri\" -O chromedriver.zip", Duration.ofMinutes(2))
+        HttpResource(uri).download(ssh, "chromedriver.zip")
         Ubuntu().install(ssh, listOf("zip", "libglib2.0-0", "libnss3"), Duration.ofMinutes(2))
         ssh.execute("unzip -n -q chromedriver.zip")
         ssh.execute("chmod +x chromedriver")
