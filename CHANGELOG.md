@@ -28,8 +28,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Download HTTP resources in parallel instead of on a single thread. Resolve [JPERF-412].
+- Unzip tar.bz2 archive files in parallel. Resolve [JPERF-413].
 
 [JPERF-412]: https://ecosystem.atlassian.net/browse/JPERF-412
+[JPERF-413]: https://ecosystem.atlassian.net/browse/JPERF-413
 
 ## [4.9.0] - 2019-02-28
 [4.9.0]: https://github.com/atlassian/infrastructure/compare/release-4.8.0...release-4.9.0
@@ -37,7 +39,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Added
 - A way to gather thread dumps over ssh. Resolve [JPERF-405].
 
+### Fixed
+- Download HTTP resources in parallel instead of on a single thread. Resolve [JPERF-412].
+
 [JPERF-405]: https://ecosystem.atlassian.net/browse/JPERF-405
+[JPERF-405]: https://ecosystem.atlassian.net/browse/JPERF-412
 
 ## [4.8.0] - 2019-02-22
 [4.8.0]: https://github.com/atlassian/infrastructure/compare/release-4.7.0...release-4.8.0

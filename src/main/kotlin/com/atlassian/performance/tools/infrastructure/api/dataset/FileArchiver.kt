@@ -8,17 +8,23 @@ import java.time.Duration
 class FileArchiver {
     private val ubuntu = Ubuntu()
 
+    /**
+     * Decompress `tar.bz2` archives to the current directory.
+     */
     fun unzip(
         connection: SshConnection,
         archive: String,
         timeout: Duration
     ) {
-        ubuntu.install(connection, listOf("pbzip2"))
+        ubuntu.install(connection, listOf("lbzip2"))
         time("unzip") {
-            connection.execute("pbzip2 -dc $archive | tar x -C .", timeout)
+            connection.execute("tar -I lbzip2 -xf $archive", timeout)
         }
     }
 
+    /**
+     * Creates `tar.bz2` archives.
+     */
     fun zip(
         connection: SshConnection,
         toArchive: String,
