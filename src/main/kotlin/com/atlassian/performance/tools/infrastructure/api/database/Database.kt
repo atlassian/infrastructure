@@ -11,4 +11,11 @@ interface Database {
     fun setup(ssh: SshConnection): String
 
     fun start(jira: URI, ssh: SshConnection)
+
+    fun getDbType() : DbType
+}
+
+enum class DbType{
+    MySql,
+    Postgres
 }

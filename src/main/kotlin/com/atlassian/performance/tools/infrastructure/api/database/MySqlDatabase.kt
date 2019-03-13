@@ -17,6 +17,11 @@ class MySqlDatabase(
     private val source: DatasetPackage,
     private val maxConnections: Int
 ) : Database {
+
+    override fun getDbType(): DbType {
+        return DbType.MySql
+    }
+
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     private val image: DockerImage = DockerImage(
