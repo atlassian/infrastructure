@@ -29,7 +29,7 @@ class PostgresDatabase(
         val postgresBinaryData = source.download(ssh)
         image.run(
             ssh = ssh,
-            parameters = "-p 5432:5432 -v `realpath $postgresBinaryData`:/var/lib/postgresql/10/main"
+            parameters = "-p 5432:5432 -v `realpath $postgresBinaryData`:/var/lib/postgresql/data"
         )
         return postgresBinaryData
     }
@@ -55,6 +55,6 @@ class PostgresDatabase(
 
     private fun replaceJiraUrl(ssh: SshConnection, jira: URI) {
         //inject Jira URL via postgres client
-        ssh.execute("""$connectStr "UPDATE jiradb.propertystring SET propertyvalue = '$jira' WHERE id IN (select id from jiradb.propertyentry where property_key like '%baseurl%');" """)
+        ssh.execute("""$connectStr "UPDATE propertystring SET propertyvalue = '$jira' WHERE id IN (select id from propertyentry where property_key like '%baseurl%');" """)
     }
 }
