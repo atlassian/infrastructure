@@ -4,6 +4,8 @@ import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import org.apache.logging.log4j.LogManager
+import org.apache.logging.log4j.Logger
 import java.net.URI
 import java.time.Duration
 import java.time.Instant
@@ -14,6 +16,8 @@ class PostgresDatabase(
     private val dbUser: String = "postgres",
     private val dbPassword: String ="postgres"
 ) : Database{
+
+    private val logger: Logger = LogManager.getLogger(this::class.java)
 
     override fun getDbType(): DbType {
         return DbType.Postgres
@@ -27,6 +31,7 @@ class PostgresDatabase(
 
     override fun setup(ssh: SshConnection): String {
         val postgresBinaryData = source.download(ssh)
+        setupSharedBuffer(ssh)
         image.run(
             ssh = ssh,
             parameters = "-p 5432:5432 -v `realpath $postgresBinaryData`:/var/lib/postgresql/data"
@@ -37,6 +42,19 @@ class PostgresDatabase(
     override fun start(jira: URI, ssh: SshConnection) {
         waitForPostgres(ssh)
         replaceJiraUrl(ssh, jira)
+    }
+
+    private fun setupSharedBuffer(ssh: SshConnection){
+        try{
+            val result = ssh.execute("grep MemTotal /proc/meminfo | awk '{print $2}'")
+            val memory = result.output.trim().toLong() / 4096 //to MB
+            ssh.execute("sed -i 's/.*shared_buffers[ ]*\\=.*/shared_buffers = ${memory}MB/' database/postgresql.conf")
+            logger.info("shared_buffers has been updated to ${memory}MB")
+        } catch(e : Exception){
+            logger.error("Fail to update the shared buffer")
+            logger.error(e)
+        }
+
     }
 
     //PGPASSWORD=postgres psql -h jkim2-jpte.ci0kcpuzeoud.ap-southeast-2.rds.amazonaws.com -U postgres -d atldb  -c 'select 1;'
