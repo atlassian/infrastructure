@@ -1,9 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
-import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
-import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserBehavior.Builder
+import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserBehavior
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import java.util.concurrent.Executors
 
@@ -23,7 +22,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
      */
     private fun multicast(
         label: String,
-        operation: (VirtualUsers, Long) -> Unit
+        operation: (VirtualUsers, Int) -> Unit
     ) {
         val executor = Executors.newFixedThreadPool(
             nodes.size,
@@ -35,7 +34,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
             .mapIndexed { index, node ->
                 executor.submitWithLogContext("$label $node") {
                     try {
-                        operation(node, index.toLong())
+                        operation(node, index)
                     } catch (e: Exception) {
                         throw Exception("$label failed on $node", e)
                     }
@@ -52,19 +51,13 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         if (nodeCount > virtualUsers) {
             throw Exception("$virtualUsers virtual users are not enough to spread into $nodeCount nodes")
         }
-        val vusPerNode = virtualUsers / nodeCount
-        val rampPerNode = load.ramp.dividedBy(nodeCount.toLong())
+        val loadSlices = load.slice(nodeCount)
         multicast("apply load") { node, index ->
             node.applyLoad(
                 VirtualUserOptions(
                     target = options.target,
-                    behavior = Builder(options.behavior)
-                        .load(VirtualUserLoad(
-                            virtualUsers = vusPerNode,
-                            hold = load.hold + rampPerNode.multipliedBy(index),
-                            ramp = rampPerNode,
-                            flat = load.flat + rampPerNode.multipliedBy(nodeCount - index - 1)
-                        ))
+                    behavior = VirtualUserBehavior.Builder(options.behavior)
+                        .load(loadSlices[index])
                         .let { if (index > 0) it.skipSetup(true) else it }
                         .build()
                 )
