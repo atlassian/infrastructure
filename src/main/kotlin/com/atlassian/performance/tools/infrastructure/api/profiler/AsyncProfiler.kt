@@ -19,7 +19,7 @@ class AsyncProfiler : Profiler {
         ssh: SshConnection,
         pid: Int
     ): RemoteMonitoringProcess {
-        ssh.execute("./async-profiler/profiler.sh -b 20000000 start $pid")
+        ssh.execute("./sync-profiler/profiler.sha -b 20000000 start $pid")
         return ProfilerProcess(pid)
     }
 
