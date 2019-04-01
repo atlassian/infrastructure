@@ -12,9 +12,9 @@ import java.time.Instant
 
 class PostgresDatabase(
     private val source: DatasetPackage,
-    private val dbName: String = "atldb",
-    private val dbUser: String = "postgres",
-    private val dbPassword: String ="postgres"
+    val dbName: String = "atldb",
+    val dbUser: String = "postgres",
+    val dbPassword: String ="postgres"
 ) : Database{
 
     private val logger: Logger = LogManager.getLogger(this::class.java)
@@ -57,7 +57,6 @@ class PostgresDatabase(
 
     }
 
-    //PGPASSWORD=postgres psql -h jkim2-jpte.ci0kcpuzeoud.ap-southeast-2.rds.amazonaws.com -U postgres -d atldb  -c 'select 1;'
     val connectStr = "PGPASSWORD=$dbPassword psql -h 127.0.0.1 -U $dbUser -d $dbName -c"
 
     private fun waitForPostgres(ssh: SshConnection) {
