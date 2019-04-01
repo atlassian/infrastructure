@@ -1,8 +1,17 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
+import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.Install
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstallSequence
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.EmptyReport
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PassingStart
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.Start
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.jvmtasks.api.Backoff
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -16,7 +25,8 @@ import java.time.Instant
 class MySqlDatabase(
     private val source: DatasetPackage,
     private val maxConnections: Int
-) : Database {
+) : InstallableDatabase {
+
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     private val image: DockerImage = DockerImage(
@@ -61,4 +71,50 @@ class MySqlDatabase(
             Thread.sleep(Duration.ofSeconds(10).toMillis())
         }
     }
+
+    override fun installInJira(databaseIp: String): Install {
+        return InstallSequence(listOf(
+            MysqlJdbc(databaseIp),
+            MysqlConnector()
+        ))
+    }
+}
+
+private class MysqlConnector : Install {
+    override fun install(
+        ssh: SshConnection,
+        jira: InstalledJira
+    ): Start {
+        val connector = "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz"
+        IdempotentAction(
+            description = "Download MySQL connector",
+            action = { ssh.execute("wget -q $connector") }
+        ).retry(
+            maxAttempts = 3,
+            backoff = StaticBackoff(Duration.ofSeconds(5))
+        )
+        ssh.execute("tar -xzf mysql-connector-java-5.1.40.tar.gz")
+        ssh.execute("cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar ${jira.installation}/lib")
+        return PassingStart(EmptyReport())
+    }
+}
+
+private class MysqlJdbc(
+    private val databaseIp: String
+) : Install {
+    override fun install(ssh: SshConnection, jira: InstalledJira): Start {
+        Sed().replace(
+            connection = ssh,
+            expression = "(<url>.*(@(//)?|//))" + "([^:/]+)" + "(.*</url>)",
+            output = """\1$databaseIp\5""",
+            file = "${jira.home}/dbconfig.xml"
+        )
+        return PassingStart(EmptyReport())
+    }
+}
+
+private class StaticBackoff(
+    private val backOff: Duration
+) : Backoff {
+    override fun backOff(attempt: Int): Duration = backOff
 }
