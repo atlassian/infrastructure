@@ -1,15 +1,17 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.ssh.api.Ssh
+import com.atlassian.performance.tools.ssh.api.SshHost
+import com.atlassian.performance.tools.ssh.api.auth.PublicKeyAuthentication
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntu
 import java.time.Duration
 
 internal fun SshUbuntu.toSsh(): Ssh {
     val ssh = Ssh(with(this.ssh) {
-        com.atlassian.performance.tools.ssh.api.SshHost(
+        SshHost(
             ipAddress = ipAddress,
             userName = userName,
-            authentication = com.atlassian.performance.tools.ssh.api.auth.PublicKeyAuthentication(privateKey),
+            authentication = PublicKeyAuthentication(privateKey),
             port = port
         )
     })

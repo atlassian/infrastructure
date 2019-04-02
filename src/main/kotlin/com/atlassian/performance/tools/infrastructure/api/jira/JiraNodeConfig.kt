@@ -1,10 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira
 
-import com.atlassian.performance.tools.infrastructure.api.jvm.DisabledJvmDebug
-import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
-import com.atlassian.performance.tools.infrastructure.api.jvm.VersionedJavaDevelopmentKit
-import com.atlassian.performance.tools.infrastructure.api.jvm.JvmDebug
-import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
+import com.atlassian.performance.tools.infrastructure.api.jvm.*
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.DisabledRemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.RemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.profiler.Profiler
