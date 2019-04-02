@@ -1,7 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.upgrade
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.serve.Serve
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.Start
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
@@ -14,8 +15,3 @@ interface Upgrade {
         jira: StartedJira
     ): Serve
 }
-
-class StartedJira(
-    val installed: InstalledJira,
-    val pid: Int
-)

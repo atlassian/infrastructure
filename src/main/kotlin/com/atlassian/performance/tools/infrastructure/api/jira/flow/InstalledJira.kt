@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
+package com.atlassian.performance.tools.infrastructure.api.jira.flow
 
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 
@@ -6,5 +6,6 @@ class InstalledJira(
     val home: String,
     val installation: String,
     val name: String,
-    val jdk: JavaDevelopmentKit
+    val jdk: JavaDevelopmentKit,
+    val server: TcpServer
 )

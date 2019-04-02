@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.upgrade.PassingUpgrade
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.upgrade.Upgrade
