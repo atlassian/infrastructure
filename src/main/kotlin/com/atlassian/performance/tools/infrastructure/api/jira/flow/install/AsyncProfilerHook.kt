@@ -1,21 +1,19 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.serve.PassingServe
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.serve.Serve
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PassingStart
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.Start
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.upgrade.Upgrade
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.ReportTrack
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 
-class AsyncProfilerInstall : Install {
-    override fun install(
+class AsyncProfilerHook : PreInstallHook {
+    override fun hook(
         ssh: SshConnection,
-        jira: InstalledJira
-    ): Start {
+        server: TcpServer,
+        track: ReportTrack
+    ) {
         val directory = "async-profiler"
         val downloads = URI("https://github.com/jvm-profiling-tools/async-profiler/releases/download/")
         val distribution = downloads.resolve("v1.4/async-profiler-1.4-linux-x64.tar.gz")
@@ -25,25 +23,28 @@ class AsyncProfilerInstall : Install {
         ssh.execute("sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'")
         ssh.execute("sudo sh -c 'echo 0 > /proc/sys/kernel/kptr_restrict'")
         val profilerPath = "./$directory/profiler.sh"
-        return PassingStart(AsyncProfilerUpgrade(profilerPath))
+        val profiler = InstalledAsyncProfiler(profilerPath)
+        track.postStartHooks.add(profiler)
     }
+
 }
 
-private class AsyncProfilerUpgrade(
+private class InstalledAsyncProfiler(
     private val profilerPath: String
-) : Upgrade {
+) : PostStartHook {
 
-    override fun upgrade(
+    override fun hook(
         ssh: SshConnection,
-        jira: StartedJira
-    ): Serve {
+        jira: StartedJira,
+        track: ReportTrack
+    ) {
         ssh.execute("$profilerPath -b 20000000 start ${jira.pid}")
-        val report = AsyncProfilerReport(jira.pid, profilerPath)
-        return PassingServe(report)
+        val profiler = StartedAsyncProfiler(jira.pid, profilerPath)
+        track.reports.add(profiler)
     }
 }
 
-private class AsyncProfilerReport(
+private class StartedAsyncProfiler(
     private val pid: Int,
     private val profilerPath: String
 ) : Report {

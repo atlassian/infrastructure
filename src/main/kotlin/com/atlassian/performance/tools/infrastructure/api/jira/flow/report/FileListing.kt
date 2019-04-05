@@ -8,7 +8,7 @@ class FileListing(
     override fun locate(
         ssh: SshConnection
     ): List<String> = ssh
-        .safeExecute("ls $pattern")
+        .execute("ls $pattern")
         .output
         .lines()
         .filter { it.isNotBlank() }
