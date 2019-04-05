@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultJiraInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultPostInstallHook
@@ -48,7 +49,8 @@ class HookedJiraStartIT {
             )
             val remoteReports = sshUbuntu.toSsh().newConnection().use { ssh ->
                 val installed = jiraInstallation.install(ssh, server, track)
-                jiraStart.start(ssh, installed, track)
+                val started = jiraStart.start(ssh, installed, track)
+                stop(started, ssh)
                 track.reports.flatMap { it.locate(ssh) }
             }
 
@@ -66,6 +68,14 @@ class HookedJiraStartIT {
             "./atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
             "./jpt-jstat.log"
         )
+    }
+
+    private fun stop(
+        started: StartedJira,
+        ssh: SshConnection
+    ) {
+        val installed = started.installed
+        ssh.execute("${installed.jdk.use()}; ${installed.installation}/bin/stop-jira.sh")
     }
 
     private fun download(
