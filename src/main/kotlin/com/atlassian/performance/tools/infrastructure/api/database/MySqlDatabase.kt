@@ -3,12 +3,10 @@ package com.atlassian.performance.tools.infrastructure.api.database
 import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.Install
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstallSequence
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.EmptyReport
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PassingStart
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.Start
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHookSequence
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.ReportTrack
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.Backoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
@@ -72,19 +70,21 @@ class MySqlDatabase(
         }
     }
 
-    override fun installInJira(databaseIp: String): Install {
-        return InstallSequence(listOf(
+    override fun installInJira(databaseIp: String): PostInstallHook {
+        return PostInstallHookSequence(listOf(
             MysqlJdbc(databaseIp),
             MysqlConnector()
         ))
     }
 }
 
-private class MysqlConnector : Install {
-    override fun install(
+private class MysqlConnector : PostInstallHook {
+
+    override fun hook(
         ssh: SshConnection,
-        jira: InstalledJira
-    ): Start {
+        jira: InstalledJira,
+        track: ReportTrack
+    ) {
         val connector = "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz"
         IdempotentAction(
             description = "Download MySQL connector",
@@ -95,21 +95,24 @@ private class MysqlConnector : Install {
         )
         ssh.execute("tar -xzf mysql-connector-java-5.1.40.tar.gz")
         ssh.execute("cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar ${jira.installation}/lib")
-        return PassingStart(EmptyReport())
     }
 }
 
 private class MysqlJdbc(
     private val databaseIp: String
-) : Install {
-    override fun install(ssh: SshConnection, jira: InstalledJira): Start {
+) : PostInstallHook {
+
+    override fun hook(
+        ssh: SshConnection,
+        jira: InstalledJira,
+        track: ReportTrack
+    ) {
         Sed().replace(
             connection = ssh,
             expression = "(<url>.*(@(//)?|//))" + "([^:/]+)" + "(.*</url>)",
             output = """\1$databaseIp\5""",
             file = "${jira.home}/dbconfig.xml"
         )
-        return PassingStart(EmptyReport())
     }
 }
 
