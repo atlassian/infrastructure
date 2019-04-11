@@ -1,21 +1,27 @@
 language: java
-
 stages:
   - test
   - name: release
     if: env(RELEASE) == true AND fork == false
-
 jobs:
   include:
     - stage: test
       script: travis_wait 18 ./gradlew build
     - stage: release
-      script: ./scripts/travis-release.sh
-
+      script: "./scripts/travis-release.sh"
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
   - rm -fr $HOME/.gradle/caches/*/plugin-resolution/
 cache:
   directories:
-    - $HOME/.gradle/caches/
-    - $HOME/.gradle/wrapper/
+    - "$HOME/.gradle/caches/"
+    - "$HOME/.gradle/wrapper/"
+notifications:
+  slack:
+    secure: 'NCK1FQMSNkSKHnJvj8p0ha+fV+bPfFxhqG3FNRnPioAW+zC05wdM1+9RcAkqxUYvaLpWgLu7kfERh8RKkpN1OPKODqCmGcpUBcRZ+yBtbkJ
+      yL9D1eCkbVJR5Bc9e0WODzc02aAkUNBt0yMGk5ZfEBp2J28jjS4ogff5+T6wsjh6LxvDXFI9ZBHN1wX5bYcllL8WcwmAtqtGijnqU8ZiE++s9bGY+7
+      e7IEeYAQzMjuTgCmI8walzm64iNt647WigQlXT4FsggwnThBBCTKc4xgKmPJMwbOvcvkefVc5Hz+W/wD+iJXgtjx9i6N2qtPT/wpxPRHpDO8OCHT6+
+      z7TMZYh+jV8Cfz10wFOoKDgzODP66Id2r3ofk2qsOiVQpfp2Jeu/o6DA+efcMSM5whWemWN5y0AukCvHO681iviiBPBXJsncQURI0k6qJ3XA217VZN
+      w16WHbqqQpizI3PAWARM0Je4aQgAmBLmWlQQRawmjSOO8f9tZKU2AUlAbtLtI/TPi4m+BJj/AjUNYZJ90LocUrk00HgwnjomKqlQyjix+xf10NH5/J
+      ikEO6OeiIP23/qbxD/f3uXM6MKyD0jK1dcWPT4RhCA7fAjySxx34lHOqtSUXw68Hw/B3pbtTGqPExgXcph70vMUefQvNp7pSY8ER1q1k4zuA4WEBus
+      oD8bgI='
