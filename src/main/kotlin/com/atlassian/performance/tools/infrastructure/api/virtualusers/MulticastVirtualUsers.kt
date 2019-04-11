@@ -32,7 +32,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         )
         nodes
             .mapIndexed { index, node ->
-                executor.submitWithLogContext("$label $node") {
+                executor.submitWithLogContext("$label node-${index + 1}") {
                     try {
                         operation(node, index)
                     } catch (e: Exception) {
