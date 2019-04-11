@@ -10,15 +10,16 @@
 >
     <Appenders>
         <Appender name="Console" type="Console">
-            <Layout type="PatternLayout" pattern="%d{ISO8601}{UTC}Z %-5level %t %X %x [%logger] %msg%n"/>
-            <Filters>
-                <Filter type="ThresholdFilter" level="debug"/>
-            </Filters>
+            <Layout type="PatternLayout" pattern="%d{ISO8601}{UTC}Z %-5level %t %x [%logger] %msg%n"/>
         </Appender>
+        <Appender type="Null" name="Nothingness"/>
     </Appenders>
     <Loggers>
-        <Root>
+        <Logger name="com.atlassian.performance.tools" level="debug">
             <AppenderRef ref="Console"/>
+        </Logger>
+        <Root>
+            <AppenderRef ref="Nothingness"/>
         </Root>
     </Loggers>
 </Configuration>
