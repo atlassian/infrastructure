@@ -5,7 +5,7 @@ import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.net.URI
 
-class ChromedriverInstallerTest {
+class ChromedriverInstallerIT {
     private val version = "2.45"
 
     @Test
