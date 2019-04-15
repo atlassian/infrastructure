@@ -5,4 +5,15 @@ class TcpServer(
     val publicPort: Int,
     val privatePort: Int,
     val name: String
-)
+) {
+    constructor(
+        ip: String,
+        port: Int,
+        name: String
+    ) : this(
+        ip,
+        port,
+        port,
+        name
+    )
+}
