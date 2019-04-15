@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
 
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.ReportTrack
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class PostInstallHookSequence(
@@ -11,8 +11,8 @@ class PostInstallHookSequence(
     override fun hook(
         ssh: SshConnection,
         jira: InstalledJira,
-        track: ReportTrack
+        flow: JiraNodeFlow
     ) {
-        hooks.forEach { it.hook(ssh, jira, track) }
+        hooks.forEach { it.hook(ssh, jira, flow) }
     }
 }

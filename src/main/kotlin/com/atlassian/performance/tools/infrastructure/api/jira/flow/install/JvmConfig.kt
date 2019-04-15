@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig
 import com.atlassian.performance.tools.infrastructure.api.jira.SetenvSh
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.FileListing
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.ReportTrack
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class JvmConfig(
@@ -15,7 +15,7 @@ class JvmConfig(
     override fun hook(
         ssh: SshConnection,
         jira: InstalledJira,
-        track: ReportTrack
+        flow: JiraNodeFlow
     ) {
         val gcLog = JiraGcLog(jira.installation)
         SetenvSh(jira.installation).setup(
@@ -25,6 +25,6 @@ class JvmConfig(
             jiraIp = jira.server.ip
         )
         val report = FileListing(gcLog.path("*"))
-        track.reports.add(report)
+        flow.reports.add(report)
     }
 }
