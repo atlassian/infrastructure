@@ -8,7 +8,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultJiraInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultPostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.HookedJiraInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.ReportTrack
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -25,9 +25,9 @@ class HookedJiraStartIT {
     fun shouldStartJiraWithDefaultHooks() {
         // given
         val config = JiraNodeConfig.Builder().build()
-        val track = ReportTrack()
-        track.postStartHooks.add(DefaultPostStartHook())
-        track.postInstallHooks.add(DefaultPostInstallHook(config))
+        val flow = JiraNodeFlow()
+        flow.postStartHooks.add(DefaultPostStartHook())
+        flow.postInstallHooks.add(DefaultPostInstallHook(config))
         val jiraInstallation = HookedJiraInstallation(DefaultJiraInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
@@ -48,10 +48,10 @@ class HookedJiraStartIT {
                 "my-jira"
             )
             val remoteReports = sshUbuntu.toSsh().newConnection().use { ssh ->
-                val installed = jiraInstallation.install(ssh, server, track)
-                val started = jiraStart.start(ssh, installed, track)
+                val installed = jiraInstallation.install(ssh, server, flow)
+                val started = jiraStart.start(ssh, installed, flow)
                 stop(started, ssh)
-                track.reports.flatMap { it.locate(ssh) }
+                flow.reports.flatMap { it.locate(ssh) }
             }
 
             // then

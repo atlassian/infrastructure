@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
 
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.ReportTrack
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
 import com.atlassian.performance.tools.infrastructure.api.os.OsMetric
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
@@ -14,12 +14,12 @@ class UbuntuSysstat : PostInstallHook {
     override fun hook(
         ssh: SshConnection,
         jira: InstalledJira,
-        track: ReportTrack
+        flow: JiraNodeFlow
     ) {
         val postStartHooks = Ubuntu()
             .metrics(ssh)
             .map { InstalledOsMetric(it) }
-        track.postStartHooks.addAll(postStartHooks)
+        flow.postStartHooks.addAll(postStartHooks)
     }
 }
 
@@ -30,9 +30,9 @@ private class InstalledOsMetric(
     override fun hook(
         ssh: SshConnection,
         jira: StartedJira,
-        track: ReportTrack
+        flow: JiraNodeFlow
     ) {
         val process = metric.start(ssh)
-        track.reports.add(RemoteMonitoringProcessReport(process))
+        flow.reports.add(RemoteMonitoringProcessReport(process))
     }
 }
