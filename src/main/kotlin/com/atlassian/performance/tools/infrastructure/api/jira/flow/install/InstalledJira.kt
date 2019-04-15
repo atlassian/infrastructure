@@ -1,5 +1,6 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.flow
+package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
 
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 
 class InstalledJira(

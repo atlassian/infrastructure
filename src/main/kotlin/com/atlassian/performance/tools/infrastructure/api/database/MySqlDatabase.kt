@@ -3,9 +3,9 @@ package com.atlassian.performance.tools.infrastructure.api.database
 import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHookSequence
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJiraHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJiraHookSequence
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.Backoff
@@ -70,15 +70,15 @@ class MySqlDatabase(
         }
     }
 
-    override fun installInJira(databaseIp: String): PostInstallHook {
-        return PostInstallHookSequence(listOf(
+    override fun installInJira(databaseIp: String): InstalledJiraHook {
+        return InstalledJiraHookSequence(listOf(
             MysqlJdbc(databaseIp),
             MysqlConnector()
         ))
     }
 }
 
-private class MysqlConnector : PostInstallHook {
+private class MysqlConnector : InstalledJiraHook {
 
     override fun hook(
         ssh: SshConnection,
@@ -100,7 +100,7 @@ private class MysqlConnector : PostInstallHook {
 
 private class MysqlJdbc(
     private val databaseIp: String
-) : PostInstallHook {
+) : InstalledJiraHook {
 
     override fun hook(
         ssh: SshConnection,

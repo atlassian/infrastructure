@@ -1,13 +1,13 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
+package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-interface PostInstallHook {
+interface StartedJiraHook {
     fun hook(
         ssh: SshConnection,
-        jira: InstalledJira,
+        jira: StartedJira,
         flow: JiraNodeFlow
     )
 }

@@ -1,30 +1,30 @@
 package com.atlassian.performance.tools.infrastructure.jira.flow.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJiraHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
 import com.atlassian.performance.tools.infrastructure.api.profiler.Profiler
 import com.atlassian.performance.tools.infrastructure.jira.flow.RemoteMonitoringProcessReport
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
- * Bridges the [Profiler] SPI with the [PostInstallHook] SPI.
- * In general any [Profiler] can be rewritten as an [PostInstallHook] or any other hook without this bridge.
+ * Bridges the [Profiler] SPI with the [InstalledJiraHook] SPI.
+ * In general any [Profiler] can be rewritten as an [InstalledJiraHook] or any other hookPreStart without this bridge.
  */
 class ProfilerHook(
     private val profiler: Profiler
-) : PostInstallHook {
+) : InstalledJiraHook {
     override fun hook(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
         profiler.install(ssh)
-        flow.postStartHooks.add(InstalledProfiler(profiler))
+        flow.hookPostStart(InstalledProfiler(profiler))
     }
 }
 
 private class InstalledProfiler(
     private val profiler: Profiler
-) : PostStartHook {
+) : StartedJiraHook {
 
     override fun hook(
         ssh: SshConnection,
