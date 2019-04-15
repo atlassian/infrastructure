@@ -1,8 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class HookedJiraStart(
@@ -14,9 +14,9 @@ class HookedJiraStart(
         installed: InstalledJira,
         flow: JiraNodeFlow
     ): StartedJira {
-        flow.preStartHooks.forEach { it.hook(ssh, installed, flow) }
+        flow.listPreStartHooks().forEach { it.hook(ssh, installed, flow) }
         val started = start.start(ssh, installed, flow)
-        flow.postStartHooks.forEach { it.hook(ssh, started, flow) }
+        flow.listPostStartHooks().forEach { it.hook(ssh, started, flow) }
         return started
     }
 }

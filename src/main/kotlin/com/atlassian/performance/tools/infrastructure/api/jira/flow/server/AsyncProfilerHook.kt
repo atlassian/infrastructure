@@ -1,14 +1,14 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.flow.install
+package com.atlassian.performance.tools.infrastructure.api.jira.flow.server
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 
-class AsyncProfilerHook : PreInstallHook {
+class AsyncProfilerHook : TcpServerHook {
+
     override fun hook(
         ssh: SshConnection,
         server: TcpServer,
@@ -24,14 +24,13 @@ class AsyncProfilerHook : PreInstallHook {
         ssh.execute("sudo sh -c 'echo 0 > /proc/sys/kernel/kptr_restrict'")
         val profilerPath = "./$directory/profiler.sh"
         val profiler = InstalledAsyncProfiler(profilerPath)
-        flow.postStartHooks.add(profiler)
+        flow.hookPostStart(profiler)
     }
-
 }
 
 private class InstalledAsyncProfiler(
     private val profilerPath: String
-) : PostStartHook {
+) : StartedJiraHook {
 
     override fun hook(
         ssh: SshConnection,
@@ -48,6 +47,7 @@ private class StartedAsyncProfiler(
     private val pid: Int,
     private val profilerPath: String
 ) : Report {
+
     override fun locate(ssh: SshConnection): List<String> {
         val flameGraphFile = "flamegraph.svg"
         ssh.execute("$profilerPath stop $pid -o svg > $flameGraphFile")

@@ -3,12 +3,12 @@ package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultJiraInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultPostInstallHook
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.HookedJiraInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.*
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.UbuntuSysstat
 import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -26,8 +26,8 @@ class HookedJiraStartIT {
         // given
         val config = JiraNodeConfig.Builder().build()
         val flow = JiraNodeFlow()
-        flow.postStartHooks.add(DefaultPostStartHook())
-        flow.postInstallHooks.add(DefaultPostInstallHook(config))
+        flow.hookPostStart(DefaultStartedJiraHook())
+        flow.hookPostInstall(DefaultPostInstallHook(config))
         val jiraInstallation = HookedJiraInstallation(DefaultJiraInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
@@ -38,8 +38,6 @@ class HookedJiraStartIT {
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(privatePort)
         })
-
-        // when
         val remoteReports = container.start().use { sshUbuntu ->
             val server = TcpServer(
                 "localhost",
@@ -48,6 +46,7 @@ class HookedJiraStartIT {
                 "my-jira"
             )
             val remoteReports = sshUbuntu.toSsh().newConnection().use { ssh ->
+                // when
                 val installed = jiraInstallation.install(ssh, server, flow)
                 val started = jiraStart.start(ssh, installed, flow)
                 stop(started, ssh)
@@ -70,6 +69,47 @@ class HookedJiraStartIT {
         )
     }
 
+    @Test
+    fun shouldDownloadPartialReportsInCaseOfFailure() {
+        // given
+        val flow = JiraNodeFlow()
+        val sysstat = UbuntuSysstat()
+        flow.hookPreInstall(sysstat)
+        flow.hookPreInstall(FailingHook())
+        val jiraInstallation = HookedJiraInstallation(DefaultJiraInstallation(
+            jiraHomeSource = EmptyJiraHome(),
+            productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+            jdk = OracleJDK()
+        ))
+        val privatePort = 8080
+        val container = SshUbuntuContainer(Consumer {
+            it.addExposedPort(privatePort)
+        })
+        val remoteReports = container.start().use { sshUbuntu ->
+            val server = TcpServer(
+                "localhost",
+                sshUbuntu.container.getMappedPort(privatePort),
+                privatePort,
+                "my-jira"
+            )
+            return@use sshUbuntu.toSsh().newConnection().use useSsh@{ ssh ->
+                // when
+                try {
+                    jiraInstallation.install(ssh, server, flow)
+                } catch (e: Exception) {
+                    println("Failed: ${e.message}")
+                }
+                return@useSsh flow.reports.flatMap { it.locate(ssh) }
+            }
+        }
+
+        // then
+        assertThat(remoteReports).contains(
+            "./jpt-vmstat.log",
+            "./jpt-iostat.log"
+        )
+    }
+
     private fun stop(
         started: StartedJira,
         ssh: SshConnection
@@ -88,5 +128,15 @@ class HookedJiraStartIT {
             ssh.download(remote, local)
             return@map local.toFile()
         }
+    }
+}
+
+private class FailingHook : TcpServerHook, InstalledJiraHook {
+    override fun hook(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
+        throw Exception("Failed")
+    }
+
+    override fun hook(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
+        throw Exception("Failed")
     }
 }
