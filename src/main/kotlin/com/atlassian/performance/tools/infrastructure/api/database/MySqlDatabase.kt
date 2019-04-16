@@ -15,7 +15,9 @@ import java.time.Instant
  */
 class MySqlDatabase(
     private val source: DatasetPackage,
-    private val maxConnections: Int
+    private val maxConnections: Int,
+    private val innodb_buffer_pool_size : String?,
+    private val innodb_log_file_size : String?
 ) : Database {
 
     override fun getDbType(): DbType {
@@ -37,7 +39,19 @@ class MySqlDatabase(
         source: DatasetPackage
     ) : this(
         source = source,
-        maxConnections = 151
+        maxConnections = 151,
+        innodb_buffer_pool_size = null,
+        innodb_log_file_size = null
+    )
+
+    constructor(
+        source: DatasetPackage,
+        maxConnections : Int
+    ) : this(
+        source = source,
+        maxConnections = maxConnections,
+        innodb_buffer_pool_size = null,
+        innodb_log_file_size = null
     )
 
     override fun setup(ssh: SshConnection): String {
@@ -45,7 +59,9 @@ class MySqlDatabase(
         image.run(
             ssh = ssh,
             parameters = "-p 3306:3306 -v `realpath $mysqlData`:/var/lib/mysql",
-            arguments = "--skip-grant-tables --max_connections=$maxConnections"
+            arguments = "--skip-grant-tables --max_connections=$maxConnections" +
+                if(innodb_buffer_pool_size != null) " --innodb-buffer-pool-size=${innodb_buffer_pool_size}" else  "" +
+                if(innodb_log_file_size != null) " --innodb-log-file-size=${innodb_log_file_size}" else  ""
         )
         return mysqlData
     }
