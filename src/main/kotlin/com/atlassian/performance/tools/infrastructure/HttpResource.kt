@@ -16,7 +16,7 @@ class HttpResource(
         download(
             ssh,
             destination,
-            Duration.ofMinutes(2)
+            Duration.ofMinutes(3)
         )
     }
 
@@ -25,7 +25,7 @@ class HttpResource(
         destination: String,
         timeout: Duration
     ) {
-        Ubuntu().install(ssh, listOf("lftp"))
+        Ubuntu().install(ssh, listOf("lftp"), Duration.ofMinutes(2))
         ssh.execute(
             """lftp -c 'pget -n 64 -c "$uri" -o $destination'""",
             timeout

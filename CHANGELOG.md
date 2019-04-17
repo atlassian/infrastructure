@@ -28,8 +28,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Increase `AdoptOpenJDK11` download timeout. Fix [JPERF-465]
+- Have more patience for `lftp` installation. Fix [JPERF-460].
 
 [JPERF-465]: https://ecosystem.atlassian.net/browse/JPERF-465
+[JPERF-460]: https://ecosystem.atlassian.net/browse/JPERF-460
 
 ## [4.12.1] - 2019-04-04
 [4.12.1]: https://github.com/atlassian/infrastructure/compare/release-4.12.0...release-4.12.1
