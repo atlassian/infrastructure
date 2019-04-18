@@ -4,15 +4,27 @@ import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
-import org.hamcrest.Matchers.startsWith
-import org.junit.Assert
+import org.assertj.core.api.Assertions
 import java.io.File
 import java.time.Duration
 
 class JstatSupport(
-    private val jdk: VersionedJavaDevelopmentKit,
-    private val expectedJstatHeader: String = "Timestamp         S0     S1     E      O      M     CCS    YGC     YGCT    FGC    FGCT     GCT"
+    private val jdk: VersionedJavaDevelopmentKit
 ) {
+    private val expectedStats: Set<String> = setOf(
+        "Timestamp",
+        "S0",
+        "S1",
+        "E",
+        "O",
+        "M",
+        "CCS",
+        "YGC",
+        "YGCT",
+        "FGC",
+        "FGCT",
+        "GCT"
+    )
     private val jarName = "hello-world-after-1m-wait.jar"
     private val jar = "/com/atlassian/performance/tools/infrastructure/api/jvm/$jarName"
     private val timestampLength = "2018-12-17T14:10:44+00:00 ".length
@@ -36,7 +48,8 @@ class JstatSupport(
                 jstatMonitoring.stop(connection)
                 val jstatLog = connection.execute("cat ${jstatMonitoring.getResultPath()}").output
                 val jstatHeader = jstatLog.substring(timestampLength, jstatLog.indexOf('\n'))
-                Assert.assertThat(jstatHeader, startsWith(this.expectedJstatHeader))
+
+                Assertions.assertThat(jstatHeader).contains(this.expectedStats)
             }
         }
     }
