@@ -39,7 +39,7 @@ class AdoptOpenJDK11 : VersionedJavaDevelopmentKit {
             action = {
                 connection.execute(
                     cmd = "curl -s -L -O -k $jdkUrl",
-                    timeout = Duration.ofSeconds(50)
+                    timeout = Duration.ofMinutes(3)
                 )
             }
         ).retry(
