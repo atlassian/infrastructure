@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.12.1...master
 
+### Fixed
+- Make `Ubuntu` thread safe. Resolves [JPERF-468].
+
+[JPERF-468]: https://ecosystem.atlassian.net/browse/JPERF-468
+
 ## [4.12.1] - 2019-04-19
 [4.12.1]: https://github.com/atlassian/infrastructure/compare/release-4.12.0...release-4.12.1
 
