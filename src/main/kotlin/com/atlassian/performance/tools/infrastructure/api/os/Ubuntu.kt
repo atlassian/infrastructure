@@ -4,10 +4,16 @@ import com.atlassian.performance.tools.infrastructure.Iostat
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import net.jcip.annotations.ThreadSafe
 import org.apache.logging.log4j.Level
 import java.time.Duration
 
+@ThreadSafe
 class Ubuntu {
+
+    private companion object {
+        private val lock = Object()
+    }
 
     fun install(
         ssh: SshConnection,
@@ -35,14 +41,16 @@ class Ubuntu {
         timeout: Duration
     ) {
         val joinedPackages = packages.joinToString(separator = " ")
-        ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
-        ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(1))
-        ssh.execute(
-            cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",
-            timeout = timeout,
-            stdout = Level.TRACE,
-            stderr = Level.TRACE
-        )
+        synchronized(lock) {
+            ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
+            ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(1))
+            ssh.execute(
+                cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",
+                timeout = timeout,
+                stdout = Level.TRACE,
+                stderr = Level.TRACE
+            )
+        }
     }
 
     fun metrics(
