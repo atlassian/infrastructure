@@ -13,6 +13,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
     private val jdkUrl = URI.create("https://download.oracle.com/otn-pub/java/jdk/8u$jdkUpdate-b11/d54c1d3a095b4ff2b6607d096fa80163/$jdkArchive")
     private val jdkBin = "~/jdk1.8.0_$jdkUpdate/jre/bin/"
     private val bin = "~/jdk1.8.0_$jdkUpdate/bin/"
+    private val CHECKSUM_FROM_ORACLE_JDK_TAR_GZ_OUTPUT = "19878902 185540433 jdk-8u131-linux-x64.tar.gz"
     override val jstatMonitoring = Jstat(bin)
 
     @Deprecated(
@@ -25,8 +26,20 @@ class OracleJDK : VersionedJavaDevelopmentKit {
 
     override fun install(connection: SshConnection) {
         download(connection)
-        connection.execute("tar -xzf $jdkArchive")
-        connection.execute("echo '${use()}' >> ~/.bashrc")
+        val execute = connection.execute("cksum jdk-8u131-linux-x64.tar.gz")
+
+        // Checks 3 times if the downloaded archive of JDK has a proper checksum.
+        // This is done in order to prevent failure to execute unzipping a corrupted file.
+        for (attempt in 0..2) {
+            if (execute.output.trim() == CHECKSUM_FROM_ORACLE_JDK_TAR_GZ_OUTPUT) {
+                connection.execute("tar -xzf $jdkArchive")
+                connection.execute("echo '${use()}' >> ~/.bashrc")
+                break
+            } else {
+                connection.execute("rm -rf jdk-8u131-linux-x64.tar.gz")
+                download(connection)
+            }
+        }
     }
 
     override fun use(): String = "export PATH=$jdkBin:$bin:${'$'}PATH"
@@ -51,3 +64,4 @@ class OracleJDK : VersionedJavaDevelopmentKit {
         }
     }
 }
+
