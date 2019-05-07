@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.12.2...master
 
+### Fixed
+- Parallelize Ubuntu installs across SSH connections. Fix [JPERF-478].
+
+[JPERF-478]: https://ecosystem.atlassian.net/browse/JPERF-478
+
 ## [4.12.2] - 2019-04-23
 [4.12.2]: https://github.com/atlassian/infrastructure/compare/release-4.12.1...release-4.12.2
 
