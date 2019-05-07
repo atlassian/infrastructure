@@ -2,6 +2,8 @@ package com.atlassian.performance.tools.infrastructure.api.os
 
 import com.atlassian.performance.tools.ssh.api.DetachedProcess
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import com.atlassian.performance.tools.ssh.api.SshHost
+import com.atlassian.performance.tools.ssh.api.auth.PasswordAuthentication
 import org.apache.logging.log4j.Level
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
@@ -13,6 +15,7 @@ import java.time.Instant
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 import java.util.function.Supplier
 
 class UbuntuTest {
@@ -21,9 +24,16 @@ class UbuntuTest {
     fun shouldBeParallelOnDifferentSshConnections() {
         val executor = Executors.newCachedThreadPool()
         val concurrency = 4
+        val hostsSoFar = AtomicInteger(0)
 
         val singleInstall = Supplier {
-            TimingSshConnection().use { ssh ->
+            val host = SshHost(
+                ipAddress = "127.0.0." + hostsSoFar.incrementAndGet(),
+                userName = "u",
+                authentication = PasswordAuthentication("p"),
+                port = 1
+            )
+            TimingSshConnection(host).use { ssh ->
                 Ubuntu().install(ssh, listOf("whatever"))
                 ssh.timeInteraction()
             }
@@ -40,7 +50,9 @@ class UbuntuTest {
             .isEqualTo(expectedOverlaps)
     }
 
-    private class TimingSshConnection : SshConnection {
+    private class TimingSshConnection(
+        private val sshHost: SshHost
+    ) : SshConnection {
         private var firstRequest: Instant? = null
         private var lastResponse: Instant? = null
 
@@ -71,6 +83,8 @@ class UbuntuTest {
         ): SshConnection.SshResult {
             return execute(cmd, timeout, stdout, stderr)
         }
+
+        override fun getHost(): SshHost = sshHost
 
         override fun close() {
         }
