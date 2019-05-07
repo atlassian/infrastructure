@@ -56,6 +56,7 @@ dependencies {
     testCompile("org.assertj:assertj-core:3.11.1")
     testCompile("com.atlassian.performance.tools:ssh-ubuntu:0.1.0")
     testCompile("org.rnorth.duct-tape:duct-tape:1.0.7")
+    testCompile("org.threeten:threeten-extra:1.5.0")
 }
 
 fun webdriver(): List<String> = listOf(
@@ -69,6 +70,12 @@ fun log4j(
     vararg modules: String
 ): List<String> = modules.map { module ->
     "org.apache.logging.log4j:log4j-$module:2.10.0"
+}
+
+tasks.compileTestKotlin {
+    kotlinOptions {
+        this.freeCompilerArgs += "-Xjvm-default=enable"
+    }
 }
 
 tasks.getByName("test", Test::class).apply {
