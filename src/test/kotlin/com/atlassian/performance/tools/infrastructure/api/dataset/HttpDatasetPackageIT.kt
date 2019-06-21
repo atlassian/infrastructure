@@ -1,11 +1,15 @@
 package com.atlassian.performance.tools.infrastructure.api.dataset
 
 import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.net.URI
 import java.time.Duration
+import java.util.*
+import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 
 class HttpDatasetPackageIT {
 
@@ -17,11 +21,43 @@ class HttpDatasetPackageIT {
         )
 
         val unpackedPath = SshUbuntuContainer().start().use { sshUbuntu ->
-            return@use sshUbuntu.toSsh().newConnection().use { connection ->
-                return@use dataset.download(connection)
+            val ssh = sshUbuntu.toSsh()
+            return@use RandomFilesGenerator(ssh).start().use {
+                ssh.newConnection().use { connection ->
+                    dataset.download(connection)
+                }
             }
         }
 
         Assertions.assertThat(unpackedPath).isEqualTo("database")
+    }
+
+    private class RandomFilesGenerator(private val ssh: Ssh) {
+        fun start(): AutoCloseable {
+            val generator = object : AutoCloseable {
+                private val executor = Executors.newSingleThreadExecutor()
+                private val createNewFiles = AtomicBoolean(true)
+
+                fun start() {
+                    executor.execute {
+                        while (createNewFiles.get()) {
+                            ssh.newConnection().use {
+                                it.safeExecute(
+                                    cmd = "touch ${UUID.randomUUID()}"
+                                )
+                            }
+                            Thread.sleep(20)
+                        }
+                    }
+                }
+
+                override fun close() {
+                    createNewFiles.set(false)
+                    executor.shutdown()
+                }
+            }
+            generator.start()
+            return generator
+        }
     }
 }
