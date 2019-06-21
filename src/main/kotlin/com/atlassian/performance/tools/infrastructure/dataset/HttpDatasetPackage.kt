@@ -16,6 +16,9 @@ internal class HttpDatasetPackage(
     private val uri: URI,
     private val timeout: Duration
 ) : DatasetPackage {
+    private companion object {
+        private val FILE_SEPARATOR = '/'
+    }
 
     override fun download(
         ssh: SshConnection
@@ -39,23 +42,18 @@ internal class HttpDatasetPackage(
     }
 
     private fun unzip(ssh: SshConnection, resourceName: String, timeForUnzipping: Duration): String {
-        val filesBefore = ls(ssh)
-        FileArchiver().unzip(ssh, resourceName, timeForUnzipping)
-        val filesAfter = ls(ssh)
-        val newFiles = filesAfter - filesBefore
-        return newFiles.singleOrNull()
-            ?: throw Exception("Expected one new folder. Found $newFiles.")
+        return FileArchiver()
+            .verboseUnzip(ssh, resourceName, timeForUnzipping)
+            .asSequence()
+            .single { isInTopDirectory(it) }
+            .removeSuffix(FILE_SEPARATOR.toString())
     }
 
-    private fun ls(
-        ssh: SshConnection
-    ): Set<String> {
-        return ssh
-            .execute("ls")
-            .output
-            .split("\\s".toRegex())
-            .filter { it.isNotBlank() }
-            .toSet()
+    private fun isInTopDirectory(path: String): Boolean {
+        val separators = path.count { character -> character == FILE_SEPARATOR }
+        val isFile = separators == 0
+        val isDirectory = separators == 1 && path.endsWith(FILE_SEPARATOR)
+        return path.isNotBlank() && (isDirectory || isFile)
     }
 
     override fun toString(): String {
