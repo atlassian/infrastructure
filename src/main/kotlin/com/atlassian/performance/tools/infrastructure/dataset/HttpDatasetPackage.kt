@@ -7,6 +7,7 @@ import com.atlassian.performance.tools.jvmtasks.api.TaskTimer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.commons.io.FilenameUtils
 import java.net.URI
+import java.nio.file.Paths
 import java.time.Duration
 import java.time.Instant
 
@@ -16,9 +17,6 @@ internal class HttpDatasetPackage(
     private val uri: URI,
     private val timeout: Duration
 ) : DatasetPackage {
-    private companion object {
-        private val FILE_SEPARATOR = '/'
-    }
 
     override fun download(
         ssh: SshConnection
@@ -42,18 +40,17 @@ internal class HttpDatasetPackage(
     }
 
     private fun unzip(ssh: SshConnection, resourceName: String, timeForUnzipping: Duration): String {
-        return FileArchiver()
+        val topPaths = FileArchiver()
             .verboseUnzip(ssh, resourceName, timeForUnzipping)
             .asSequence()
-            .single { isInTopDirectory(it) }
-            .removeSuffix(FILE_SEPARATOR.toString())
-    }
-
-    private fun isInTopDirectory(path: String): Boolean {
-        val separators = path.count { character -> character == FILE_SEPARATOR }
-        val isFile = separators == 0
-        val isDirectory = separators == 1 && path.endsWith(FILE_SEPARATOR)
-        return path.isNotBlank() && (isDirectory || isFile)
+            .map { Paths.get(it) }
+            .map { it.first() }
+            .filter { it.toString().isNotBlank() }
+            .toSet()
+        val theOnlyTopPath = topPaths
+            .singleOrNull()
+            ?: throw Exception("Expected a single path, but got: $topPaths")
+        return theOnlyTopPath.toString()
     }
 
     override fun toString(): String {
