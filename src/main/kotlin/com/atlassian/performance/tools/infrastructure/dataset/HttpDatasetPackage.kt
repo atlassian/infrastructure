@@ -7,9 +7,9 @@ import com.atlassian.performance.tools.jvmtasks.api.TaskTimer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.commons.io.FilenameUtils
 import java.net.URI
-import java.nio.file.Paths
 import java.time.Duration
 import java.time.Instant
+import java.util.*
 
 @Deprecated("Can be inlined into `com.atlassian.performance.tools.infrastructure.api.dataset.HttpDatasetPackage` " +
     "after `ObsoleteHttpDatasetPackage` removed.")
@@ -40,17 +40,32 @@ internal class HttpDatasetPackage(
     }
 
     private fun unzip(ssh: SshConnection, resourceName: String, timeForUnzipping: Duration): String {
-        val topPaths = FileArchiver()
-            .verboseUnzip(ssh, resourceName, timeForUnzipping)
-            .asSequence()
-            .map { Paths.get(it) }
-            .map { it.first() }
-            .filter { it.toString().isNotBlank() }
+        val destination = UUID.randomUUID().toString()
+        ssh.execute("mkdir $destination")
+        FileArchiver().unzip(
+            connection = ssh,
+            archive = resourceName,
+            destination = destination,
+            timeout = timeForUnzipping
+        )
+        val newFiles = ls(ssh, destination)
+        val dataset = (newFiles.singleOrNull()
+            ?: throw Exception("Expected one new folder. Found $newFiles."))
+
+        ssh.execute("mv $destination/$dataset ..")
+        return dataset
+    }
+
+    private fun ls(
+        ssh: SshConnection,
+        destination: String
+    ): Set<String> {
+        return ssh
+            .execute("ls $destination")
+            .output
+            .split("\\s".toRegex())
+            .filter { it.isNotBlank() }
             .toSet()
-        val theOnlyTopPath = topPaths
-            .singleOrNull()
-            ?: throw Exception("Expected a single path, but got: $topPaths")
-        return theOnlyTopPath.toString()
     }
 
     override fun toString(): String {
