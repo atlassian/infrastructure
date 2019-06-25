@@ -1,6 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.dataset
 
 import com.atlassian.performance.tools.infrastructure.HttpResource
+import com.atlassian.performance.tools.infrastructure.Ls
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.dataset.FileArchiver
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer
@@ -48,24 +49,11 @@ internal class HttpDatasetPackage(
             destination = destination,
             timeout = timeForUnzipping
         )
-        val newFiles = ls(ssh, destination)
+        val newFiles = Ls().execute(ssh, destination)
         val dataset = (newFiles.singleOrNull()
             ?: throw Exception("Expected one new folder. Found $newFiles."))
 
-        ssh.execute("mv $destination/$dataset ..")
-        return dataset
-    }
-
-    private fun ls(
-        ssh: SshConnection,
-        destination: String
-    ): Set<String> {
-        return ssh
-            .execute("ls $destination")
-            .output
-            .split("\\s".toRegex())
-            .filter { it.isNotBlank() }
-            .toSet()
+        return "$destination/$dataset"
     }
 
     override fun toString(): String {

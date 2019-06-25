@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.12.5...master
 
+### Fixed
+- Fix dataset unzipping permissions problem. Fix [JPERF-504].
+
 ## [4.12.5] - 2019-06-25
 [4.12.5]: https://github.com/atlassian/infrastructure/compare/release-4.12.4...release-4.12.5
 
