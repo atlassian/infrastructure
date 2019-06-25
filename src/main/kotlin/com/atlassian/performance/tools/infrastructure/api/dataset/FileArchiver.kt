@@ -23,18 +23,19 @@ class FileArchiver {
     }
 
     /**
-     *  Decompress `tar.bz2` archives to the current directory.
+     *  Decompress `tar.bz2` archives to [destination] directory.
      *
-     *  @return files processed
+     *  @param destination
      */
-    internal fun verboseUnzip(
+    internal fun unzip(
         connection: SshConnection,
         archive: String,
+        destination : String,
         timeout: Duration
-    ): Iterable<String> {
+    ) {
         ubuntu.install(connection, listOf("lbzip2"))
-        return time("unzip") {
-            connection.execute("tar -I lbzip2 -xvf $archive", timeout).output.splitToSequence("\n").asIterable()
+        time("unzip") {
+            connection.execute("tar -I lbzip2 -xvf $archive -C $destination", timeout).output.splitToSequence("\n").asIterable()
         }
     }
 
