@@ -35,7 +35,7 @@ class FileArchiver {
     ) {
         ubuntu.install(connection, listOf("lbzip2"))
         time("unzip") {
-            connection.execute("tar -I lbzip2 -xvf $archive -C $destination", timeout).output.splitToSequence("\n").asIterable()
+            connection.execute("tar -I lbzip2 -xf $archive -C $destination", timeout).output.splitToSequence("\n").asIterable()
         }
     }
 

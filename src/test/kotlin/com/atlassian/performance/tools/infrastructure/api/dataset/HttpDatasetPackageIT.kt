@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.dataset
 
+import com.atlassian.performance.tools.infrastructure.Ls
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
@@ -20,16 +21,27 @@ class HttpDatasetPackageIT {
             downloadTimeout = Duration.ofMinutes(1)
         )
 
-        val unpackedPath = SshUbuntuContainer().start().use { sshUbuntu ->
+        val filesInDataset = SshUbuntuContainer().start().use { sshUbuntu ->
             val ssh = sshUbuntu.toSsh()
             return@use RandomFilesGenerator(ssh).start().use {
                 ssh.newConnection().use { connection ->
-                    dataset.download(connection)
+                    val unpackedPath = dataset.download(connection)
+                    Ls().execute(connection, unpackedPath)
                 }
             }
         }
 
-        Assertions.assertThat(unpackedPath).isEqualTo("database")
+        Assertions
+            .assertThat(filesInDataset)
+            .containsExactlyInAnyOrder(
+                "auto.cnf",
+                "ib_logfile0",
+                "ib_logfile1",
+                "ibdata1",
+                "jiradb",
+                "mysql",
+                "performance_schema"
+            )
     }
 
     private class RandomFilesGenerator(private val ssh: Ssh) {
