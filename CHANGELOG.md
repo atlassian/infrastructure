@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.12.5...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.12.6...master
+
+## [4.12.6] - 2019-06-26
+[4.12.6]: https://github.com/atlassian/infrastructure/compare/release-4.12.5...release-4.12.6
 
 ### Fixed
 - Fix dataset unzipping permissions problem. Fix [JPERF-504].
