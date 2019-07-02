@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
+import com.atlassian.performance.tools.infrastructure.api.jira.JiraLaunchTimeouts
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.JiraLogs
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
@@ -14,8 +15,12 @@ class DefaultStartedJiraHook : StartedJiraHook {
     ) {
         listOf(
             JiraLogs(),
-            JstatHook()
-            //,RestUpgrade(config.launchTimeouts, "admin", "admin") TODO requires database to work
+            JstatHook(),
+            RestUpgrade(
+                JiraLaunchTimeouts.Builder().build(),
+                "admin",
+                "admin"
+            )
         ).forEach { it.hook(ssh, jira, flow) }
     }
 }
