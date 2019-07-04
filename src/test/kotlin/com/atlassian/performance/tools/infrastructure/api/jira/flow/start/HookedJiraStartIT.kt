@@ -28,7 +28,7 @@ class HookedJiraStartIT {
         val flow = JiraNodeFlow()
         flow.hookPostStart(DefaultStartedJiraHook())
         flow.hookPostInstall(DefaultPostInstallHook(config))
-        val jiraInstallation = HookedJiraInstallation(DefaultJiraInstallation(
+        val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
             jdk = OracleJDK()
@@ -76,7 +76,7 @@ class HookedJiraStartIT {
         val sysstat = UbuntuSysstat()
         flow.hookPreInstall(sysstat)
         flow.hookPreInstall(FailingHook())
-        val jiraInstallation = HookedJiraInstallation(DefaultJiraInstallation(
+        val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
             jdk = OracleJDK()
