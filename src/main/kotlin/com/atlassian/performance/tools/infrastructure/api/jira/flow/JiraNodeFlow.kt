@@ -22,7 +22,7 @@ class JiraNodeFlow {
         tcpServerHooks.add(hook)
     }
 
-    fun listPreInstallHooks(): Iterable<TcpServerHook> = tcpServerHooks
+    internal fun listPreInstallHooks(): Iterable<TcpServerHook> = tcpServerHooks
 
     fun hookPostInstall(
         hook: InstalledJiraHook
@@ -30,7 +30,7 @@ class JiraNodeFlow {
         installedJiraHooks.add(hook)
     }
 
-    fun listPostInstallHooks(): Iterable<InstalledJiraHook> = installedJiraHooks
+    internal fun listPostInstallHooks(): Iterable<InstalledJiraHook> = installedJiraHooks
 
     fun hookPreStart(
         hook: InstalledJiraHook
@@ -38,7 +38,7 @@ class JiraNodeFlow {
         preStartHooks.add(hook)
     }
 
-    fun listPreStartHooks(): Iterable<InstalledJiraHook> = preStartHooks
+    internal fun listPreStartHooks(): Iterable<InstalledJiraHook> = preStartHooks
 
     fun hookPostStart(
         hook: StartedJiraHook
@@ -46,5 +46,5 @@ class JiraNodeFlow {
         postStartHooks.add(hook)
     }
 
-    fun listPostStartHooks(): Iterable<StartedJiraHook> = postStartHooks
+    internal fun listPostStartHooks(): Iterable<StartedJiraHook> = postStartHooks
 }

@@ -1,6 +1,5 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
-import com.atlassian.performance.tools.infrastructure.api.jira.JiraLaunchTimeouts
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.JiraLogs
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
@@ -15,12 +14,7 @@ class DefaultStartedJiraHook : StartedJiraHook {
     ) {
         listOf(
             JiraLogs(),
-            JstatHook(),
-            RestUpgrade(
-                JiraLaunchTimeouts.Builder().build(),
-                "admin",
-                "admin"
-            )
+            JstatHook()
         ).forEach { it.hook(ssh, jira, flow) }
     }
 }
