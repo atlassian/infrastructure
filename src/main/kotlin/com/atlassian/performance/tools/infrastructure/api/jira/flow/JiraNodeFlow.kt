@@ -5,32 +5,33 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Repor
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
 import net.jcip.annotations.ThreadSafe
-import java.util.concurrent.CopyOnWriteArrayList
+import java.util.*
+import java.util.concurrent.ConcurrentLinkedQueue
 
 @ThreadSafe
 class JiraNodeFlow {
 
-    private val tcpServerHooks: MutableList<TcpServerHook> = CopyOnWriteArrayList()
-    private val installedJiraHooks: MutableList<InstalledJiraHook> = CopyOnWriteArrayList()
-    private val preStartHooks: MutableList<InstalledJiraHook> = CopyOnWriteArrayList()
-    private val postStartHooks: MutableList<StartedJiraHook> = CopyOnWriteArrayList()
-    val reports: MutableList<Report> = CopyOnWriteArrayList()
+    private val preInstallHooks: Queue<TcpServerHook> = ConcurrentLinkedQueue()
+    private val postInstallHooks: Queue<InstalledJiraHook> = ConcurrentLinkedQueue()
+    private val preStartHooks: Queue<InstalledJiraHook> = ConcurrentLinkedQueue()
+    private val postStartHooks: Queue<StartedJiraHook> = ConcurrentLinkedQueue()
+    val reports: Queue<Report> = ConcurrentLinkedQueue()
 
     fun hookPreInstall(
         hook: TcpServerHook
     ) {
-        tcpServerHooks.add(hook)
+        preInstallHooks.add(hook)
     }
 
-    internal fun listPreInstallHooks(): Iterable<TcpServerHook> = tcpServerHooks
+    internal fun listPreInstallHooks(): Iterable<TcpServerHook> = preInstallHooks
 
     fun hookPostInstall(
         hook: InstalledJiraHook
     ) {
-        installedJiraHooks.add(hook)
+        postInstallHooks.add(hook)
     }
 
-    internal fun listPostInstallHooks(): Iterable<InstalledJiraHook> = installedJiraHooks
+    internal fun listPostInstallHooks(): Iterable<InstalledJiraHook> = postInstallHooks
 
     fun hookPreStart(
         hook: InstalledJiraHook
