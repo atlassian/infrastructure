@@ -7,7 +7,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DefaultStartedJiraHook : StartedJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: StartedJira,
         flow: JiraNodeFlow
@@ -15,6 +15,6 @@ class DefaultStartedJiraHook : StartedJiraHook {
         listOf(
             JiraLogs(),
             JstatHook()
-        ).forEach { it.hook(ssh, jira, flow) }
+        ).forEach { it.run(ssh, jira, flow) }
     }
 }

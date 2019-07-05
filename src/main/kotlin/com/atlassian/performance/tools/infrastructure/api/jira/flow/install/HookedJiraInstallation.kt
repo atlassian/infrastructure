@@ -13,9 +13,9 @@ class HookedJiraInstallation(
         server: TcpServer,
         flow: JiraNodeFlow
     ): InstalledJira {
-        flow.listPreInstallHooks().forEach { it.hook(ssh, server, flow) }
+        flow.listPreInstallHooks().forEach { it.run(ssh, server, flow) }
         val installed = installation.install(ssh, server, flow)
-        flow.listPostInstallHooks().forEach { it.hook(ssh, installed, flow) }
+        flow.listPostInstallHooks().forEach { it.run(ssh, installed, flow) }
         return installed
     }
 }

@@ -11,7 +11,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class UbuntuSysstat : TcpServerHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         server: TcpServer,
         flow: JiraNodeFlow
@@ -28,7 +28,7 @@ private class InstalledOsMetric(
     private val metric: OsMetric
 ) : TcpServerHook {
 
-    override fun hook(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
         val process = metric.start(ssh)
         flow.reports.add(RemoteMonitoringProcessReport(process))
     }

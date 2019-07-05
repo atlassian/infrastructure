@@ -11,7 +11,7 @@ class JvmConfig(
     private val config: JiraNodeConfig
 ) : InstalledJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow

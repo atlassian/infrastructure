@@ -9,7 +9,7 @@ import java.net.URI
 
 class AsyncProfilerHook : TcpServerHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         server: TcpServer,
         flow: JiraNodeFlow
@@ -32,7 +32,7 @@ private class InstalledAsyncProfiler(
     private val profilerPath: String
 ) : StartedJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: StartedJira,
         flow: JiraNodeFlow

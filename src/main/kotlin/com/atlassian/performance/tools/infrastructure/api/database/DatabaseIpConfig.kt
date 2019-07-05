@@ -10,7 +10,7 @@ class DatabaseIpConfig(
     private val databaseIp: String
 ) : InstalledJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow

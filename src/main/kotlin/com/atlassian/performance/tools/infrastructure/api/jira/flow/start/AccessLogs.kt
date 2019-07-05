@@ -7,7 +7,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class AccessLogs : StartedJiraHook {
 
-    override fun hook(ssh: SshConnection, jira: StartedJira, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, jira: StartedJira, flow: JiraNodeFlow) {
         flow.reports.add(FileListing("${jira.installed.installation}/logs/*access*"))
     }
 }

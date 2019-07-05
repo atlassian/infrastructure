@@ -6,7 +6,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class JiraLogs : InstalledJiraHook {
 
-    override fun hook(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
         listOf(
             StaticReport("${jira.home}/log/atlassian-jira.log"),
             StaticReport("${jira.installation}/logs/catalina.out")

@@ -10,7 +10,7 @@ import java.time.Duration
 
 class MysqlConnector : InstalledJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow
