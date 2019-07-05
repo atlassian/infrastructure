@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.12.6...master
 
+### Added
+- Facilitate Jira license overrides via `LicenseOverridingMysql` and `Dataset.Builder`. Unblock [JPERF-519].
+
+[JPERF-519]: https://ecosystem.atlassian.net/browse/JPERF-519
+
 ## [4.12.6] - 2019-06-26
 [4.12.6]: https://github.com/atlassian/infrastructure/compare/release-4.12.5...release-4.12.6
 
