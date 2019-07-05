@@ -10,7 +10,7 @@ internal class SplunkForwarderHook(
     private val splunk: SplunkForwarder
 ) : InstalledJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow

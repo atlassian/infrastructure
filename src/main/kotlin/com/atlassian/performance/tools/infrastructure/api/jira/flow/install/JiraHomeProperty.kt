@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class JiraHomeProperty : InstalledJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow

@@ -7,17 +7,18 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.Inst
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 interface TcpServerHook : InstalledJiraHook {
-    fun hook(
+
+    fun run(
         ssh: SshConnection,
         server: TcpServer,
         flow: JiraNodeFlow
     )
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow
     ) {
-        hook(ssh, jira.server, flow)
+        run(ssh, jira.server, flow)
     }
 }

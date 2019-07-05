@@ -23,7 +23,7 @@ class JiraNodeFlowTest {
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
         flow.listPreInstallHooks().forEach {
-            it.hook(FailingSshConnection(), server, flow)
+            it.run(FailingSshConnection(), server, flow)
         }
 
         assertThat(counter.count).isEqualTo(3)
@@ -34,7 +34,7 @@ private class CountingHook : TcpServerHook {
 
     var count = 0
 
-    override fun hook(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
         count++
     }
 }
@@ -42,7 +42,7 @@ private class CountingHook : TcpServerHook {
 private class HookingHook(
     private val hook: TcpServerHook
 ) : TcpServerHook {
-    override fun hook(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
         flow.hookPreInstall(hook)
     }
 }

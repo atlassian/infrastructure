@@ -5,7 +5,8 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.Start
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 interface StartedJiraHook {
-    fun hook(
+
+    fun run(
         ssh: SshConnection,
         jira: StartedJira,
         flow: JiraNodeFlow

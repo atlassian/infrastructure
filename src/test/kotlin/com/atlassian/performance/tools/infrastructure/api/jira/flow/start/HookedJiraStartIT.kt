@@ -132,11 +132,11 @@ class HookedJiraStartIT {
 }
 
 private class FailingHook : TcpServerHook, InstalledJiraHook {
-    override fun hook(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
         throw Exception("Failed")
     }
 
-    override fun hook(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
         throw Exception("Failed")
     }
 }

@@ -16,7 +16,7 @@ class RestUpgrade(
     private val adminPassword: String
 ) : StartedJiraHook {
 
-    override fun hook(ssh: SshConnection, jira: StartedJira, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, jira: StartedJira, flow: JiraNodeFlow) {
         val threadDump = ThreadDump(jira.pid, jira.installed.jdk)
         val privatePort = jira.installed.server.privatePort
         val upgradesEndpoint = URI("http://$adminUsername:$adminPassword@localhost:$privatePort/rest/api/2/upgrade")

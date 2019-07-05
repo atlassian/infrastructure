@@ -6,17 +6,18 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.Starte
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 interface InstalledJiraHook : StartedJiraHook {
-    fun hook(
+
+    fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow
     )
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: StartedJira,
         flow: JiraNodeFlow
     ) {
-        hook(ssh, jira.installed, flow)
+        run(ssh, jira.installed, flow)
     }
 }

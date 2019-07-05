@@ -11,7 +11,7 @@ class DefaultPostInstallHook(
     private val config: JiraNodeConfig
 ) : InstalledJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
         flow: JiraNodeFlow
@@ -23,6 +23,6 @@ class DefaultPostInstallHook(
             ProfilerHook(config.profiler),
             SplunkForwarderHook(config.splunkForwarder),
             UbuntuSysstat()
-        ).forEach { it.hook(ssh, jira, flow) }
+        ).forEach { it.run(ssh, jira, flow) }
     }
 }

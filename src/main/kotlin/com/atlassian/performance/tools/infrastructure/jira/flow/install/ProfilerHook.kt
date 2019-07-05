@@ -16,7 +16,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 class ProfilerHook(
     private val profiler: Profiler
 ) : InstalledJiraHook {
-    override fun hook(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) {
         profiler.install(ssh)
         flow.hookPostStart(InstalledProfiler(profiler))
     }
@@ -26,7 +26,7 @@ private class InstalledProfiler(
     private val profiler: Profiler
 ) : StartedJiraHook {
 
-    override fun hook(
+    override fun run(
         ssh: SshConnection,
         jira: StartedJira,
         flow: JiraNodeFlow
