@@ -1,13 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.mock.UnimplementedSshConnection
+import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import com.atlassian.performance.tools.ssh.api.SshConnection.SshResult
-import org.apache.logging.log4j.Level
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
+import java.io.File
 import java.net.URI
-import java.time.Duration
 
 class LicenseOverridingMysqlTest {
 
@@ -15,73 +13,153 @@ class LicenseOverridingMysqlTest {
 
     @Test
     fun shouldOverrideOneLicense() {
-        val (testedDatabase, underlyingDatabase, ssh) = setUp(listOf("the only license"))
+        val licenseStrings = listOf("the only license")
+        val (testedDatabase, underlyingDatabase, ssh) = setUp(licenseStrings)
 
         testedDatabase.start(jira, ssh)
 
         assertThat(underlyingDatabase.started)
             .`as`("underlying database started")
             .isTrue()
-        assertSshCommands(
-            ssh,
-            """mysql -h 127.0.0.1 -u root -e "DELETE FROM jiradb.productlicense; REPLACE INTO jiradb.productlicense (LICENSE) VALUES (\"the only license\");""""
-        )
+        assertSshCommands(ssh)
+        assertSshUploads(ssh, licenseStrings)
     }
 
     @Test
     fun shouldOverrideTwoLicenses() {
-        val (testedDatabase, _, ssh) = setUp(listOf("the first license", "the second license"))
+        val licenseStrings = listOf("the first license", "the second license")
+        val (testedDatabase, _, ssh) = setUp(licenseStrings)
 
         testedDatabase.start(jira, ssh)
 
-        assertSshCommands(
-            ssh,
-            """mysql -h 127.0.0.1 -u root -e "DELETE FROM jiradb.productlicense; REPLACE INTO jiradb.productlicense (LICENSE) VALUES (\"the first license\");"""",
-            """mysql -h 127.0.0.1 -u root -e "INSERT INTO jiradb.productlicense SELECT MAX(id)+1, \"the second license\" FROM jiradb.productlicense;""""
-        )
+        assertSshCommands(ssh)
+        assertSshUploads(ssh, licenseStrings)
     }
 
     @Test
     fun shouldOverrideThreeLicenses() {
-        val (testedDatabase, _, ssh) = setUp(listOf("the first license", "the second license", "the third license"))
+        val licenseStrings = listOf("the first license", "the second license", "the third license")
+        val (testedDatabase, _, ssh) = setUp(licenseStrings)
 
         testedDatabase.start(jira, ssh)
 
-        assertSshCommands(
-            ssh,
-            """mysql -h 127.0.0.1 -u root -e "DELETE FROM jiradb.productlicense; REPLACE INTO jiradb.productlicense (LICENSE) VALUES (\"the first license\");"""",
-            """mysql -h 127.0.0.1 -u root -e "INSERT INTO jiradb.productlicense SELECT MAX(id)+1, \"the second license\" FROM jiradb.productlicense;"""",
-            """mysql -h 127.0.0.1 -u root -e "INSERT INTO jiradb.productlicense SELECT MAX(id)+1, \"the third license\" FROM jiradb.productlicense;""""
-        )
+        assertSshCommands(ssh)
+        assertSshUploads(ssh, licenseStrings)
+    }
+
+    @Test
+    fun shouldOverrideThreeLicensesFromFilesUsingBuilder() {
+        val licenseStrings = listOf("the first license", "the second license", "the third license")
+        val licenseFiles = licenseStrings.map { createTempLicenseFile(it) }
+        val (testedDatabase, _, ssh) = setUpWithLicenseFiles(licenseFiles)
+
+        testedDatabase.start(jira, ssh)
+
+        assertSshCommands(ssh)
+        assertSshUploads(ssh, licenseStrings)
+    }
+
+    @Test
+    fun shouldOverrideThreeLicensesFromStringUsingBuilder() {
+        val licenseStrings = listOf("the first license", "the second license", "the third license")
+        val (testedDatabase, _, ssh) = setUpWithLicenseStrings(licenseStrings)
+
+        testedDatabase.start(jira, ssh)
+
+        assertSshCommands(ssh)
+        assertSshUploads(ssh, licenseStrings)
     }
 
     private fun setUp(
         licenses: List<String>
     ): DatabaseStartTest {
         val underlyingDatabase = RememberingDatabase()
+        @Suppress("DEPRECATION")
         return DatabaseStartTest(
             testedDatabase = LicenseOverridingMysql(
                 database = underlyingDatabase,
                 licenses = licenses
             ),
             underlyingDatabase = underlyingDatabase,
-            ssh = ExecutionRememberingSshConnection()
+            ssh = RememberingSshConnection()
+        )
+    }
+
+    private fun setUpWithLicenseFiles(
+        licenses: List<File>
+    ): DatabaseStartTest {
+        val underlyingDatabase = RememberingDatabase()
+        return DatabaseStartTest(
+            testedDatabase = LicenseOverridingMysql
+                .Builder(underlyingDatabase)
+                .licenseFiles(licenses)
+                .build(),
+            underlyingDatabase = underlyingDatabase,
+            ssh = RememberingSshConnection()
+        )
+    }
+
+    private fun setUpWithLicenseStrings(
+        licenses: List<String>
+    ): DatabaseStartTest {
+        val underlyingDatabase = RememberingDatabase()
+        @Suppress("DEPRECATION")
+        return DatabaseStartTest(
+            testedDatabase = LicenseOverridingMysql
+                .Builder(underlyingDatabase)
+                .licenseStrings(licenses)
+                .build(),
+            underlyingDatabase = underlyingDatabase,
+            ssh = RememberingSshConnection()
+        )
+    }
+
+    private fun generateExpectedCommands(ssh: RememberingSshConnection): List<String> {
+        return listOf(
+            // essentially, delete all existing licences
+            """mysql -h 127.0.0.1 -u root -e "DELETE FROM jiradb.productlicense;"""",
+
+            // then import the new ones
+            *ssh.uploads
+                .map {
+                    listOf(
+                        """mysql -h 127.0.0.1 -u root < ${it.remoteDestination}""",
+                        """rm ${it.remoteDestination}"""
+                    )
+                }
+                .flatten()
+                .toTypedArray()
         )
     }
 
     private fun assertSshCommands(
-        ssh: ExecutionRememberingSshConnection,
-        vararg expectedSshCommands: String
+        ssh: RememberingSshConnection
     ) {
         assertThat(ssh.commands)
             .`as`("SSH commands")
-            .containsExactly(*expectedSshCommands)
+            .containsExactly(*generateExpectedCommands(ssh).toTypedArray())
+    }
+
+    private fun assertSshUploads(ssh: RememberingSshConnection, licenseStrings: List<String>) {
+
+        assertThat(ssh.uploads.map { it.content })
+            .`as`("SSH upload content")
+            .containsExactly(*licenseStrings
+                .mapIndexed { i, c ->
+                    """INSERT INTO jiradb.productlicense VALUES ($i, "$c");""" }
+                .toTypedArray())
+
+        ssh.uploads.forEach {
+            assertThat(it.remoteDestination)
+                .`as`("SSH upload files")
+                .isEqualTo(it.localSource.name)
+        }
     }
 
     private data class DatabaseStartTest(
         val testedDatabase: LicenseOverridingMysql,
         val underlyingDatabase: RememberingDatabase,
-        val ssh: ExecutionRememberingSshConnection
+        val ssh: RememberingSshConnection
     )
 
     private class RememberingDatabase : Database {
@@ -96,25 +174,6 @@ class LicenseOverridingMysqlTest {
 
         override fun start(jira: URI, ssh: SshConnection) {
             started = true
-        }
-    }
-
-    private class ExecutionRememberingSshConnection : SshConnection by UnimplementedSshConnection() {
-
-        val commands = mutableListOf<String>()
-
-        override fun execute(
-            cmd: String,
-            timeout: Duration,
-            stdout: Level,
-            stderr: Level
-        ): SshResult {
-            commands.add(cmd)
-            return SshResult(
-                exitStatus = 0,
-                output = "",
-                errorOutput = ""
-            )
         }
     }
 }
