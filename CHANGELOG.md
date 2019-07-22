@@ -29,6 +29,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Fixed
 - Increase timeout of apt-get. Fix [JPERF-552]
 
+### Added
+- Add support for wall-clock profiler. Resolves [JPERF-531].
+
+[JPERF-531]: https://ecosystem.atlassian.net/browse/JPERF-531
 [JPERF-552]: https://ecosystem.atlassian.net/browse/JPERF-552
 
 ## [4.14.1] - 2019-07-24
