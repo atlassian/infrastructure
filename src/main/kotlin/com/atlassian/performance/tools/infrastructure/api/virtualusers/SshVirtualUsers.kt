@@ -43,7 +43,7 @@ class SshVirtualUsers(
             )
             it.execute(
                 testingCommand,
-                options.behavior.load.total + Duration.ofMinutes(5)
+                options.behavior.load.total + options.behavior.maxOverhead
             )
         }
         logger.info("$name finished applying load")

@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.0...master
 
+### Fixed
+- Respect the overhead declared by virtual users. Fix [JPERF-530].
+
+[JPERF-530]: https://ecosystem.atlassian.net/browse/JPERF-530
+
 ## [4.14.0] - 2019-07-17
 [4.14.0]: https://github.com/atlassian/infrastructure/compare/release-4.13.0...release-4.14.0
 
