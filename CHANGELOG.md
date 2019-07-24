@@ -24,14 +24,16 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.13.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.0...master
+
+## [4.14.0] - 2019-07-17
+[4.14.0]: https://github.com/atlassian/infrastructure/compare/release-4.13.0...release-4.14.0
 
 ### Deprecated
 - Deprecate the handling of licenses as strings within `LicenseOverridingMysql`. Avoid [JPERF-523].
 
 ### Fixed
 - Handle Jira license data as files within `LicenseOverridingMysql`. Fix [JPERF-523].
-
 
 [JPERF-523]: https://ecosystem.atlassian.net/browse/JPERF-523
 
