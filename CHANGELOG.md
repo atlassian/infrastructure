@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.1...master
 
+### Fixed
+- Increase timeout of apt-get. Fix [JPERF-552]
+
+[JPERF-552]: https://ecosystem.atlassian.net/browse/JPERF-552
+
 ## [4.14.1] - 2019-07-24
 [4.14.1]: https://github.com/atlassian/infrastructure/compare/release-4.14.0...release-4.14.1
 
