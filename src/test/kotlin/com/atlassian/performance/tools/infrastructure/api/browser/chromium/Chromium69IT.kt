@@ -1,11 +1,15 @@
 package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
+import com.atlassian.performance.tools.infrastructure.api.jvm.StaticBackoff
 import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
+import java.net.URI
+import java.time.Duration
 
 class Chromium69IT {
 
@@ -17,7 +21,9 @@ class Chromium69IT {
 
                 Chromium69().install(connection)
 
-                val installedAfter = isChromiumInstalled(connection)
+                val installedAfter = IdempotentAction("Find Chromium") {
+                    isChromiumInstalled(connection)
+                }.retry(maxAttempts = 2, backoff = StaticBackoff(Duration.ofSeconds(1)))
 
                 Assert.assertThat(installedBefore, Matchers.`is`(false))
                 Assert.assertThat(installedAfter, Matchers.`is`(true))
