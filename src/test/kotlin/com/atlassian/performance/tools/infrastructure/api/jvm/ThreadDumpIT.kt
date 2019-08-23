@@ -1,11 +1,14 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
 import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.jvmtasks.api.Backoff
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.lang.Exception
+import java.time.Duration
 
 class ThreadDumpIT {
     @Test
@@ -19,7 +22,9 @@ class ThreadDumpIT {
                 sshConnection.execute("${jdk.use()}; javac Test.java")
                 val process = sshConnection.startProcess("${jdk.use()}; java Test")
                 try {
-                    val pid = getPid(sshConnection, jdk)
+                    val pid = IdempotentAction("Get PID") {
+                        getPid(sshConnection, jdk)
+                    }.retry(maxAttempts = 2, backoff = StaticBackoff(Duration.ofSeconds(1)))
 
                     ThreadDump(pid, jdk).gather(sshConnection, destination)
 
@@ -44,4 +49,9 @@ class ThreadDumpIT {
             .first()
             .toInt()
     }
+}
+internal class StaticBackoff(
+    private val backOff: Duration
+) : Backoff {
+    override fun backOff(attempt: Int): Duration = backOff
 }
