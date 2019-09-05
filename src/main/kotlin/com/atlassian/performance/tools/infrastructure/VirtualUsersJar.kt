@@ -13,7 +13,7 @@ internal class VirtualUsersJar {
             "-agentlib:jdwp=transport=dt_socket,server=y,address=8000,suspend=n",
             "-jar $jarName"
         )
-        val cliArgs = options.toCliArgs()
+        val cliArgs = options.toCliArgs().map { "'$it'" }
         val redirects = listOf(
             "2>virtual-users-error.log",
             "> virtual-users-out.log"
