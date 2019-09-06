@@ -28,6 +28,23 @@ class JiraNodeFlowTest {
 
         assertThat(counter.count).isEqualTo(3)
     }
+
+    @Test
+    fun shouldHookToTheTailDuringListing() {
+        val counter = CountingHook()
+        val flow = JiraNodeFlow().apply {
+            hookPreInstall(counter)
+            hookPreInstall(counter)
+            hookPreInstall(HookingHook(counter))
+        }
+        val server = TcpServer("doesn't matter", 123, "fake-server")
+
+        flow.listPreInstallHooks().forEach {
+            it.run(FailingSshConnection(), server, flow)
+        }
+
+        assertThat(counter.count).isEqualTo(3)
+    }
 }
 
 private class CountingHook : TcpServerHook {

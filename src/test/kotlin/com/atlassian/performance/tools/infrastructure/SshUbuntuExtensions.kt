@@ -16,7 +16,7 @@ internal fun SshUbuntu.toSsh(): Ssh {
         )
     })
     ssh.newConnection().use { connection ->
-        connection.execute("apt-get update -qq", Duration.ofMinutes(3))
+        connection.execute("apt-get update -qq", Duration.ofMinutes(7))
         connection.execute("export DEBIAN_FRONTEND=noninteractive; apt-get install sudo curl screen gnupg2 -y -qq", Duration.ofMinutes(10))
     }
     return ssh
