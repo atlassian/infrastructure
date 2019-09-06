@@ -22,9 +22,7 @@ class JiraNodeFlowTest {
         }
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
-        flow.listPreInstallHooks().forEach {
-            it.run(FailingSshConnection(), server, flow)
-        }
+        flow.runPreInstallHooks(FailingSshConnection(), server)
 
         assertThat(counter.count).isEqualTo(3)
     }
@@ -39,9 +37,7 @@ class JiraNodeFlowTest {
         }
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
-        flow.listPreInstallHooks().forEach {
-            it.run(FailingSshConnection(), server, flow)
-        }
+        flow.runPreInstallHooks(FailingSshConnection(), server)
 
         assertThat(counter.count).isEqualTo(3)
     }

@@ -4,6 +4,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.Inst
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import net.jcip.annotations.ThreadSafe
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -23,7 +24,17 @@ class JiraNodeFlow {
         preInstallHooks.add(hook)
     }
 
-    internal fun listPreInstallHooks(): Iterable<TcpServerHook> = preInstallHooks
+    internal fun runPreInstallHooks(
+        ssh: SshConnection,
+        server: TcpServer
+    ) {
+        while (true) {
+            preInstallHooks
+                .poll()
+                ?.run(ssh, server, this)
+                ?: break
+        }
+    }
 
     fun hookPostInstall(
         hook: InstalledJiraHook
