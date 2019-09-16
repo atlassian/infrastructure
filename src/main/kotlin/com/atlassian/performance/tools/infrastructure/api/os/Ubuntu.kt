@@ -44,7 +44,6 @@ class Ubuntu {
         val joinedPackages = packages.joinToString(separator = " ")
         val lock = LOCKS.computeIfAbsent(ssh.getHost().ipAddress) { Object() }
         synchronized(lock) {
-            ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
             ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(3))
             ssh.execute(
                 cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",

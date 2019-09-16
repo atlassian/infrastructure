@@ -11,21 +11,19 @@ import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.remote.RemoteWebDriver
 import java.net.URI
 import java.util.concurrent.TimeUnit
+import java.net.ServerSocket
 
 internal class PageLoadTimeoutRecoveryTest {
 
     internal fun run(chromium: Browser) {
         val remoteChromedriverPort = 9515
-        val localChromedriverPort = 9525
-        val mockServerPort = 8500
-        val remoteMockServerPort = 8500
-        val httpServer = MockHttpServer(mockServerPort)
-        val fastResource = httpServer.register(FastResponse())
-        val slowResource = httpServer.register(SlowResponse())
-        httpServer.start().use {
+        MockHttpServer().start().use { httpServer ->
+            val fastResource = httpServer.register(FastResponse())
+            val slowResource = httpServer.register(SlowResponse())
             SshUbuntuContainer().start().use { sshUbuntu ->
                 val ssh = sshUbuntu.toSsh()
-                ssh.forwardRemotePort(mockServerPort, remoteMockServerPort).use {
+                ssh.forwardRemotePort(httpServer.getPort(), httpServer.getPort()).use {
+                    val localChromedriverPort = findFreePort()
                     ssh.forwardLocalPort(localChromedriverPort, remoteChromedriverPort).use {
                         ssh.newConnection().use { connection ->
                             chromium.install(connection)
@@ -46,6 +44,10 @@ internal class PageLoadTimeoutRecoveryTest {
                 }
             }
         }
+    }
+
+    private fun findFreePort(): Int {
+        return ServerSocket(0).use { socket -> return socket.localPort }
     }
 
     private class FastResponse : MockHttpServer.RequestHandler {
