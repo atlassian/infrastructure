@@ -36,7 +36,7 @@ class UbuntuIT {
         (1..concurrency)
             .map {
                 executor.submit { installLftp(lock, latch) }
-            }.map { it.get(2, TimeUnit.MINUTES) }
+            }.map { it.get(5, TimeUnit.MINUTES) }
 
     }
 
