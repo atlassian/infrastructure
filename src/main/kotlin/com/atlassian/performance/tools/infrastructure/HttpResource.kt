@@ -16,7 +16,7 @@ class HttpResource(
         download(
             ssh,
             destination,
-            Duration.ofMinutes(3)
+            Duration.ofMinutes(4)
         )
     }
 

@@ -39,7 +39,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
             try {
                 connection.execute(
                     cmd = "curl -s -L -O -H 'Cookie: oraclelicense=accept-securebackup-cookie' -k $jdkUrl",
-                    timeout = Duration.ofSeconds(65)
+                    timeout = Duration.ofSeconds(120)
                 )
                 break
             } catch (e: Exception) {
