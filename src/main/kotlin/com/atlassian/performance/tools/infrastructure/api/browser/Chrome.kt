@@ -16,7 +16,7 @@ class Chrome : Browser {
     override fun install(ssh: SshConnection) {
         ssh.execute("wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add")
         ssh.execute("echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee -a /etc/apt/sources.list.d/google-chrome.list")
-        Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(3))
+        Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(5))
         val version = getLatestVersion()
         ChromedriverInstaller(URI("https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip")).install(ssh)
     }

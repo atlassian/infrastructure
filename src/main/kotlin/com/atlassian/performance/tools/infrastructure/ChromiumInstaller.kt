@@ -27,7 +27,7 @@ internal class ChromiumInstaller(private val uri: URI) {
                 "libatk-bridge2.0",
                 "libgtk-3-0"
             ),
-            Duration.ofMinutes(5)
+            Duration.ofMinutes(10)
         )
         HttpResource(uri).download(ssh, "chromium.zip")
         ssh.execute("unzip chromium.zip")
