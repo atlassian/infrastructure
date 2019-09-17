@@ -28,8 +28,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].
+- Fix `apt-get install` flakes. Fix [JPERF-219].
 
 [JPERF-569]: https://ecosystem.atlassian.net/browse/JPERF-569
+[JPERF-219]: https://ecosystem.atlassian.net/browse/JPERF-219
 
 ## [4.14.2] - 2019-08-23
 [4.14.2]: https://github.com/atlassian/infrastructure/compare/release-4.14.1...release-4.14.2
