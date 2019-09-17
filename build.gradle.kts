@@ -1,3 +1,6 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
 val kotlinVersion = "1.2.70"
 
 plugins {
@@ -85,6 +88,10 @@ tasks.getByName("test", Test::class).apply {
 }
 
 val testIntegration = task<Test>("testIntegration") {
+    testLogging {
+        events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
+        exceptionFormat = TestExceptionFormat.FULL
+    }
     filter {
         include("**/*IT.class")
     }
