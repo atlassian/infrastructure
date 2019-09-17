@@ -44,14 +44,29 @@ class Ubuntu {
         val joinedPackages = packages.joinToString(separator = " ")
         val lock = LOCKS.computeIfAbsent(ssh.getHost().ipAddress) { Object() }
         synchronized(lock) {
+            try {
+                ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(2))
+                ssh.execute(
+                    cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",
+                    timeout = timeout,
+                    stdout = Level.TRACE,
+                    stderr = Level.TRACE
+                )
+            } catch (e: Exception) {
+                cleanInterruptedApt(ssh)
+                throw Exception("Failed an attempt to install $packages", e)
+            }
+        }
+    }
+
+    /**
+     * Cleans up after a potentially interrupted `apt-get` command.
+     */
+    private fun cleanInterruptedApt(ssh: SshConnection) {
+        val pid = ssh.execute("pidof apt-get").output.trim().toIntOrNull()
+        if (pid != null) {
+            ssh.safeExecute("kill -9 $pid")
             ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
-            ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(2))
-            ssh.execute(
-                cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",
-                timeout = timeout,
-                stdout = Level.TRACE,
-                stderr = Level.TRACE
-            )
         }
     }
 
