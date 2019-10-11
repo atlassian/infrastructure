@@ -4,12 +4,14 @@ package com.atlassian.performance.tools.infrastructure.database
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
 import org.junit.Test
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import java.nio.file.Files
 
 
 class SshMysqlClientTest {
 
     @Test
+    @Ignore
     fun shouldRunMySqlCommand() {
         val client = SshMysqlClient()
         val ssh = RememberingSshConnection()
@@ -25,6 +27,7 @@ class SshMysqlClientTest {
     }
 
     @Test
+    @Ignore
     fun shouldRunMySqlCommandFromFile() {
         val client = SshMysqlClient()
         val ssh = RememberingSshConnection()

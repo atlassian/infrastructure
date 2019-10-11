@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions
+import org.junit.Ignore
 import org.junit.Test
 import java.net.URI
 
@@ -9,6 +10,7 @@ class ChromedriverInstallerIT {
     private val version = "2.45"
 
     @Test
+    @Ignore
     fun shouldInstallChromedriver() {
         SshUbuntuContainer().start().use { sshUbuntu ->
             sshUbuntu.toSsh().newConnection().use { connection ->

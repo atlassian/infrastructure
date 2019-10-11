@@ -3,11 +3,13 @@ package com.atlassian.performance.tools.infrastructure.api.distribution
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 
 class PublicJiraSoftwareDistributionsIT {
 
     @Test
+    @Ignore
     fun shouldDownloadJiraSoftware() {
         SshUbuntuContainer().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->

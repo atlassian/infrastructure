@@ -6,6 +6,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 /**
  *  Asynchronous profiler. See https://github.com/jvm-profiling-tools/async-profiler#basic-usage
  */
+@Deprecated("Use AsyncProfilerHook")
 class AsyncProfiler : Profiler {
     override fun install(ssh: SshConnection) {
         ssh.execute("wget -q https://github.com/jvm-profiling-tools/async-profiler/releases/download/v1.4/async-profiler-1.4-linux-x64.tar.gz")

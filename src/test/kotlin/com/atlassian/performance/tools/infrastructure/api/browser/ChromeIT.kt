@@ -5,12 +5,14 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 
 
 class ChromeIT {
 
     @Test
+    @Ignore
     fun shouldInstallChromeBrowser() {
         SshUbuntuContainer().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->

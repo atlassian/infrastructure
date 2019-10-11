@@ -78,8 +78,4 @@ class SshVirtualUsers(
             }
         }
     }
-
-    override fun toString(): String {
-        return "SshVirtualUsers(name='$name', nodeOrder=$nodeOrder, resultsTransport=$resultsTransport, jarName='$jarName', ssh=$ssh, logger=$logger, jdk=$jdk)"
-    }
 }

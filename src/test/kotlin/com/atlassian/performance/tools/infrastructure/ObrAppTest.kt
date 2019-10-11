@@ -3,12 +3,14 @@ package com.atlassian.performance.tools.infrastructure
 import com.atlassian.performance.tools.io.api.ensureDirectory
 import org.hamcrest.Matchers.containsInAnyOrder
 import org.junit.Assert.assertThat
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 
 class ObrAppTest {
 
     @Test
+    @Ignore
     fun extractedJiraPortfolioObrContainsExpectedJars() {
         val obrLocation = "com/atlassian/performance/tools/infrastructure/jira/jira-portfolio-2.12.1.obr"
         val obrFileName = javaClass.classLoader.getResource(obrLocation).file

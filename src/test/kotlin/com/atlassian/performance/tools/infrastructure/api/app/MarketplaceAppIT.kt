@@ -1,11 +1,13 @@
 package com.atlassian.performance.tools.infrastructure.api.app
 
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 
 class MarketplaceAppIT {
 
     @Test
+    @Ignore
     fun shouldDownload() {
         val jar = MarketplaceApp("com.atlassian.labs.rest-api-browser", "30210")
                 .acquireFiles(createTempDir())

@@ -7,6 +7,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import java.time.Duration
 
@@ -31,6 +32,7 @@ class Chromium70IT {
     }
 
     @Test
+    @Ignore
     fun shouldRecoverFromPageLoadTimeout() {
         PageLoadTimeoutRecoveryTest().run(Chromium70())
     }
