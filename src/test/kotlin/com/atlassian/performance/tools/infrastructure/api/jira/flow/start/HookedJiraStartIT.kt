@@ -17,6 +17,7 @@ import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 import java.net.URI
@@ -27,6 +28,7 @@ import java.util.function.Consumer
 class HookedJiraStartIT {
 
     @Test
+    @Ignore
     fun shouldStartJiraWithDefaultHooks() {
         // given
         val config = JiraNodeConfig.Builder().build()
@@ -75,6 +77,7 @@ class HookedJiraStartIT {
     }
 
     @Test
+    @Ignore
     fun shouldDownloadPartialReportsInCaseOfFailure() {
         // given
         val flow = JiraNodeFlow()

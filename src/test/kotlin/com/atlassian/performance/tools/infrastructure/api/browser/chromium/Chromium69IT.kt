@@ -7,6 +7,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers
 import org.junit.Assert
+import org.junit.Ignore
 import org.junit.Test
 import java.net.URI
 import java.time.Duration
@@ -14,6 +15,7 @@ import java.time.Duration
 class Chromium69IT {
 
     @Test
+    @Ignore
     fun shouldInstallBrowser() {
         SshUbuntuContainer().start().use { sshUbuntu ->
             sshUbuntu.toSsh().newConnection().use { connection ->
@@ -32,6 +34,7 @@ class Chromium69IT {
     }
 
     @Test
+    @Ignore
     fun shouldRecoverFromPageLoadTimeout() {
         PageLoadTimeoutRecoveryTest().run(Chromium69())
     }

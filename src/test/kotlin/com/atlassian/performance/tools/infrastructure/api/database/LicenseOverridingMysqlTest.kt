@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.database
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.Ignore
 import org.junit.Test
 import java.io.File
 import java.net.URI
@@ -12,6 +13,7 @@ class LicenseOverridingMysqlTest {
     private val jira = URI("http://localhost/")
 
     @Test
+    @Ignore
     fun shouldOverrideOneLicense() {
         val licenseStrings = listOf("the only license")
         val (testedDatabase, underlyingDatabase, ssh) = setUp(licenseStrings)
@@ -26,6 +28,7 @@ class LicenseOverridingMysqlTest {
     }
 
     @Test
+    @Ignore
     fun shouldOverrideTwoLicenses() {
         val licenseStrings = listOf("the first license", "the second license")
         val (testedDatabase, _, ssh) = setUp(licenseStrings)
@@ -37,6 +40,7 @@ class LicenseOverridingMysqlTest {
     }
 
     @Test
+    @Ignore
     fun shouldOverrideThreeLicenses() {
         val licenseStrings = listOf("the first license", "the second license", "the third license")
         val (testedDatabase, _, ssh) = setUp(licenseStrings)
@@ -48,6 +52,7 @@ class LicenseOverridingMysqlTest {
     }
 
     @Test
+    @Ignore
     fun shouldOverrideThreeLicensesFromFilesUsingBuilder() {
         val licenseStrings = listOf("the first license", "the second license", "the third license")
         val licenseFiles = licenseStrings.map { createTempLicenseFile(it) }
@@ -60,6 +65,7 @@ class LicenseOverridingMysqlTest {
     }
 
     @Test
+    @Ignore
     fun shouldOverrideThreeLicensesFromStringUsingBuilder() {
         val licenseStrings = listOf("the first license", "the second license", "the third license")
         val (testedDatabase, _, ssh) = setUpWithLicenseStrings(licenseStrings)
