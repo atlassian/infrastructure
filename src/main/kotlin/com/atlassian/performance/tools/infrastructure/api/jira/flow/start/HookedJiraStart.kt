@@ -14,9 +14,9 @@ class HookedJiraStart(
         installed: InstalledJira,
         flow: JiraNodeFlow
     ): StartedJira {
-        flow.listPreStartHooks().forEach { it.run(ssh, installed, flow) }
+        flow.runPreStartHooks(ssh, installed)
         val started = start.start(ssh, installed, flow)
-        flow.listPostStartHooks().forEach { it.run(ssh, started, flow) }
+        flow.runPostStartHooks(ssh, started)
         return started
     }
 }

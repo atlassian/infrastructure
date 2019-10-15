@@ -15,7 +15,7 @@ class HookedJiraInstallation(
     ): InstalledJira {
         flow.runPreInstallHooks(ssh, server)
         val installed = installation.install(ssh, server, flow)
-        flow.listPostInstallHooks().forEach { it.run(ssh, installed, flow) }
+        flow.runPostInstallHooks(ssh, installed)
         return installed
     }
 }
