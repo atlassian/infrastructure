@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StaticBackoff
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.start.StaticBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI

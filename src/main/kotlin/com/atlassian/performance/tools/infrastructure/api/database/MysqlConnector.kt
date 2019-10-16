@@ -1,8 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.PostInstallFlow
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
 import com.atlassian.performance.tools.jvmtasks.api.Backoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -13,7 +13,7 @@ class MysqlConnector : PostInstallHook {
     override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
-        flow: PostInstallFlow
+        hooks: PostInstallHooks
     ) {
         val connector = "https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz"
         IdempotentAction(

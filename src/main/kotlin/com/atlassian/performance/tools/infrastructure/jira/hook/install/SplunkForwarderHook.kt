@@ -1,13 +1,13 @@
-package com.atlassian.performance.tools.infrastructure.api.database
+package com.atlassian.performance.tools.infrastructure.jira.hook.install
 
-import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-class DatabaseIpConfig(
-    private val databaseIp: String
+internal class SplunkForwarderHook(
+    private val splunk: SplunkForwarder
 ) : PostInstallHook {
 
     override fun run(
@@ -15,11 +15,7 @@ class DatabaseIpConfig(
         jira: InstalledJira,
         hooks: PostInstallHooks
     ) {
-        Sed().replace(
-            connection = ssh,
-            expression = "(<url>.*(@(//)?|//))" + "([^:/]+)" + "(.*</url>)",
-            output = """\1$databaseIp\5""",
-            file = "${jira.home}/dbconfig.xml"
-        )
+        splunk.jsonifyLog4j(ssh, "${jira.installation}/atlassian-jira/WEB-INF/classes/log4j.properties")
+        splunk.run(ssh, jira.server.name, "/home/ubuntu/jirahome/log")
     }
 }
