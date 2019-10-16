@@ -5,5 +5,5 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostSt
 interface PostStartFlow : Reports {
     fun hook(
         hook: PostStartHook
-    )
+    ): PostStartFlow
 }

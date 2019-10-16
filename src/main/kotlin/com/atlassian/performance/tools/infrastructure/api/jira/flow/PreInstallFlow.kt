@@ -5,5 +5,5 @@ import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.PreIn
 interface PreInstallFlow : PostInstallFlow {
     fun hook(
         hook: PreInstallHook
-    )
+    ): PreInstallFlow
 }

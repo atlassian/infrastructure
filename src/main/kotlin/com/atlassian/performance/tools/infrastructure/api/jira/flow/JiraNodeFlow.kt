@@ -1,10 +1,13 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow
 
+import com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultPostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.PreInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.DefaultPostStartHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import net.jcip.annotations.ThreadSafe
@@ -12,7 +15,7 @@ import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @ThreadSafe
-class JiraNodeFlow : PreInstallFlow {
+class JiraNodeFlow private constructor() : PreInstallFlow {
     private val preInstallHooks: Queue<PreInstallHook> = ConcurrentLinkedQueue()
     private val postInstallHooks: Queue<PostInstallHook> = ConcurrentLinkedQueue()
     private val preStartHooks: Queue<PreStartHook> = ConcurrentLinkedQueue()
@@ -21,14 +24,14 @@ class JiraNodeFlow : PreInstallFlow {
 
     override fun hook(
         hook: PreInstallHook
-    ) {
+    ) = apply {
         preInstallHooks.add(hook)
     }
 
     internal fun runPreInstallHooks(
         ssh: SshConnection,
         server: TcpServer
-    ) {
+    ): JiraNodeFlow = apply {
         while (true) {
             preInstallHooks
                 .poll()
@@ -39,14 +42,14 @@ class JiraNodeFlow : PreInstallFlow {
 
     override fun hook(
         hook: PostInstallHook
-    ) {
+    ): PreInstallFlow = apply {
         postInstallHooks.add(hook)
     }
 
     internal fun runPostInstallHooks(
         ssh: SshConnection,
         jira: InstalledJira
-    ) {
+    ): JiraNodeFlow = apply {
         while (true) {
             postInstallHooks
                 .poll()
@@ -57,14 +60,14 @@ class JiraNodeFlow : PreInstallFlow {
 
     override fun hook(
         hook: PreStartHook
-    ) {
+    ): JiraNodeFlow = apply {
         preStartHooks.add(hook)
     }
 
     internal fun runPreStartHooks(
         ssh: SshConnection,
         jira: InstalledJira
-    ) {
+    ): JiraNodeFlow = apply {
         while (true) {
             preStartHooks
                 .poll()
@@ -75,14 +78,14 @@ class JiraNodeFlow : PreInstallFlow {
 
     override fun hook(
         hook: PostStartHook
-    ) {
+    ): JiraNodeFlow = apply {
         postStartHooks.add(hook)
     }
 
     internal fun runPostStartHooks(
         ssh: SshConnection,
         jira: StartedJira
-    ) {
+    ): JiraNodeFlow = apply {
         while (true) {
             postStartHooks
                 .poll()
@@ -91,7 +94,9 @@ class JiraNodeFlow : PreInstallFlow {
         }
     }
 
-    override fun addReport(report: Report) {
+    override fun addReport(
+        report: Report
+    ) = apply {
         reports.add(report)
     }
 
@@ -105,4 +110,12 @@ class JiraNodeFlow : PreInstallFlow {
         .also { it.preStartHooks += this.preStartHooks }
         .also { it.postStartHooks += this.postStartHooks }
         .also { it.reports += this.reports }
+
+    companion object {
+        fun default(): JiraNodeFlow = JiraNodeFlow()
+            .apply { hook(DefaultPostInstallHook(JiraNodeConfig.Builder().build())) }
+            .apply { hook(DefaultPostStartHook()) }
+
+        fun empty(): JiraNodeFlow = JiraNodeFlow()
+    }
 }

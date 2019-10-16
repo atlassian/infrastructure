@@ -15,7 +15,7 @@ class JiraNodeFlowTest {
     @Test
     fun shouldHookDuringListing() {
         val counter = CountingHook()
-        val flow = JiraNodeFlow().apply {
+        val flow = JiraNodeFlow.empty().apply {
             hook(counter)
             hook(HookingHook(counter))
             hook(counter)
@@ -30,7 +30,7 @@ class JiraNodeFlowTest {
     @Test
     fun shouldHookToTheTailDuringListing() {
         val counter = CountingHook()
-        val flow = JiraNodeFlow().apply {
+        val flow = JiraNodeFlow.empty().apply {
             hook(counter)
             hook(counter)
             hook(HookingHook(counter))
