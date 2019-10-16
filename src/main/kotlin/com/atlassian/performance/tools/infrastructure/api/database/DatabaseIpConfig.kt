@@ -1,19 +1,19 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.Sed
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PostInstallFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJiraHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DatabaseIpConfig(
     private val databaseIp: String
-) : InstalledJiraHook {
+) : PostInstallHook {
 
     override fun run(
         ssh: SshConnection,
         jira: InstalledJira,
-        flow: JiraNodeFlow
+        flow: PostInstallFlow
     ) {
         Sed().replace(
             connection = ssh,

@@ -4,10 +4,12 @@ import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJir
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PostStartFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.*
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.DefaultPostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.HookedJiraInstallation
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
 import com.atlassian.performance.tools.infrastructure.api.jvm.Jstat
 import com.atlassian.performance.tools.infrastructure.api.jvm.VersionedJavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.toSsh
@@ -31,8 +33,8 @@ class HookedJiraStartIT {
         // given
         val config = JiraNodeConfig.Builder().build()
         val flow = JiraNodeFlow()
-        flow.hookPostStart(DefaultStartedJiraHook())
-        flow.hookPostInstall(DefaultPostInstallHook(config))
+        flow.hook(DefaultPostStartHook())
+        flow.hook(DefaultPostInstallHook(config))
         val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
@@ -55,7 +57,7 @@ class HookedJiraStartIT {
                 val installed = jiraInstallation.install(ssh, server, flow)
                 val started = jiraStart.start(ssh, installed, flow)
                 stop(started, ssh)
-                flow.reports.flatMap { it.locate(ssh) }
+                flow.allReports().flatMap { it.locate(ssh) }
             }
 
             // then
@@ -77,9 +79,11 @@ class HookedJiraStartIT {
     @Test
     fun shouldDownloadPartialReportsInCaseOfFailure() {
         // given
-        val flow = JiraNodeFlow()
-        flow.hookPreInstall(EarlyUbuntuSysstat())
-        flow.hookPostInstall(FailingHook())
+        val flow = JiraNodeFlow().apply {
+            hook(EarlyUbuntuSysstat())
+            hook(FailingHook())
+        }
+
         val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
@@ -103,7 +107,7 @@ class HookedJiraStartIT {
                 } catch (e: Exception) {
                     println("Failed: ${e.message}")
                 }
-                return@useSsh flow.reports.flatMap { it.locate(ssh) }
+                return@useSsh flow.allReports().flatMap { it.locate(ssh) }
             }
         }
 
@@ -135,9 +139,11 @@ class HookedJiraStartIT {
     }
 }
 
-private class FailingHook : TcpServerHook, InstalledJiraHook {
-    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) = throw Exception("Expected failure")
-    override fun run(ssh: SshConnection, jira: InstalledJira, flow: JiraNodeFlow) = throw Exception("Expected failure")
+private class FailingHook : PostStartHook {
+    override fun run(ssh: SshConnection, jira: StartedJira, flow: PostStartFlow) {
+        throw Exception("Expected failure")
+
+    }
 }
 
 /**

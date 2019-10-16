@@ -1,18 +1,19 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.server
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PostStartFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PreInstallFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 
-class AsyncProfilerHook : TcpServerHook {
+class AsyncProfilerHook : PreInstallHook {
 
     override fun run(
         ssh: SshConnection,
         server: TcpServer,
-        flow: JiraNodeFlow
+        flow: PreInstallFlow
     ) {
         val directory = "async-profiler"
         val downloads = URI("https://github.com/jvm-profiling-tools/async-profiler/releases/download/")
@@ -24,22 +25,22 @@ class AsyncProfilerHook : TcpServerHook {
         ssh.execute("sudo sh -c 'echo 0 > /proc/sys/kernel/kptr_restrict'")
         val profilerPath = "./$directory/profiler.sh"
         val profiler = InstalledAsyncProfiler(profilerPath)
-        flow.hookPostStart(profiler)
+        flow.hook(profiler)
     }
 }
 
 private class InstalledAsyncProfiler(
     private val profilerPath: String
-) : StartedJiraHook {
+) : PostStartHook {
 
     override fun run(
         ssh: SshConnection,
         jira: StartedJira,
-        flow: JiraNodeFlow
+        flow: PostStartFlow
     ) {
         ssh.execute("$profilerPath -b 20000000 start ${jira.pid}")
         val profiler = StartedAsyncProfiler(jira.pid, profilerPath)
-        flow.reports.add(profiler)
+        flow.addReport(profiler)
     }
 }
 

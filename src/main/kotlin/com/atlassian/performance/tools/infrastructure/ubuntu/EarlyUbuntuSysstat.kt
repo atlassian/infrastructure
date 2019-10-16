@@ -1,19 +1,19 @@
 package com.atlassian.performance.tools.infrastructure.ubuntu
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.TcpServer
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PreInstallFlow
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.PreInstallHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-class EarlyUbuntuSysstat : TcpServerHook {
+class EarlyUbuntuSysstat : PreInstallHook {
 
     override fun run(
         ssh: SshConnection,
         server: TcpServer,
-        flow: JiraNodeFlow
+        flow: PreInstallFlow
     ) {
         UbuntuSysstat()
             .install(ssh)
-            .forEach { flow.hookPreInstall(it) }
+            .forEach { flow.hook(it) }
     }
 }

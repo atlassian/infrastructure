@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.PreInstallHook
 import com.atlassian.performance.tools.ssh.api.DetachedProcess
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.Level
@@ -16,9 +16,9 @@ class JiraNodeFlowTest {
     fun shouldHookDuringListing() {
         val counter = CountingHook()
         val flow = JiraNodeFlow().apply {
-            hookPreInstall(counter)
-            hookPreInstall(HookingHook(counter))
-            hookPreInstall(counter)
+            hook(counter)
+            hook(HookingHook(counter))
+            hook(counter)
         }
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
@@ -31,9 +31,9 @@ class JiraNodeFlowTest {
     fun shouldHookToTheTailDuringListing() {
         val counter = CountingHook()
         val flow = JiraNodeFlow().apply {
-            hookPreInstall(counter)
-            hookPreInstall(counter)
-            hookPreInstall(HookingHook(counter))
+            hook(counter)
+            hook(counter)
+            hook(HookingHook(counter))
         }
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
@@ -43,20 +43,20 @@ class JiraNodeFlowTest {
     }
 }
 
-private class CountingHook : TcpServerHook {
+private class CountingHook : PreInstallHook {
 
     var count = 0
 
-    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
+    override fun run(ssh: SshConnection, server: TcpServer, flow: PreInstallFlow) {
         count++
     }
 }
 
 private class HookingHook(
-    private val hook: TcpServerHook
-) : TcpServerHook {
-    override fun run(ssh: SshConnection, server: TcpServer, flow: JiraNodeFlow) {
-        flow.hookPreInstall(hook)
+    private val hook: PreInstallHook
+) : PreInstallHook {
+    override fun run(ssh: SshConnection, server: TcpServer, flow: PreInstallFlow) {
+        flow.hook(hook)
     }
 }
 

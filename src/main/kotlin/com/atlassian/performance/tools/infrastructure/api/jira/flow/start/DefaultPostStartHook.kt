@@ -1,19 +1,17 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow.start
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.JiraNodeFlow
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.JiraLogs
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.PostStartFlow
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.StartedJira
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-class DefaultStartedJiraHook : StartedJiraHook {
+class DefaultPostStartHook : PostStartHook {
 
     override fun run(
         ssh: SshConnection,
         jira: StartedJira,
-        flow: JiraNodeFlow
+        flow: PostStartFlow
     ) {
         listOf(
-            JiraLogs(),
             JstatHook()
         ).forEach { it.run(ssh, jira, flow) }
     }

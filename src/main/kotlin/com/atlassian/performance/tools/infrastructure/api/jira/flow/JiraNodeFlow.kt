@@ -1,25 +1,24 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.flow
 
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.InstalledJiraHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.install.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.flow.report.Report
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.TcpServerHook
-import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.StartedJiraHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.server.PreInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.flow.start.PostStartHook
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import net.jcip.annotations.ThreadSafe
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
 @ThreadSafe
-class JiraNodeFlow {
+class JiraNodeFlow : PreInstallFlow {
+    private val preInstallHooks: Queue<PreInstallHook> = ConcurrentLinkedQueue()
+    private val postInstallHooks: Queue<PostInstallHook> = ConcurrentLinkedQueue()
+    private val preStartHooks: Queue<PreStartHook> = ConcurrentLinkedQueue()
+    private val postStartHooks: Queue<PostStartHook> = ConcurrentLinkedQueue()
+    private val reports: Queue<Report> = ConcurrentLinkedQueue()
 
-    private val preInstallHooks: Queue<TcpServerHook> = ConcurrentLinkedQueue()
-    private val postInstallHooks: Queue<InstalledJiraHook> = ConcurrentLinkedQueue()
-    private val preStartHooks: Queue<InstalledJiraHook> = ConcurrentLinkedQueue()
-    private val postStartHooks: Queue<StartedJiraHook> = ConcurrentLinkedQueue()
-    val reports: Queue<Report> = ConcurrentLinkedQueue()
-
-    fun hookPreInstall(
-        hook: TcpServerHook
+    override fun hook(
+        hook: PreInstallHook
     ) {
         preInstallHooks.add(hook)
     }
@@ -36,27 +35,35 @@ class JiraNodeFlow {
         }
     }
 
-    fun hookPostInstall(
-        hook: InstalledJiraHook
+    override fun hook(
+        hook: PostInstallHook
     ) {
         postInstallHooks.add(hook)
     }
 
-    internal fun listPostInstallHooks(): Iterable<InstalledJiraHook> = postInstallHooks
+    internal fun listPostInstallHooks(): Iterable<PostInstallHook> = postInstallHooks
 
-    fun hookPreStart(
-        hook: InstalledJiraHook
+    override fun hook(
+        hook: PreStartHook
     ) {
         preStartHooks.add(hook)
     }
 
-    internal fun listPreStartHooks(): Iterable<InstalledJiraHook> = preStartHooks
+    internal fun listPreStartHooks(): Iterable<PreStartHook> = preStartHooks
 
-    fun hookPostStart(
-        hook: StartedJiraHook
+    override fun hook(
+        hook: PostStartHook
     ) {
         postStartHooks.add(hook)
     }
 
-    internal fun listPostStartHooks(): Iterable<StartedJiraHook> = postStartHooks
+    internal fun listPostStartHooks(): Iterable<PostStartHook> = postStartHooks
+
+    override fun addReport(report: Report) {
+        reports.add(report)
+    }
+
+    internal fun allReports(): Iterable<Report> {
+        return reports.toList()
+    }
 }
