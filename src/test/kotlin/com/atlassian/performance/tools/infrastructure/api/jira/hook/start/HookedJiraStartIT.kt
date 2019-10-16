@@ -49,7 +49,7 @@ class HookedJiraStartIT {
                 val installed = jiraInstallation.install(ssh, server, hooks)
                 val started = jiraStart.start(ssh, installed, hooks)
                 stop(started, ssh)
-                hooks.allReports().flatMap { it.locate(ssh) }
+                hooks.listReports().flatMap { it.locate(ssh) }
             }
 
             // then
@@ -98,7 +98,7 @@ class HookedJiraStartIT {
                 } catch (e: Exception) {
                     println("Failed: ${e.message}")
                 }
-                return@useSsh hooks.allReports().flatMap { it.locate(ssh) }
+                return@useSsh hooks.listReports().flatMap { it.locate(ssh) }
             }
         }
 

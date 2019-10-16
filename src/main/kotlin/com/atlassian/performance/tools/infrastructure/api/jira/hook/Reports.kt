@@ -13,7 +13,7 @@ open class Reports protected constructor() {
         reports.add(report)
     }
 
-    internal fun allReports(): Iterable<Report> {
+    fun listReports(): Iterable<Report> {
         return reports.toList()
     }
 }
