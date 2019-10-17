@@ -142,6 +142,7 @@ This is an erroneous release. Don't use new APIs from this version, switch to `4
 
 ### Added
 - Offer `Docker` and `DockerImage` for customization and injection. Unblock Docker to work with other Ubuntu versions.
+- Add `DockerMysqlServer`.
 
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].
