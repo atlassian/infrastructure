@@ -140,6 +140,9 @@ This is an erroneous release. Don't use new APIs from this version, switch to `4
 ## [4.14.3] - 2019-11-27
 [4.14.3]: https://github.com/atlassian/infrastructure/compare/release-4.14.2...release-4.14.3
 
+### Added
+- Offer `Docker` and `DockerImage` for customization and injection. Unblock Docker to work with other Ubuntu versions.
+
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].
 - Clean up after `apt-get install` flakes. Help fix [JPERF-219].

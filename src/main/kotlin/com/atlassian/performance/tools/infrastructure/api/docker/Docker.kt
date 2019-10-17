@@ -1,10 +1,13 @@
-package com.atlassian.performance.tools.infrastructure
+package com.atlassian.performance.tools.infrastructure.api.docker
 
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
-internal class Docker {
+class Docker private constructor(
+    private val dependencyPackagesTimeout: Duration,
+    private val mainPackageTimeout: Duration
+) {
 
     private val ubuntu = Ubuntu()
 
@@ -21,7 +24,7 @@ internal class Docker {
                 "ca-certificates",
                 "curl"
             ),
-            timeout = Duration.ofMinutes(2)
+            timeout = dependencyPackagesTimeout
         )
         ubuntu.addKey(ssh, "7EA0A9C3F273FCD8")
 
@@ -32,8 +35,19 @@ internal class Docker {
         ubuntu.install(
             ssh = ssh,
             packages = listOf("docker-ce=$version"),
-            timeout = Duration.ofMinutes(5)
+            timeout = mainPackageTimeout
         )
         ssh.execute("sudo service docker status || sudo service docker start")
+    }
+
+    class Builder {
+
+        private var dependencyPackagesTimeout: Duration = Duration.ofMinutes(2)
+        private var mainPackageTimeout: Duration = Duration.ofMinutes(5)
+
+        fun build(): Docker = Docker(
+            dependencyPackagesTimeout,
+            mainPackageTimeout
+        )
     }
 }

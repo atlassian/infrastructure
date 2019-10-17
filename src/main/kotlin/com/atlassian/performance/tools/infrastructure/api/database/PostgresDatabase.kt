@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -14,10 +14,7 @@ class PostgresDatabase(
 ) : Database {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    private val image: DockerImage = DockerImage(
-        name = "postgres:9.6.15",
-        pullTimeout = Duration.ofMinutes(5)
-    )
+    private val image: DockerImage = DockerImage.Builder("postgres:9.6.15").build()
 
     constructor(
         source: DatasetPackage
