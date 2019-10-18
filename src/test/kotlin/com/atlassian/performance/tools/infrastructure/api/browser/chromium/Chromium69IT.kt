@@ -8,7 +8,6 @@ import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
-import java.net.URI
 import java.time.Duration
 
 class Chromium69IT {
@@ -29,11 +28,6 @@ class Chromium69IT {
                 Assert.assertThat(installedAfter, Matchers.`is`(true))
             }
         }
-    }
-
-    @Test
-    fun shouldRecoverFromPageLoadTimeout() {
-        PageLoadTimeoutRecoveryTest().run(Chromium69())
     }
 
     private fun isChromiumInstalled(ssh: SshConnection): Boolean {
