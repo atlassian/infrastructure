@@ -7,11 +7,26 @@ import java.time.Duration
 
 internal class ChromiumInstaller(private val uri: URI) {
     internal fun install(ssh: SshConnection) {
-        val ubuntu = Ubuntu()
-        ubuntu.install(
+        ParallelExecutor().execute(
+            { installDependencies(ssh) },
+            { installChromium(ssh) }
+        )
+    }
+
+    private fun installChromium(ssh: SshConnection) {
+        HttpResource(uri).download(ssh, "chromium.zip")
+        Ubuntu().install(
+            ssh,
+            listOf("unzip")
+        )
+        ssh.execute("unzip chromium.zip")
+        ssh.execute("sudo ln -s `pwd`/chrome-linux/chrome /usr/bin/chrome")
+    }
+
+    private fun installDependencies(ssh: SshConnection) {
+        Ubuntu().install(
             ssh,
             listOf(
-                "unzip",
                 "libx11-xcb1",
                 "libxcomposite1",
                 "libxdamage1",
@@ -29,8 +44,5 @@ internal class ChromiumInstaller(private val uri: URI) {
             ),
             Duration.ofMinutes(10)
         )
-        HttpResource(uri).download(ssh, "chromium.zip")
-        ssh.execute("unzip chromium.zip")
-        ssh.execute("sudo ln -s `pwd`/chrome-linux/chrome /usr/bin/chrome")
     }
 }
