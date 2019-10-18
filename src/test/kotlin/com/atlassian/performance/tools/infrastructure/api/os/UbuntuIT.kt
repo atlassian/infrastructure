@@ -36,7 +36,7 @@ class UbuntuIT {
         sshUbuntu.toSsh().newConnection().use { connection ->
             Ubuntu().install(
                 ColdAptSshConnection(connection),
-                listOf("vim"),
+                listOf("nano"),
                 Duration.ofSeconds(30)
             )
         }
