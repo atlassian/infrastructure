@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
 import com.atlassian.performance.tools.infrastructure.ChromedriverInstaller
 import com.atlassian.performance.tools.infrastructure.ChromiumInstaller
+import com.atlassian.performance.tools.infrastructure.ParallelExecutor
 import com.atlassian.performance.tools.infrastructure.api.browser.Browser
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
@@ -14,7 +15,9 @@ class Chromium70 : Browser {
      * Installs chromium 70 with a compatible chromedriver.
      */
     override fun install(ssh: SshConnection) {
-        ChromiumInstaller(chromiumUri).install(ssh)
-        ChromedriverInstaller(chromedriverUri).install(ssh)
+        ParallelExecutor().execute(
+            { ChromiumInstaller(chromiumUri).install(ssh) },
+            { ChromedriverInstaller(chromedriverUri).install(ssh) }
+        )
     }
 }
