@@ -1,6 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.browser
 
 import com.atlassian.performance.tools.infrastructure.ChromedriverInstaller
+import com.atlassian.performance.tools.infrastructure.ParallelExecutor
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.http.client.methods.HttpGet
@@ -16,9 +17,13 @@ class Chrome : Browser {
     override fun install(ssh: SshConnection) {
         ssh.execute("wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add")
         ssh.execute("echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee -a /etc/apt/sources.list.d/google-chrome.list")
-        Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(5))
-        val version = getLatestVersion()
-        ChromedriverInstaller(URI("https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip")).install(ssh)
+        ParallelExecutor().execute(
+            { Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(5)) },
+            {
+                val version = getLatestVersion()
+                ChromedriverInstaller(URI("https://chromedriver.storage.googleapis.com/$version/chromedriver_linux64.zip")).install(ssh)
+            }
+        )
     }
 
     private fun getLatestVersion(): String {
