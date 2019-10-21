@@ -29,7 +29,7 @@ class DockerMysqlServer private constructor(
 
     override fun call(hooks: PreInstanceHooks) {
         val server = serverSupplier.get()
-        server.ssh.newConnection().use { setup(it) }
+        server.ssh.newConnection().use { setup(it, server.publicPort) }
         hooks.nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.ip))
             node.postInstall.insert(MysqlConnector())
@@ -37,11 +37,11 @@ class DockerMysqlServer private constructor(
         hooks.postInstance.insert(FixJiraUriViaMysql(server.ssh))
     }
 
-    private fun setup(ssh: SshConnection) {
+    private fun setup(ssh: SshConnection, publicPort: Int) {
         val mysqlData = source.download(ssh)
         dockerImage.run(
             ssh = ssh,
-            parameters = "-p 3306:3306 -v `realpath $mysqlData`:/var/lib/mysql",
+            parameters = "-p $publicPort:3306 -v `realpath $mysqlData`:/var/lib/mysql",
             arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
         Ubuntu().install(ssh, listOf("mysql-client"))
