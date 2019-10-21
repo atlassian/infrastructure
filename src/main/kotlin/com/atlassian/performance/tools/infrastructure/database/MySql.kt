@@ -37,12 +37,13 @@ internal object Mysql {
     fun container(
         dataDir: String,
         extraParameters: Array<String>,
-        extraArguments: Array<String>
+        extraArguments: Array<String>,
+        hostPort: Int = 3306
     ) = DockerContainer.Builder()
         .imageName("mysql:5.7.32")
         .pullTimeout(Duration.ofMinutes(5))
         .parameters(
-            "-p 3306:3306",
+            "-p $hostPort:3306",
             "-v `realpath $dataDir`:/var/lib/mysql",
             *extraParameters
         )

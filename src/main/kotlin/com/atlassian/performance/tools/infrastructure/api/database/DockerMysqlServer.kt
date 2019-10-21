@@ -21,8 +21,7 @@ class DockerMysqlServer private constructor(
 
     override fun call(hooks: PreInstanceHooks) {
         val server = serverSupplier.get()
-        val client = server.ssh.newConnection().use { setup(it) }
-
+        val client = server.ssh.newConnection().use { setup(it, server.publicPort) }
         hooks.nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.ip))
             node.postInstall.insert(MysqlConnector())
@@ -30,7 +29,7 @@ class DockerMysqlServer private constructor(
         hooks.postInstance.insert(FixJiraUriViaMysql(client, server.ssh))
     }
 
-    private fun setup(ssh: SshConnection): SshSqlClient {
+    private fun setup(ssh: SshConnection, publicPort: Int): SshSqlClient {
         val mysqlDataLocation = source.download(ssh)
         Mysql.container(
             dataDir = mysqlDataLocation,
@@ -38,7 +37,8 @@ class DockerMysqlServer private constructor(
             extraArguments = arrayOf(
                 "--skip-grant-tables", // Recovery mode, as some datasets give no permissions to their root DB user
                 "--max_connections=$maxConnections"
-            )
+            ),
+            hostPort = publicPort
         ).run(ssh)
         val client = Mysql.installClient(ssh)
         Mysql.awaitDatabase(ssh)
