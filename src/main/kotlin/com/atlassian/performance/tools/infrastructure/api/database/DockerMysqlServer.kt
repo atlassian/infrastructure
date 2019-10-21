@@ -2,26 +2,39 @@ package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PostInstanceHook
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PostInstanceHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.database.SshMysqlClient
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import com.atlassian.performance.tools.ssh.api.SshHost
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import java.net.URI
 import java.time.Duration
 import java.time.Instant
+import java.util.function.Supplier
 
 class DockerMysqlServer private constructor(
+    private val serverSupplier: Supplier<TcpServer>,
     private val source: DatasetPackage,
     private val dockerImage: DockerImage,
     private val maxConnections: Int
-) {
+) : PreInstanceHook {
+
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    fun setup(sshHost: SshHost) {
-        Ssh(host = sshHost, connectivityPatience = 4)
-            .newConnection()
-            .use { setup(it) }
+    override fun call(hooks: PreInstanceHooks) {
+        val server = serverSupplier.get()
+        server.ssh.newConnection().use { setup(it) }
+        hooks.nodes.forEach { node ->
+            node.postInstall.insert(DatabaseIpConfig(server.ip))
+            node.postInstall.insert(MysqlConnector())
+        }
+        hooks.postInstance.insert(FixJiraUriViaMysql(server.ssh))
     }
 
     private fun setup(ssh: SshConnection) {
@@ -43,7 +56,8 @@ class DockerMysqlServer private constructor(
     }
 
     class Builder(
-        private val source: DatasetPackage
+        private var serverSupplier: Supplier<TcpServer>,
+        private var source: DatasetPackage
     ) {
 
         private var dockerImage = DockerImage.Builder("mysql:5.6.42")
@@ -51,13 +65,30 @@ class DockerMysqlServer private constructor(
             .build()
         private var maxConnections: Int = 151
 
+        fun serverSupplier(serverSupplier: Supplier<TcpServer>) = apply { this.serverSupplier = serverSupplier }
+        fun source(source: DatasetPackage) = apply { this.source = source }
         fun dockerImage(dockerImage: DockerImage) = apply { this.dockerImage = dockerImage }
         fun maxConnections(maxConnections: Int) = apply { this.maxConnections = maxConnections }
 
         fun build(): DockerMysqlServer = DockerMysqlServer(
+            serverSupplier,
             source,
             dockerImage,
             maxConnections
         )
+    }
+
+    private class FixJiraUriViaMysql(
+        private val mysql: Ssh
+    ) : PostInstanceHook {
+
+        override fun call(instance: URI, hooks: PostInstanceHooks) {
+            mysql.newConnection().use { ssh ->
+                val db = "jiradb"
+                val update = "UPDATE $db.propertystring SET propertyvalue = '$instance'"
+                val where = "WHERE id IN (select id from $db.propertyentry where property_key like '%baseurl%')"
+                SshMysqlClient().runSql(ssh, "$update $where;")
+            }
+        }
     }
 }
