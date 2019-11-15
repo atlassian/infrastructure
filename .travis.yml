@@ -25,3 +25,7 @@ notifications:
       7VZNw16WHbqqQpizI3PAWARM0Je4aQgAmBLmWlQQRawmjSOO8f9tZKU2AUlAbtLtI/TPi4m+BJj/AjUNYZJ90LocUrk00HgwnjomKqlQyjix+xf10\
       NH5/JikEO6OeiIP23/qbxD/f3uXM6MKyD0jK1dcWPT4RhCA7fAjySxx34lHOqtSUXw68Hw/B3pbtTGqPExgXcph70vMUefQvNp7pSY8ER1q1k4zuA\
       4WEBusoD8bgI="
+
+env:
+  global:
+    - JAVA_TOOL_OPTIONS=-Dhttps.protocols=TLSv1.2
