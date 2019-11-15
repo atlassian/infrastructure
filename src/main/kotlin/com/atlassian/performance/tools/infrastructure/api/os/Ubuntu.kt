@@ -63,7 +63,7 @@ class Ubuntu {
      * Cleans up after a potentially interrupted `apt-get` command.
      */
     private fun cleanInterruptedApt(ssh: SshConnection) {
-        val pid = ssh.execute("pidof apt-get").output.trim().toIntOrNull()
+        val pid = ssh.safeExecute("pidof apt-get").output.trim().toIntOrNull()
         if (pid != null) {
             ssh.safeExecute("kill -9 $pid")
             ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
