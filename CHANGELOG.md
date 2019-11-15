@@ -26,12 +26,15 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.3...master
 
+### Fixed
+- Harden `apt-get` retry cleanup when the process is gone. Help fix [JPERF-219].
+
 ## [4.14.3] - 2019-11-27
 [4.14.3]: https://github.com/atlassian/infrastructure/compare/release-4.14.2...release-4.14.3
 
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].
-- Fix `apt-get install` flakes. Fix [JPERF-219].
+- Clean up after `apt-get install` flakes. Help fix [JPERF-219].
 - Harden dataset HTTP downloads.
 - Harden `apt-get` downloads.
 - Detect VU -> Jira connectivity early.
