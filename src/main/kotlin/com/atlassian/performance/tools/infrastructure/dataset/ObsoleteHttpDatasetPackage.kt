@@ -2,6 +2,8 @@ package com.atlassian.performance.tools.infrastructure.dataset
 
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.dataset.FileArchiver
+import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
@@ -21,7 +23,9 @@ internal class ObsoleteHttpDatasetPackage(
     ): String {
         val unzipCommand = FileArchiver().pipeUnzip(ssh)
         TaskTimer.time("download") {
-            ssh.execute("wget -qO - ${datasetBucket.resolve(downloadPath)} | $unzipCommand", downloadTimeout)
+            IdempotentAction("download dataset") {
+                ssh.execute("wget -qO - ${datasetBucket.resolve(downloadPath)} | $unzipCommand", downloadTimeout)
+            }.retry(5, ExponentialBackoff(Duration.ofSeconds(2)))
         }
         return unpackedPath!!
     }
