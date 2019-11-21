@@ -29,7 +29,7 @@ class Ubuntu {
             )
         }
             .retry(
-                maxAttempts = 2,
+                maxAttempts = 7, //we need to accommodate cron-based image updates happening in the background
                 backoff = ExponentialBackoff(
                     baseBackoff = Duration.ofSeconds(5)
                 )
