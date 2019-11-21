@@ -3,9 +3,11 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 import com.atlassian.performance.tools.infrastructure.VirtualUsersJar
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK
+import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
+import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
 import java.time.Duration
 import java.util.*
@@ -35,7 +37,16 @@ class SshVirtualUsers(
     ) {
         logger.info("Applying load via $name...")
         ssh.newConnection().use {
+            Ubuntu().install(it, listOf("curl"))
             jdk.install(it)
+
+            it.safeExecute(
+                "curl --head ${options.jiraAddress}",
+                Duration.ofSeconds(30),
+                Level.DEBUG,
+                Level.DEBUG
+            )
+
             val testingCommand = VirtualUsersJar().testingCommand(
                 jdk = jdk,
                 jarName = jarName,
