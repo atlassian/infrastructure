@@ -67,6 +67,7 @@ class Ubuntu {
         if (pid != null) {
             ssh.safeExecute("kill -9 $pid")
             ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
+            ssh.execute("sudo rm -rf /var/lib/dpkg/updates/*")
         }
     }
 
