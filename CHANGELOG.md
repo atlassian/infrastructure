@@ -29,6 +29,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].
 - Fix `apt-get install` flakes. Fix [JPERF-219].
+- Harden dataset HTTP downloads.
+- Harden `apt-get` downloads.
+- Detect VU -> Jira connectivity early.
 
 [JPERF-569]: https://ecosystem.atlassian.net/browse/JPERF-569
 [JPERF-219]: https://ecosystem.atlassian.net/browse/JPERF-219
