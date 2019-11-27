@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.2...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.3...master
+
+## [4.14.3] - 2019-11-27
+[4.14.3]: https://github.com/atlassian/infrastructure/compare/release-4.14.2...release-4.14.3
 
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].
