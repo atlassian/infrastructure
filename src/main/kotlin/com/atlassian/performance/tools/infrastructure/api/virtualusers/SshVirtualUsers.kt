@@ -35,7 +35,7 @@ class SshVirtualUsers(
     override fun applyLoad(
         options: VirtualUserOptions
     ) {
-        logger.info("Applying load via $name...")
+        logger.debug("Applying load via $name...")
         ssh.newConnection().use {
             Ubuntu().install(it, listOf("curl"))
             jdk.install(it)
@@ -57,7 +57,7 @@ class SshVirtualUsers(
                 options.behavior.load.total + options.behavior.maxOverhead
             )
         }
-        logger.info("$name finished applying load")
+        logger.debug("$name finished applying load")
     }
 
     /**
