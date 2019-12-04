@@ -4,11 +4,16 @@ import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserBehavior
 import com.google.common.util.concurrent.ThreadFactoryBuilder
+import org.apache.logging.log4j.LogManager
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
 class MulticastVirtualUsers<out T : VirtualUsers>(
     val nodes: List<T>
 ) : VirtualUsers {
+    private val logger = LogManager.getLogger(this::class.java)
 
     override fun gatherResults() {
         multicast("gatherResults") { node, _ ->
@@ -52,16 +57,29 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
             throw Exception("$virtualUsers virtual users are not enough to spread into $nodeCount nodes")
         }
         val loadSlices = load.slice(nodeCount)
+        val activeNodes = ConcurrentHashMap.newKeySet<String>()
+
+        val roughTotalTime = options.behavior.load.total.plusSeconds(59)
+        val estimatedFinishStr = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
+
+        logger.info("Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m, should finish by " + estimatedFinishStr + "...")
         multicast("apply load") { node, index ->
-            node.applyLoad(
-                VirtualUserOptions(
-                    target = options.target,
-                    behavior = VirtualUserBehavior.Builder(options.behavior)
-                        .load(loadSlices[index])
-                        .let { if (index > 0) it.skipSetup(true) else it }
-                        .build()
+            activeNodes.add(node.toString())
+            try {
+                node.applyLoad(
+                    VirtualUserOptions(
+                        target = options.target,
+                        behavior = VirtualUserBehavior.Builder(options.behavior)
+                            .load(loadSlices[index])
+                            .let { if (index > 0) it.skipSetup(true) else it }
+                            .build()
+                    )
                 )
-            )
+            } finally {
+                activeNodes.remove(node.toString())
+                logger.info("Remaining active virtual user nodes: ${activeNodes.size}")
+                logger.debug("Remaining active virtual user nodes: $activeNodes")
+            }
         }
     }
 }
