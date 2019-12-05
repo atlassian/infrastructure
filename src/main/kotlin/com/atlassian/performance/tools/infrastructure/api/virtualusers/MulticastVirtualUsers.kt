@@ -65,16 +65,15 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         logger.info("Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m, should finish by " + estimatedFinish + "...")
         multicast("apply load") { node, index ->
             activeNodes.add(node.toString())
+            val nodeOptions = VirtualUserOptions(
+                target = options.target,
+                behavior = VirtualUserBehavior.Builder(options.behavior)
+                    .load(loadSlices[index])
+                    .let { if (index > 0) it.skipSetup(true) else it }
+                    .build()
+            )
             try {
-                node.applyLoad(
-                    VirtualUserOptions(
-                        target = options.target,
-                        behavior = VirtualUserBehavior.Builder(options.behavior)
-                            .load(loadSlices[index])
-                            .let { if (index > 0) it.skipSetup(true) else it }
-                            .build()
-                    )
-                )
+                node.applyLoad(nodeOptions)
             } finally {
                 activeNodes.remove(node.toString())
                 logger.info("Remaining active virtual user nodes: ${activeNodes.size}")
