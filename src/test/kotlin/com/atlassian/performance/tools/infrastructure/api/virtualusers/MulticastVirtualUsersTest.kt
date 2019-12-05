@@ -15,12 +15,12 @@ import java.time.Duration
 import java.time.Duration.ofSeconds
 
 class MulticastVirtualUsersTest {
-    private val load = VirtualUserLoad(
-        virtualUsers = 12,
-        hold = ofSeconds(10),
-        ramp = ofSeconds(16),
-        flat = ofSeconds(55)
-    )
+    private val load = VirtualUserLoad.Builder()
+        .virtualUsers(12)
+        .hold(ofSeconds(10))
+        .ramp(ofSeconds(16))
+        .flat(ofSeconds(55))
+        .build()
     private val options = VirtualUserOptions(
         behavior = VirtualUserBehavior.Builder(JiraSoftwareScenario::class.java)
             .load(load)
