@@ -60,6 +60,20 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         }
         val loadSlices = load.slice(nodeCount)
         logEstimatedFinish(load, options, nodeCount)
+        applySlicedLoad(loadSlices, options)
+    }
+
+    private fun logEstimatedFinish(load: VirtualUserLoad, options: VirtualUserOptions, nodeCount: Int) {
+        val estimatedDuration = load.total + options.behavior.maxOverhead
+        val durationText = "~${estimatedDuration.toMinutes()}m"
+        val finishText = LocalDateTime.now().plus(estimatedDuration).truncatedTo(MINUTES).format(ISO_LOCAL_TIME)
+        logger.info("Applying load using $nodeCount nodes for $durationText, should finish by $finishText...")
+    }
+
+    private fun applySlicedLoad(
+        loadSlices: List<VirtualUserLoad>,
+        options: VirtualUserOptions
+    ) {
         val activeNodes = ConcurrentHashMap.newKeySet<T>()
         multicast("apply load") { node, index ->
             activeNodes.add(node)
@@ -78,12 +92,5 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
                 logger.debug("Remaining active virtual user nodes: $activeNodes")
             }
         }
-    }
-
-    private fun logEstimatedFinish(load: VirtualUserLoad, options: VirtualUserOptions, nodeCount: Int) {
-        val estimatedDuration = load.total + options.behavior.maxOverhead
-        val durationText = "~${estimatedDuration.toMinutes()}m"
-        val finishText = LocalDateTime.now().plus(estimatedDuration).truncatedTo(MINUTES).format(ISO_LOCAL_TIME)
-        logger.info("Applying load using $nodeCount nodes for $durationText, should finish by $finishText...")
     }
 }
