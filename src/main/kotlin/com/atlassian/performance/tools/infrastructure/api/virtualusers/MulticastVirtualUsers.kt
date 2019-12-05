@@ -59,7 +59,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         val loadSlices = load.slice(nodeCount)
         val activeNodes = ConcurrentHashMap.newKeySet<T>()
 
-        val roughTotalTime = options.behavior.load.total.plusSeconds(59)
+        val roughTotalTime = load.total.plus(options.behavior.maxOverhead)
         val estimatedFinish = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
 
         logger.info(
