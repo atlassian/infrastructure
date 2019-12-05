@@ -27,7 +27,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
      */
     private fun multicast(
         label: String,
-        operation: (VirtualUsers, Int) -> Unit
+        operation: (T, Int) -> Unit
     ) {
         val executor = Executors.newFixedThreadPool(
             nodes.size,
@@ -57,14 +57,14 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
             throw Exception("$virtualUsers virtual users are not enough to spread into $nodeCount nodes")
         }
         val loadSlices = load.slice(nodeCount)
-        val activeNodes = ConcurrentHashMap.newKeySet<String>()
+        val activeNodes = ConcurrentHashMap.newKeySet<T>()
 
         val roughTotalTime = options.behavior.load.total.plusSeconds(59)
         val estimatedFinish = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
 
         logger.info("Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m, should finish by " + estimatedFinish + "...")
         multicast("apply load") { node, index ->
-            activeNodes.add(node.toString())
+            activeNodes.add(node)
             val nodeOptions = VirtualUserOptions(
                 target = options.target,
                 behavior = VirtualUserBehavior.Builder(options.behavior)
@@ -75,7 +75,7 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
             try {
                 node.applyLoad(nodeOptions)
             } finally {
-                activeNodes.remove(node.toString())
+                activeNodes.remove(node)
                 logger.info("Remaining active virtual user nodes: ${activeNodes.size}")
                 logger.debug("Remaining active virtual user nodes: $activeNodes")
             }
