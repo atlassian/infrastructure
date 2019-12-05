@@ -62,7 +62,10 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         val roughTotalTime = options.behavior.load.total.plusSeconds(59)
         val estimatedFinish = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
 
-        logger.info("Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m, should finish by " + estimatedFinish + "...")
+        logger.info(
+            "Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m," +
+                " should finish by " + estimatedFinish + "..."
+        )
         multicast("apply load") { node, index ->
             activeNodes.add(node)
             val nodeOptions = VirtualUserOptions(
