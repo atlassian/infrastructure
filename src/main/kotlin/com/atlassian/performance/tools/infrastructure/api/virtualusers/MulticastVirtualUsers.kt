@@ -1,12 +1,14 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
+import com.atlassian.performance.tools.virtualusers.api.VirtualUserLoad
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import com.atlassian.performance.tools.virtualusers.api.config.VirtualUserBehavior
 import com.google.common.util.concurrent.ThreadFactoryBuilder
 import org.apache.logging.log4j.LogManager
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatter.ISO_LOCAL_TIME
+import java.time.temporal.ChronoUnit.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
 
@@ -57,15 +59,8 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
             throw Exception("$virtualUsers virtual users are not enough to spread into $nodeCount nodes")
         }
         val loadSlices = load.slice(nodeCount)
+        logEstimatedFinish(load, options, nodeCount)
         val activeNodes = ConcurrentHashMap.newKeySet<T>()
-
-        val roughTotalTime = load.total.plus(options.behavior.maxOverhead)
-        val estimatedFinish = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
-
-        logger.info(
-            "Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m," +
-                " should finish by " + estimatedFinish + "..."
-        )
         multicast("apply load") { node, index ->
             activeNodes.add(node)
             val nodeOptions = VirtualUserOptions(
@@ -83,5 +78,12 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
                 logger.debug("Remaining active virtual user nodes: $activeNodes")
             }
         }
+    }
+
+    private fun logEstimatedFinish(load: VirtualUserLoad, options: VirtualUserOptions, nodeCount: Int) {
+        val estimatedDuration = load.total + options.behavior.maxOverhead
+        val durationText = "~${estimatedDuration.toMinutes()}m"
+        val finishText = LocalDateTime.now().plus(estimatedDuration).truncatedTo(MINUTES).format(ISO_LOCAL_TIME)
+        logger.info("Applying load using $nodeCount nodes for $durationText, should finish by $finishText...")
     }
 }
