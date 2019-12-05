@@ -60,9 +60,9 @@ class MulticastVirtualUsers<out T : VirtualUsers>(
         val activeNodes = ConcurrentHashMap.newKeySet<String>()
 
         val roughTotalTime = options.behavior.load.total.plusSeconds(59)
-        val estimatedFinishStr = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
+        val estimatedFinish = DateTimeFormatter.ofPattern("HH:mm").format(LocalDateTime.now().plus(roughTotalTime))
 
-        logger.info("Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m, should finish by " + estimatedFinishStr + "...")
+        logger.info("Applying load using ${nodes.size} nodes for ~${roughTotalTime.toMinutes()}m, should finish by " + estimatedFinish + "...")
         multicast("apply load") { node, index ->
             activeNodes.add(node.toString())
             try {
