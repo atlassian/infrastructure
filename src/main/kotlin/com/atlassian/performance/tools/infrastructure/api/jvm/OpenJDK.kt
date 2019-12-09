@@ -14,7 +14,7 @@ class OpenJDK : VersionedJavaDevelopmentKit {
         Ubuntu().install(
             connection,
             listOf("openjdk-8-jdk"),
-            Duration.ofMinutes(5)
+            Duration.ofMinutes(10)
         )
     }
 
