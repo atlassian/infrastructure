@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.3...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.4...master
+
+## [4.14.4] - 2019-12-09
+[4.14.4]: https://github.com/atlassian/infrastructure/compare/release-4.14.3...release-4.14.4
 
 ### Fixed
 - Harden `apt-get` retry cleanup when the process is gone. Help fix [JPERF-219].
