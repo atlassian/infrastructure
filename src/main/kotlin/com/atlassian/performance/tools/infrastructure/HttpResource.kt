@@ -27,7 +27,7 @@ class HttpResource(
     ) {
         Ubuntu().install(ssh, listOf("lftp"), Duration.ofMinutes(2))
         ssh.execute(
-            """lftp -c 'pget -n 64 -c "$uri" -o $destination'""",
+            """lftp -c 'set net:timeout 15; set net:max-retries 10; pget -n 32 -c "$uri" -o $destination'""",
             timeout
         )
     }
