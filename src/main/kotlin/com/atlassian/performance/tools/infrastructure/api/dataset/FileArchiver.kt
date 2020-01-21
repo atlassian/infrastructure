@@ -18,7 +18,11 @@ class FileArchiver {
     ) {
         ubuntu.install(connection, listOf("lbzip2"))
         time("unzip") {
-            connection.execute("tar -I lbzip2 -xf $archive", timeout)
+            val cmd = if (archive.contains("SCALED_ISSUES_UNIMODAL_PG"))
+                "tar -xzvf $archive"
+            else
+                "tar -I lbzip2 -xf $archive"
+            connection.execute(cmd, timeout)
         }
     }
 
