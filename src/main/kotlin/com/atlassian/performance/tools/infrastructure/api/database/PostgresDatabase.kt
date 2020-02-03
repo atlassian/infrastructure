@@ -31,12 +31,11 @@ class PostgresDatabase(
 
     override fun setup(ssh: SshConnection): String {
         val pgData = source.download(ssh)
-        val containerName = image.run(
+        image.run(
             ssh = ssh,
             parameters = "-p 3306:5432 -v `realpath $pgData`:/var/lib/postgresql/data",
             arguments = "-c 'listen_addresses='*'' -c 'max_connections=$maxConnections'"
         )
-        Thread.sleep(Duration.ofSeconds(15).toMillis())
         return pgData
     }
 
