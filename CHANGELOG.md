@@ -26,7 +26,6 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.5...master
 
-## [4.14.5] - 2020-02-03
 [4.14.5]: https://github.com/atlassian/infrastructure/compare/release-4.14.4...release-4.14.5
 
 ### Added

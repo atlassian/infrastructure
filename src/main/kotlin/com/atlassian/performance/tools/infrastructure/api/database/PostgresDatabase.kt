@@ -22,7 +22,7 @@ class PostgresDatabase(
 
     constructor(
         source: DatasetPackage,
-        dataBaseVersion: String = "9.6"
+        dataBaseVersion: String
     ) : this(
         source = source,
         maxConnections = 200,
