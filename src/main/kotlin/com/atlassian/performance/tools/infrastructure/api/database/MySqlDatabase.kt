@@ -61,4 +61,6 @@ class MySqlDatabase(
             Thread.sleep(Duration.ofSeconds(10).toMillis())
         }
     }
+
+    override fun type(): String = "mysql"
 }

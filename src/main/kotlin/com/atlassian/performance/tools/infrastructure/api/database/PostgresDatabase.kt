@@ -45,4 +45,5 @@ class PostgresDatabase(
         Thread.sleep(Duration.ofSeconds(15).toMillis())
     }
 
+    override fun type(): String = "postgres"
 }
