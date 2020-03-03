@@ -29,6 +29,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Fixed
 - Use non-deprecated Kotlin stdlib. Fix [JPERF-466].
 
+### Added
+- Added parametrized `CustomChromium`.
+
 [JPERF-466]: https://ecosystem.atlassian.net/browse/JPERF-466
 
 ## [4.14.4] - 2019-12-09
