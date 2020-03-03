@@ -24,16 +24,19 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.14.5...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.15.0...master
+
+## [4.15.0] - 2020-03-03
+[4.15.0]: https://github.com/atlassian/infrastructure/compare/release-4.14.5...release-4.15.0
+
+### Added
+- Added parametrized `CustomChromium`.
 
 ## [4.14.5] - 2020-03-03
 [4.14.5]: https://github.com/atlassian/infrastructure/compare/release-4.14.4...release-4.14.5
 
 ### Fixed
 - Use non-deprecated Kotlin stdlib. Fix [JPERF-466].
-
-### Added
-- Added parametrized `CustomChromium`.
 
 [JPERF-466]: https://ecosystem.atlassian.net/browse/JPERF-466
 
