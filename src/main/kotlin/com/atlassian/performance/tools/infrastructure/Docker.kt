@@ -26,8 +26,8 @@ internal class Docker {
         )
         val release = ssh.execute("lsb_release -cs").output
         val repository = "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable"
-        ssh.execute("sudo add-apt-repository \"$repository\"")
         ssh.execute("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+        ssh.execute("sudo add-apt-repository \"$repository\"")
         val version = "17.09.0~ce-0~ubuntu"
         ubuntu.install(
             ssh = ssh,
