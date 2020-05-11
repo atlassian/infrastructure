@@ -25,6 +25,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.15.0...master
+### Changed
+- Upgraded Docker to 19.03
+
+### Fixed
+- Fixed compatibility with Ubuntu Eoan ([JPERF-625](https://ecosystem.atlassian.net/browse/JPERF-625))
 
 ## [4.15.0] - 2020-03-03
 [4.15.0]: https://github.com/atlassian/infrastructure/compare/release-4.14.5...release-4.15.0

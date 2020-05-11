@@ -24,11 +24,12 @@ internal class Docker {
             ),
             timeout = Duration.ofMinutes(2)
         )
+        ubuntu.addKey(ssh, "7EA0A9C3F273FCD8")
+
         val release = ssh.execute("lsb_release -cs").output
-        val repository = "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable"
-        ssh.execute("sudo add-apt-repository \"$repository\"")
-        ssh.execute("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
-        val version = "17.09.0~ce-0~ubuntu"
+        ubuntu.addRepository(ssh, "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable");
+
+        val version = "5:19.03.8~3-0~ubuntu-$release"
         ubuntu.install(
             ssh = ssh,
             packages = listOf("docker-ce=$version"),

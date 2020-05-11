@@ -14,9 +14,11 @@ import java.time.Duration.ofMinutes
  * We have no control over the chrome version. We install the latest stable chrome version. It may cause not repeatable builds.
  */
 class Chrome : Browser {
+    private val ubuntu = Ubuntu()
+
     override fun install(ssh: SshConnection) {
-        ssh.execute("wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | sudo apt-key add")
-        ssh.execute("echo 'deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main' | sudo tee -a /etc/apt/sources.list.d/google-chrome.list")
+        ubuntu.addKey(ssh, "78BD65473CB3BD13")
+        ubuntu.addRepository(ssh, "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main")
         ParallelExecutor().execute(
             { Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(5)) },
             {
