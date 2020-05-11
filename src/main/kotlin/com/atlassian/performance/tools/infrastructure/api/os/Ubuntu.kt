@@ -81,4 +81,13 @@ class Ubuntu {
             Iostat()
         )
     }
+
+    fun addKey(ssh: SshConnection, keyId: String) {
+        ssh.execute("sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $keyId")
+    }
+
+    fun addRepository(ssh: SshConnection, repository: String) {
+        install(ssh, listOf("software-properties-common"))
+        ssh.execute("sudo add-apt-repository '$repository'")
+    }
 }
