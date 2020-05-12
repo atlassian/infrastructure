@@ -53,7 +53,7 @@ internal class HttpDatasetPackage(
         val dataset = (newFiles.singleOrNull()
             ?: throw Exception("Expected one new folder. Found $newFiles."))
 
-        return "$destination/$dataset"
+        return ssh.execute("cd '$destination/$dataset' && pwd").output.trimEnd('\n')
     }
 
     override fun toString(): String {
