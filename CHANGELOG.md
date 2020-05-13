@@ -24,11 +24,15 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.15.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.15.1...master
+
+## [4.15.1] - 2020-05-13
+[4.15.1]: https://github.com/atlassian/infrastructure/compare/release-4.15.0...release-4.15.1
 
 ### Fixed
 - Fix compatibility with Ubuntu Eoan ([JPERF-625](https://ecosystem.atlassian.net/browse/JPERF-625)).
 - Upgrade Docker to 19.03, which works with Ubuntu 16-19.
+- Fix dataset location generation.
 
 ## [4.15.0] - 2020-03-03
 [4.15.0]: https://github.com/atlassian/infrastructure/compare/release-4.14.5...release-4.15.0
