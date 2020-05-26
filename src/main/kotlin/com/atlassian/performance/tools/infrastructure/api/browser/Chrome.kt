@@ -18,7 +18,7 @@ class Chrome : Browser {
 
     override fun install(ssh: SshConnection) {
         ubuntu.addKey(ssh, "78BD65473CB3BD13")
-        ubuntu.addRepository(ssh, "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main")
+        ubuntu.addRepository(ssh, "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main", "google-chrome")
         ParallelExecutor().execute(
             { Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(5)) },
             {
