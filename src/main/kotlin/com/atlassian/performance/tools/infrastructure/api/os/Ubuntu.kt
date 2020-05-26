@@ -45,7 +45,7 @@ class Ubuntu {
         val lock = LOCKS.computeIfAbsent(ssh.getHost().ipAddress) { Object() }
         synchronized(lock) {
             try {
-                ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(2))
+                updatePackageIndex(ssh)
                 ssh.execute(
                     cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",
                     timeout = timeout,
@@ -82,12 +82,22 @@ class Ubuntu {
         )
     }
 
-    fun addKey(ssh: SshConnection, keyId: String) {
-        ssh.execute("sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $keyId")
+    private fun updatePackageIndex(ssh: SshConnection) {
+        ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(3))
     }
 
+    fun addKey(ssh: SshConnection, keyId: String) {
+        ssh.execute("sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $keyId 2>&1 | grep -v 'stdout is not a terminal'")
+    }
+
+    @Deprecated("Use the version with declared file name instead", ReplaceWith("addRepository()"))
     fun addRepository(ssh: SshConnection, repository: String) {
         install(ssh, listOf("software-properties-common"))
         ssh.execute("sudo add-apt-repository '$repository'")
+    }
+
+    fun addRepository(ssh: SshConnection, repository: String, sourceFileName: String) {
+        ssh.execute("echo '$repository' | sudo tee /etc/apt/sources.list.d/${sourceFileName}.list")
+        updatePackageIndex(ssh)
     }
 }
