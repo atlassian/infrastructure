@@ -13,7 +13,7 @@ The API covers all public Java types from `com.atlassian.performance.tools.infra
   * [source compatibility]
   * [binary compatibility]
   * [behavioral compatibility] with behavioral contracts expressed via Javadoc
-
+    
 [source compatibility]: http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#source_compatibility
 [binary compatibility]: http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#binary_compatibility
 [behavioral compatibility]: http://cr.openjdk.java.net/~darcy/OpenJdkDevGuide/OpenJdkDevelopersGuide.v0.777.html#behavioral_compatibility
@@ -24,13 +24,17 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.15.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...master
+
+
+## [4.16.0] - 2020-06-02
+[4.16.0]: https://github.com/atlassian/infrastructure/compare/release-4.15.1...release-4.16.0
 
 ### Fixed
-- Spurious apt warnings have been eliminated ([JPERF-642](https://ecosystem.atlassian.net/browse/JPERF-642))
+- Eliminate spurious apt warnings. Fix [JPERF-642](https://ecosystem.atlassian.net/browse/JPERF-642).
 
 # Added
-- a new, recommended method to add new repositories to Ubuntu: com.atlassian.performance.tools.infrastructure.api.os.Ubuntu.addRepository(com.atlassian.performance.tools.ssh.api.SshConnection, java.lang.String, java.lang.String)
+- Add a new recommended method to add new repositories to Ubuntu: `com.atlassian.performance.tools.infrastructure.api.os.Ubuntu.addRepository(com.atlassian.performance.tools.ssh.api.SshConnection, java.lang.String, java.lang.String)`.
 
 ## [4.15.1] - 2020-05-13
 [4.15.1]: https://github.com/atlassian/infrastructure/compare/release-4.15.0...release-4.15.1
