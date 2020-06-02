@@ -100,4 +100,8 @@ class Ubuntu {
         ssh.execute("echo '$repository' | sudo tee /etc/apt/sources.list.d/${sourceFileName}.list")
         updatePackageIndex(ssh)
     }
+
+    fun getDistributionCodename(ssh: SshConnection): String {
+        return ssh.execute(". /etc/lsb-release ; echo \$DISTRIB_CODENAME").output.trimEnd('\n')
+    }
 }
