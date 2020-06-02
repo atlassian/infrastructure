@@ -19,14 +19,13 @@ internal class Docker {
             packages = listOf(
                 "apt-transport-https",
                 "ca-certificates",
-                "curl",
-                "software-properties-common"
+                "curl"
             ),
             timeout = Duration.ofMinutes(2)
         )
         ubuntu.addKey(ssh, "7EA0A9C3F273FCD8")
 
-        val release = ssh.execute("lsb_release -cs").output
+        val release = ubuntu.getDistributionCodename(ssh)
         ubuntu.addRepository(ssh, "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable", "docker");
 
         val version = "5:19.03.8~3-0~ubuntu-$release"
