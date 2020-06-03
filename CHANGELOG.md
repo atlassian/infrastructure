@@ -25,9 +25,12 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...master
-### Fixed
-- Corrected Ubuntu codename detection
 
+## [4.16.1] - 2020-06-03
+[4.16.1]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...release-4.16.1
+
+### Fixed
+- Fix Ubuntu codename detection.
 
 ## [4.16.0] - 2020-06-02
 [4.16.0]: https://github.com/atlassian/infrastructure/compare/release-4.15.1...release-4.16.0
