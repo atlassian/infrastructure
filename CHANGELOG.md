@@ -24,13 +24,21 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.0...master
+
+## [4.17.0] - 2020-06-03
+[4.17.0]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...release-4.17.0
+
+### Fixed
+- Fix Ubuntu codename detection.
+
+### Added
+- Add `Ubuntu.getDistributionCodename`.
 
 ## [4.16.1] - 2020-06-03
 [4.16.1]: https://github.com/atlassian/infrastructure/compare/release-4.16.0...release-4.16.1
 
-### Fixed
-- Fix Ubuntu codename detection.
+This is an erroneous release. Don't use new APIs from this version, switch to `4.17.0` instead.
 
 ## [4.16.0] - 2020-06-02
 [4.16.0]: https://github.com/atlassian/infrastructure/compare/release-4.15.1...release-4.16.0
