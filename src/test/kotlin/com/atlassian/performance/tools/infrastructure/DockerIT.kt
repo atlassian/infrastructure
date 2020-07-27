@@ -16,6 +16,7 @@ class DockerIT {
                 connection.execute("sudo apt install ./$packageFile", Duration.ofMinutes(3))
                 
                 Docker().install(connection)
+                DockerImage("hello-world").run(connection)
             }
         }
     }
