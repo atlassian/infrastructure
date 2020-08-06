@@ -102,7 +102,6 @@ val testIntegration = task<Test>("testIntegration") {
     filter {
         include("**/*IT.class")
     }
-    setForkEvery(1)
     maxParallelForks = 5
 }
 
