@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
     inputs:
       release:
-        description: 'Type `full speed ahead` in order to release'
-        default: 'no release'
+        description: 'Release? yes/no'
+        default: 'no'
 
 jobs:
   build:
@@ -32,7 +32,7 @@ jobs:
         name: test-reports
         path: build/reports/tests
     - name: Release
-      if: github.event.inputs.release == 'full speed ahead'
+      if: github.event.inputs.release == 'yes'
       env:
         atlassian_private_username: ${{ secrets.ATLASSIAN_PRIVATE_USERNAME }}
         atlassian_private_password: ${{ secrets.ATLASSIAN_PRIVATE_PASSWORD }}
