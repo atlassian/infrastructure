@@ -34,5 +34,6 @@ internal class Docker {
             packages = listOf("docker-ce=$version"),
             timeout = Duration.ofMinutes(5)
         )
+        ssh.execute("sudo service docker start")
     }
 }
