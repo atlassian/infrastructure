@@ -1,15 +1,17 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
+import com.github.dockerjava.api.model.Bind
+import com.github.dockerjava.api.model.Volume
 import org.junit.Test
+import org.testcontainers.containers.GenericContainer
 import java.time.Duration
 import java.util.function.Consumer
 
 class DockerIT {
     @Test
     fun installWorks() {
-        val privilegedContainer = SshUbuntuContainer(Consumer { it.setPrivilegedMode(true) })
-        privilegedContainer.start().use { ssh ->
+        SshUbuntuContainer(Consumer { enableNestedDocker(it) }).start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
                 //workaround for a bug in Docker download site for bionic
                 val packageFile = "containerd.io_1.2.2-3_amd64.deb"
@@ -20,5 +22,10 @@ class DockerIT {
                 DockerImage("hello-world").run(connection)
             }
         }
+    }
+
+    private fun enableNestedDocker(container: GenericContainer<*>) {
+        val dockerDaemonSocket = "/var/run/docker.sock"
+        container.setBinds(listOf(Bind(dockerDaemonSocket, Volume(dockerDaemonSocket))))
     }
 }
