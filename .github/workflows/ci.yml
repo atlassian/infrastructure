@@ -5,6 +5,11 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+  workflow_dispatch:
+    inputs:
+      release:
+        description: 'Type `full speed ahead` in order to release'
+        default: 'no release'
 
 jobs:
   build:
@@ -26,3 +31,11 @@ jobs:
       with:
         name: test-reports
         path: build/reports/tests
+    - name: Release
+      if: github.event.inputs.release == 'full speed ahead'
+      env:
+        atlassian_private_username: ${{ secrets.ATLASSIAN_PRIVATE_USERNAME }}
+        atlassian_private_password: ${{ secrets.ATLASSIAN_PRIVATE_PASSWORD }}
+      run: |
+        ./gradlew release
+        ./gradlew publish
