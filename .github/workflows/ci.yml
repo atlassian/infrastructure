@@ -21,3 +21,8 @@ jobs:
         key: ${{ runner.os }}-${{ hashFiles('gradle') }}
     - name: Build
       run: ./gradlew build
+    - name: Upload test reports
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-reports
+        path: build/reports/tests
