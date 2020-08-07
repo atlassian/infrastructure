@@ -1,14 +1,13 @@
 package com.atlassian.performance.tools.infrastructure.api.dataset
 
 import com.atlassian.performance.tools.infrastructure.Ls
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.sshubuntu.SshUbuntuImage.Companion.runSoloUbuntu
 import com.atlassian.performance.tools.ssh.api.Ssh
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.net.URI
 import java.time.Duration
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -21,9 +20,9 @@ class HttpDatasetPackageIT {
             downloadTimeout = Duration.ofMinutes(1)
         )
 
-        val filesInDataset = SshUbuntuContainer().start().use { sshUbuntu ->
-            val ssh = sshUbuntu.toSsh()
-            return@use RandomFilesGenerator(ssh).start().use {
+        val filesInDataset = runSoloUbuntu { sshUbuntu ->
+            val ssh = sshUbuntu.ssh
+            return@runSoloUbuntu RandomFilesGenerator(ssh).start().use {
                 ssh.newConnection().use { connection ->
                     val unpackedPath = dataset.download(connection)
                     Ls().execute(connection, unpackedPath)
