@@ -5,7 +5,9 @@ import com.atlassian.performance.tools.infrastructure.splunk.Log4jJsonifier
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
-
+/**
+ * Runs on Ubuntu 18.04, 20.04 and 22.04.
+ */
 class AtlassianSplunkForwarder(
     private val additionalEventFields: Map<String, String>,
     private val kinesisRoleArn: String
