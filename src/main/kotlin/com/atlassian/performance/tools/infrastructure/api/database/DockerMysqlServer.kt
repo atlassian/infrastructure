@@ -72,6 +72,18 @@ class DockerMysqlServer private constructor(
             extraSqls.add("UPDATE jiradb.cwd_user SET credential='$password' WHERE user_name='$user';")
         }
 
+        fun resetCaptcha(user: String) = apply {
+            resetAttribute(user, "login.totalFailedCount")
+            resetAttribute(user, "login.currentFailedCount")
+        }
+
+        private fun resetAttribute(user: String, attribute: String) {
+            val sql = "UPDATE jiradb.cwd_user_attributes SET attribute_value = '0'" +
+                "WHERE user_id = (SELECT id FROM jiradb.cwd_user WHERE user_name = '$user')" +
+                "AND attribute_name = '$attribute';"
+            extraSqls.add(sql)
+        }
+
         fun build(): DockerMysqlServer = DockerMysqlServer(
             serverRoom,
             mysqlVersion,
