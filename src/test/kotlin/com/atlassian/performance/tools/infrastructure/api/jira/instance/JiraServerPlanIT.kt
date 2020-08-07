@@ -20,6 +20,9 @@ import java.time.Instant
 class JiraServerPlanIT {
 
     private lateinit var infrastructure: DockerInfrastructure
+    private val dataset = Datasets.SmallJiraEightDataset
+    private val jiraVersion = "9.4.9"
+    private val jiraDistribution = PublicJiraSoftwareDistribution(jiraVersion)
 
     @Before
     fun setUp() {
@@ -35,13 +38,13 @@ class JiraServerPlanIT {
     fun shouldStartJiraWithHooks() {
         // given
         val hooks = PreInstallHooks.default()
-            .also { Datasets.SmallJiraEightDataset.hookDataUpgrade(it.postStart) }
+            .also { dataset.hookDataUpgrade(it.postStart) }
         val nodePlan = JiraNodePlan.Builder(infrastructure)
             .hooks(hooks)
             .installation(
                 ParallelInstallation(
-                    jiraHomeSource = JiraHomePackage(Datasets.SmallJiraEightDataset.jiraHome),
-                    productDistribution = PublicJiraSoftwareDistribution("9.0.0"),
+                    jiraHomeSource = JiraHomePackage(dataset.jiraHome),
+                    productDistribution = jiraDistribution,
                     jdk = AdoptOpenJDK()
                 )
             )
@@ -49,7 +52,7 @@ class JiraServerPlanIT {
             .hooks(hooks)
             .build()
         val instanceHooks = PreInstanceHooks.default()
-            .also { Datasets.SmallJiraEightDataset.hookMysql(it, infrastructure) }
+            .also { dataset.hookMysql(it, infrastructure) }
         val jiraServerPlan = JiraServerPlan.Builder(infrastructure)
             .plan(nodePlan)
             .hooks(instanceHooks)

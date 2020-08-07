@@ -11,38 +11,6 @@ import java.net.URI
 import java.time.Duration
 
 class Datasets {
-
-    object JiraSevenDataset {
-        private val s3Bucket = URI("https://s3-eu-west-1.amazonaws.com/")
-            .resolve("jpt-custom-datasets-storage-a008820-datasetbucket-1sjxdtrv5hdhj/")
-            .resolve("dataset-f8dba866-9d1b-492e-b76c-f4a78ac3958c/")
-
-        private val mysql = HttpDatasetPackage(
-            uri = s3Bucket.resolve("database.tar.bz2"),
-            downloadTimeout = Duration.ofMinutes(6)
-        )
-
-        val jiraHome = HttpDatasetPackage(
-            uri = s3Bucket.resolve("jirahome.tar.bz2"),
-            downloadTimeout = Duration.ofMinutes(6)
-        )
-
-        fun hookMysql(preInstanceHooks: PreInstanceHooks, serverRoom: TcpServerRoom) {
-            val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql)
-                .mysqlVersion("5.7.32")
-                .build()
-            preInstanceHooks.insert(mysqlServer)
-        }
-
-        fun hookMysql(postStartHooks: PostStartHooks) {
-            val timeouts = JiraLaunchTimeouts.Builder()
-                .initTimeout(Duration.ofMinutes(4))
-                .build()
-            val dataUpgrade = RestUpgrade(timeouts, "admin", "admin")
-            postStartHooks.insert(dataUpgrade)
-        }
-    }
-
     object SmallJiraEightDataset {
         private val s3Bucket = URI("https://s3-eu-central-1.amazonaws.com/")
             .resolve("jpt-custom-datasets-storage-a008820-datasetbucket-1nrja8d1upind/")
@@ -61,6 +29,14 @@ class Datasets {
         fun hookMysql(preInstanceHooks: PreInstanceHooks, serverRoom: TcpServerRoom) {
             val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql).build()
             preInstanceHooks.insert(mysqlServer)
+        }
+
+        fun hookMysql(postStartHooks: PostStartHooks) {
+            val timeouts = JiraLaunchTimeouts.Builder()
+                .initTimeout(Duration.ofMinutes(4))
+                .build()
+            val dataUpgrade = RestUpgrade(timeouts, "admin", "admin")
+            postStartHooks.insert(dataUpgrade)
         }
 
         fun hookDataUpgrade(postStartHooks: PostStartHooks) {

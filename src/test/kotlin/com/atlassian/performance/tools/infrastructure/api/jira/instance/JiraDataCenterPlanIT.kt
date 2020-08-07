@@ -26,6 +26,9 @@ import java.time.Duration.ofMinutes
 class JiraDataCenterPlanIT {
 
     private lateinit var infrastructure: DockerInfrastructure
+    private val dataset = Datasets.SmallJiraEightDataset
+    private val jiraVersion = "9.4.9"
+    private val jiraDistribution = PublicJiraSoftwareDistribution(jiraVersion)
 
     @Before
     fun setUp() {
@@ -40,15 +43,15 @@ class JiraDataCenterPlanIT {
     @Test
     fun shouldStartDataCenter() {
         // given
-        val jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome)
+        val jiraHomeSource = JiraHomePackage(dataset.jiraHome)
         val nodePlans = listOf(1, 2).map {
             val nodeHooks = PreInstallHooks.default()
-                .also { Datasets.JiraSevenDataset.hookMysql(it.postStart) }
+                .also { dataset.hookMysql(it.postStart) }
             JiraNodePlan.Builder(infrastructure)
                 .installation(
                     ParallelInstallation(
                         jiraHomeSource = jiraHomeSource,
-                        productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                        productDistribution = jiraDistribution,
                         jdk = AdoptOpenJDK()
                     )
                 )
@@ -57,7 +60,7 @@ class JiraDataCenterPlanIT {
                 .build()
         }
         val instanceHooks = PreInstanceHooks.default()
-            .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
+            .also { dataset.hookMysql(it, infrastructure) }
             .also { it.insert(SambaSharedHome(jiraHomeSource, infrastructure)) }
         val dcPlan = JiraDataCenterPlan.Builder(infrastructure)
             .nodePlans(nodePlans)
@@ -99,8 +102,8 @@ class JiraDataCenterPlanIT {
             JiraNodePlan.Builder(infrastructure)
                 .installation(
                     ParallelInstallation(
-                        jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),
-                        productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                        jiraHomeSource = JiraHomePackage(dataset.jiraHome),
+                        productDistribution = jiraDistribution,
                         jdk = AdoptOpenJDK()
                     )
                 )
@@ -126,9 +129,9 @@ class JiraDataCenterPlanIT {
             .map { reports.toPath().relativize(it.toPath()) }
             .toList()
         assertThat(fileTree.map { it.toString() }).contains(
-            "jira-node-1/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+            "jira-node-1/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out",
             "jira-node-1/~/jpt-jstat.log",
-            "jira-node-2/atlassian-jira-software-7.13.0-standalone/logs/catalina.out"
+            "jira-node-2/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out"
         )
         assertThat(fileTree.filter { it.fileName.toString() == "atlassian-jira.log" })
             .`as`("Jira log from $fileTree")
