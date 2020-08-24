@@ -1,5 +1,4 @@
-![CI](https://github.com/atlassian/infrastructure/workflows/CI/badge.svg)
-[![Build Status](https://travis-ci.com/atlassian/infrastructure.svg?branch=master)](https://travis-ci.com/atlassian/infrastructure)
+![CI status](https://github.com/atlassian/infrastructure/workflows/CI/badge.svg)
 
 ## JPT infrastructure
 
