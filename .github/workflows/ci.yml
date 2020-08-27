@@ -38,5 +38,5 @@ jobs:
         atlassian_private_username: ${{ secrets.ATLASSIAN_PRIVATE_USERNAME }}
         atlassian_private_password: ${{ secrets.ATLASSIAN_PRIVATE_PASSWORD }}
       run: |
-        ./gradlew release
+        ./gradlew release -Prelease.customUsername=${{ secrets.GITHUB_TOKEN }}
         ./gradlew publish
