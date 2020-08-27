@@ -35,8 +35,8 @@ jobs:
     - name: Release
       if: github.event.inputs.release == 'yes'
       env:
-        atlassian_private_username: ${{ secrets.ATLASSIAN_PRIVATE_USERNAME }}
-        atlassian_private_password: ${{ secrets.ATLASSIAN_PRIVATE_PASSWORD }}
+        atlassian_private_username: ${{ secrets.ARTIFACTORY_USERNAME }}
+        atlassian_private_password: ${{ secrets.ARTIFACTORY_API_KEY }}
       run: |
         ./gradlew release -Prelease.customUsername=${{ secrets.REPOSITORY_ACCESS_TOKEN }}
         ./gradlew publish
