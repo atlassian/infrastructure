@@ -9,7 +9,7 @@ internal class Docker {
     private val ubuntu = Ubuntu()
 
     /**
-     * See the [official guide](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/#install-docker-ce).
+     * See the [official guide](https://docs.docker.com/engine/install/ubuntu/#install-from-a-package).
      */
     fun install(
         ssh: SshConnection
@@ -19,19 +19,24 @@ internal class Docker {
             packages = listOf(
                 "apt-transport-https",
                 "ca-certificates",
-                "curl"
+                "curl",
+                "gnupg-agent",
+                "software-properties-common"
             ),
             timeout = Duration.ofMinutes(2)
         )
-        ubuntu.addKey(ssh, "7EA0A9C3F273FCD8")
-
-        val release = ubuntu.getDistributionCodename(ssh)
-        ubuntu.addRepository(ssh, "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable", "docker");
-
-        val version = "5:19.03.8~3-0~ubuntu-$release"
+        ssh.execute("curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -")
+        ssh.execute(
+            """
+            sudo add-apt-repository \
+               "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+               $(lsb_release -cs) \
+               stable"
+            """.trimIndent()
+        )
         ubuntu.install(
             ssh = ssh,
-            packages = listOf("docker-ce=$version"),
+            packages = listOf("docker-ce", "docker-ce-cli", "containerd.io"),
             timeout = Duration.ofMinutes(5)
         )
         ssh.execute("sudo service docker status || sudo service docker start")

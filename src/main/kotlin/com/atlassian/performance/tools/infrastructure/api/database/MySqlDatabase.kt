@@ -11,6 +11,7 @@ import java.time.Duration
 import java.time.Instant
 
 /**
+ * Runs on Ubuntu 16.04, 18.04, 19.10 and 20.04.
  * @param maxConnections MySQL `max_connections` parameter.
  */
 class MySqlDatabase(

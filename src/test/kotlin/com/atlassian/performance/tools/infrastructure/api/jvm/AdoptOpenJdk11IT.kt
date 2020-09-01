@@ -1,17 +1,14 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.infrastructure.toSsh
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
+import com.atlassian.performance.tools.infrastructure.sshubuntu.SshUbuntuImage.Companion.runSoloSsh
 import org.junit.Test
 
 class AdoptOpenJdk11IT {
 
     @Test
     fun shouldSupportJstat() {
-        SshUbuntuContainer().start().use { ssh ->
-            ssh.toSsh().newConnection().use { connection ->
-                JstatSupport(AdoptOpenJDK11()).shouldSupportJstat(connection)
-            }
+        runSoloSsh { ssh ->
+            JstatSupport(AdoptOpenJDK11()).shouldSupportJstat(ssh)
         }
     }
 }

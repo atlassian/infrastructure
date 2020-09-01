@@ -4,7 +4,9 @@ import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-
+/**
+ * Runs on Ubuntu 16.04, 18.04, 19.10 and 20.04.
+ */
 class AtlassianSplunkForwarder(
     private val additionalEventFields: Map<String, String>,
     private val kinesisRoleArn: String

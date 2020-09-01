@@ -32,6 +32,9 @@ configurations.all {
                 "org.jetbrains:annotations" -> useVersion("15.0")
                 "com.google.code.findbugs:jsr305" -> useVersion("3.0.2")
                 "org.apache.commons:commons-compress" -> useVersion("1.9")
+                "commons-io:commons-io" -> useVersion("2.6") // shrinkwrap and docker-java conflict
+                "org.bouncycastle:bcpkix-jdk15on" -> useVersion("1.64") // sshj and docker-java conflict
+                "org.bouncycastle:bcprov-jdk15on" -> useVersion("1.64") // sshj and docker-java conflict
             }
             when (requested.group) {
                 "org.jetbrains.kotlin" -> useVersion(kotlinVersion)
@@ -64,7 +67,7 @@ dependencies {
     testCompile("com.atlassian.performance.tools:jira-software-actions:[1.0.0,2.0.0)")
     testCompile("org.hamcrest:hamcrest-library:1.3")
     testCompile("org.assertj:assertj-core:3.11.1")
-    testCompile("com.atlassian.performance.tools:ssh-ubuntu:0.2.2")
+    testCompile("com.github.docker-java:docker-java:3.2.5")
     testCompile("org.rnorth.duct-tape:duct-tape:1.0.7")
     testCompile("org.threeten:threeten-extra:1.5.0")
 }
@@ -73,7 +76,7 @@ fun webdriver(): List<String> = listOf(
     "selenium-support",
     "selenium-chrome-driver"
 ).map { module ->
-    "org.seleniumhq.selenium:$module:3.11.0"
+    "org.seleniumhq.selenium:$module:3.141.59"
 }
 
 fun log4j(

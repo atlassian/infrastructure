@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
+import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -29,7 +30,7 @@ class JstatSupport(
     private val timestampLength = "2018-12-17T14:10:44+00:00 ".length
 
     fun shouldSupportJstat(connection: SshConnection) {
-        connection.execute("apt-get install curl screen -y -qq", Duration.ofMinutes(2))
+        Ubuntu().install(connection, listOf("curl screen"), Duration.ofMinutes(2))
         connection.upload(File(this.javaClass.getResource(jar).toURI()), jarName)
         jdk.install(connection)
         connection.startProcess(jdk.command("-classpath $jarName samples.HelloWorld"))
