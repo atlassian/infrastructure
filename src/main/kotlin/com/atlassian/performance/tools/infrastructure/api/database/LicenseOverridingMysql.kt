@@ -7,9 +7,6 @@ import org.apache.logging.log4j.Logger
 import java.io.File
 import java.net.URI
 import java.nio.file.Files
-import java.io.FileWriter
-import java.io.BufferedWriter
-
 
 /**
  * Removes all licenses from [database] and adds [licenses] instead.
@@ -80,6 +77,8 @@ class LicenseOverridingMysql private constructor(
             )
         }
     }
+
+    override fun type(): String = "mysql"
 }
 
 internal fun createTempLicenseFile(license: String): File {

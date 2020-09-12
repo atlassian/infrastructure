@@ -14,4 +14,9 @@ interface Database {
     fun setup(ssh: SshConnection): String
 
     fun start(jira: URI, ssh: SshConnection)
+
+    /**
+     * @return Database type e.g. mysql
+     */
+    fun type(): String
 }
