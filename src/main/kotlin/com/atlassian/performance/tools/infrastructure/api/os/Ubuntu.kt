@@ -1,12 +1,15 @@
 package com.atlassian.performance.tools.infrastructure.api.os
 
 import com.atlassian.performance.tools.infrastructure.Iostat
-import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.JitterBackoff
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
+import com.atlassian.performance.tools.jvmtasks.api.plus
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import net.jcip.annotations.ThreadSafe
 import org.apache.logging.log4j.Level
 import java.time.Duration
+import java.time.Duration.ofSeconds
 import java.util.concurrent.ConcurrentHashMap
 
 @ThreadSafe
@@ -30,9 +33,7 @@ class Ubuntu {
         }
             .retry(
                 maxAttempts = 7, //we need to accommodate cron-based image updates happening in the background
-                backoff = ExponentialBackoff(
-                    baseBackoff = Duration.ofSeconds(5)
-                )
+                backoff = StaticBackoff(ofSeconds(10)) + JitterBackoff(ofSeconds(5))
             )
     }
 

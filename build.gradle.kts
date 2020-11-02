@@ -48,7 +48,7 @@ dependencies {
 
     implementation("com.atlassian.performance.tools:io:[1.0.0,2.0.0)")
     implementation("com.atlassian.performance.tools:concurrency:[1.0.0,2.0.0)")
-    implementation("com.atlassian.performance.tools:jvm-tasks:[1.0.0,2.0.0)")
+    implementation("com.atlassian.performance.tools:jvm-tasks:[1.2.0, 2.0.0)")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("com.google.guava:guava:23.6-jre")
     implementation("org.apache.httpcomponents:httpclient:4.5.5")
