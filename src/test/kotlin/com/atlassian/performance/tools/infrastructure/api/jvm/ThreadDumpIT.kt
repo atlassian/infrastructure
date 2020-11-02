@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.jvmtasks.api.Backoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions
 import java.time.Duration
@@ -38,10 +38,4 @@ class ThreadDumpTest {
             .first()
             .toInt()
     }
-}
-
-internal class StaticBackoff(
-    private val backOff: Duration
-) : Backoff {
-    override fun backOff(attempt: Int): Duration = backOff
 }

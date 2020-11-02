@@ -1,8 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
-import com.atlassian.performance.tools.infrastructure.api.jvm.StaticBackoff
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers

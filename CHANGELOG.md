@@ -26,6 +26,12 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.1...master
 
+### Fixed
+- Reduce max `Ubuntu.install` backoff from 1270 seconds to 105 seconds. Fix [JPERF-619].
+- Change `Ubuntu.install` backoff from exponential to static + jitter.
+
+[JPERF-619]: https://ecosystem.atlassian.net/browse/JPERF-619
+
 ## [4.17.1] - 2020-08-27
 [4.17.1]: https://github.com/atlassian/infrastructure/compare/release-4.17.0...release-4.17.1
 
