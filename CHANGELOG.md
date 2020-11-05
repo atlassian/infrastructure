@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.2...master
+
+## [4.17.2] - 2020-11-05
+[4.17.2]: https://github.com/atlassian/infrastructure/compare/release-4.17.1...release-4.17.2
 
 ### Fixed
 - Reduce max `Ubuntu.install` backoff from 1270 seconds to 105 seconds. Fix [JPERF-619].
