@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.2...master
 
+### Fixed
+- Bumping version of MySQL to 5.7.32 . Fix for [JPERF-671] 
+
+[JPERF-671]: https://ecosystem.atlassian.net/browse/JPERF-671
+
 ## [4.17.2] - 2020-11-05
 [4.17.2]: https://github.com/atlassian/infrastructure/compare/release-4.17.1...release-4.17.2
 
