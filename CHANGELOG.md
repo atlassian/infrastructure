@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.2...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.3...master
+
+## [4.17.3] - 2020-11-25
+[4.17.3]: https://github.com/atlassian/infrastructure/compare/release-4.17.2...release-4.17.3
 
 ### Fixed
 + Bump MySQL version to 5.7.32. Fix [JPERF-671].
