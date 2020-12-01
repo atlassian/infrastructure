@@ -28,7 +28,7 @@ internal class Docker {
         val release = ubuntu.getDistributionCodename(ssh)
         ubuntu.addRepository(ssh, "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable", "docker");
 
-        val version = "5:19.03.8~3-0~ubuntu-$release"
+        val version = "5:19.03.13~3-0~ubuntu-$release"
         ubuntu.install(
             ssh = ssh,
             packages = listOf("docker-ce=$version"),
