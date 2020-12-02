@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.3...master
 
+### Fixed
++ Bump version of the docker to `5:19.03.13`. Fix [JPERF-664]
+
+[JPERF-664]: https://ecosystem.atlassian.net/browse/JPERF-664
+
 ## [4.17.3] - 2020-11-25
 [4.17.3]: https://github.com/atlassian/infrastructure/compare/release-4.17.2...release-4.17.3
 
