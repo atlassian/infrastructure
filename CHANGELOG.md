@@ -23,8 +23,8 @@ Changing the license is breaking a contract.
 Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
-## [Unrelased]
-[4.17.4]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...master
+## [Unreleased]
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...master
 
 ## [4.17.4] - 2020-12-14
 [4.17.4]: https://github.com/atlassian/infrastructure/compare/release-4.17.3...4.17.4
