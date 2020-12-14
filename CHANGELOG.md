@@ -24,10 +24,13 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.3...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...master
+
+## [4.17.4] - 2020-12-14
+[4.17.4]: https://github.com/atlassian/infrastructure/compare/release-4.17.3...release-4.17.4
 
 ### Fixed
-+ Bump version of the docker to `5:19.03.13`. Fix [JPERF-664]
+- Bump version of the docker to `5:19.03.13`. Fix [JPERF-664].
 
 [JPERF-664]: https://ecosystem.atlassian.net/browse/JPERF-664
 
