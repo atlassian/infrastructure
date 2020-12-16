@@ -24,7 +24,13 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.5...master
+
+## [4.17.5] - 2020-12-15
+[4.17.5]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...release-4.17.5
+
+### Fixed
+- Increase timeout for logstash Docker image installation.
 
 ## [4.17.4] - 2020-12-14
 [4.17.4]: https://github.com/atlassian/infrastructure/compare/release-4.17.3...release-4.17.4
