@@ -1,29 +1,33 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.hook
+package com.atlassian.performance.tools.infrastructure.api.jira.hook.install
 
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.start.PreStartHooks
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-open class PostInstallHooks protected constructor() : PreStartHooks() {
+class PostInstallHooks {
 
-    private val postInstallHooks: Queue<PostInstallHook> = ConcurrentLinkedQueue()
+    private val hooks: Queue<PostInstallHook> = ConcurrentLinkedQueue()
+    val preStart = PreStartHooks()
+    val postStart = preStart.postStart
+    val reports = postStart.reports
 
-    fun hook(
+    fun insert(
         hook: PostInstallHook
     ) {
-        postInstallHooks.add(hook)
+        hooks.add(hook)
     }
 
-    internal fun runPostInstallHooks(
+    internal fun call(
         ssh: SshConnection,
         jira: InstalledJira
     ) {
         while (true) {
-            postInstallHooks
+            hooks
                 .poll()
-                ?.run(ssh, jira, this)
+                ?.call(ssh, jira, this)
                 ?: break
         }
     }

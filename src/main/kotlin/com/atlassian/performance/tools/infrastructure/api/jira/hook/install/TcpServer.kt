@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.hook
+package com.atlassian.performance.tools.infrastructure.api.jira.hook.install
 
 class TcpServer(
     val ip: String,

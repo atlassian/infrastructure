@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.hook.server
+package com.atlassian.performance.tools.infrastructure.api.jira.hook.install
 
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.report.Report
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.report.StaticReport

@@ -1,6 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.server.PreInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PreInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PreInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.TcpServer
 import com.atlassian.performance.tools.ssh.api.DetachedProcess
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.Level
@@ -16,13 +18,13 @@ class JiraNodeHooksTest {
     fun shouldHookDuringListing() {
         val counter = CountingHook()
         val hooks = JiraNodeHooks.empty().apply {
-            hook(counter)
-            hook(HookingHook(counter))
-            hook(counter)
+            preInstall.insert(counter)
+            preInstall.insert(HookingHook(counter))
+            preInstall.insert(counter)
         }
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
-        hooks.runPreInstallHooks(FailingSshConnection(), server)
+        hooks.preInstall.call(FailingSshConnection(), server)
 
         assertThat(counter.count).isEqualTo(3)
     }
@@ -31,13 +33,13 @@ class JiraNodeHooksTest {
     fun shouldHookToTheTailDuringListing() {
         val counter = CountingHook()
         val hooks = JiraNodeHooks.empty().apply {
-            hook(counter)
-            hook(counter)
-            hook(HookingHook(counter))
+            preInstall.insert(counter)
+            preInstall.insert(counter)
+            preInstall.insert(HookingHook(counter))
         }
         val server = TcpServer("doesn't matter", 123, "fake-server")
 
-        hooks.runPreInstallHooks(FailingSshConnection(), server)
+        hooks.preInstall.call(FailingSshConnection(), server)
 
         assertThat(counter.count).isEqualTo(3)
     }
@@ -47,7 +49,7 @@ private class CountingHook : PreInstallHook {
 
     var count = 0
 
-    override fun run(ssh: SshConnection, server: TcpServer, hooks: PreInstallHooks) {
+    override fun call(ssh: SshConnection, server: TcpServer, hooks: PreInstallHooks) {
         count++
     }
 }
@@ -55,8 +57,8 @@ private class CountingHook : PreInstallHook {
 private class HookingHook(
     private val hook: PreInstallHook
 ) : PreInstallHook {
-    override fun run(ssh: SshConnection, server: TcpServer, hooks: PreInstallHooks) {
-        hooks.hook(hook)
+    override fun call(ssh: SshConnection, server: TcpServer, hooks: PreInstallHooks) {
+        hooks.insert(hook)
     }
 }
 

@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.jira.hook.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
@@ -10,7 +10,7 @@ internal class SplunkForwarderHook(
     private val splunk: SplunkForwarder
 ) : PostInstallHook {
 
-    override fun run(
+    override fun call(
         ssh: SshConnection,
         jira: InstalledJira,
         hooks: PostInstallHooks

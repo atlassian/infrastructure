@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
 import com.atlassian.performance.tools.jvmtasks.api.Backoff
@@ -10,7 +10,7 @@ import java.time.Duration
 
 class MysqlConnector : PostInstallHook {
 
-    override fun run(
+    override fun call(
         ssh: SshConnection,
         jira: InstalledJira,
         hooks: PostInstallHooks

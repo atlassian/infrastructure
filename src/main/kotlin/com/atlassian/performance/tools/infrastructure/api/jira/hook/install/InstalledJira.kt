@@ -1,6 +1,5 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.hook.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 
 class InstalledJira(

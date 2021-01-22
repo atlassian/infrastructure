@@ -3,11 +3,10 @@ package com.atlassian.performance.tools.infrastructure.api.jira.hook.start
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.JiraNodeHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.PostStartHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.TcpServer
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.HookedJiraInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.ParallelInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.server.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jvm.S3HostedJdk
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.infrastructure.ubuntu.EarlyUbuntuSysstat
@@ -27,12 +26,15 @@ class HookedJiraStartIT {
     fun shouldStartJiraWithDefaultHooks() {
         // given
         val hooks = JiraNodeHooks.default()
-        val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
-            jiraHomeSource = EmptyJiraHome(),
-            productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
-            jdk = S3HostedJdk()
-        ))
-        val jiraStart = HookedJiraStart(JiraLaunchScript())
+        val jiraInstallation = HookedJiraInstallation(
+            ParallelInstallation(
+                jiraHomeSource = EmptyJiraHome(),
+                productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                jdk = S3HostedJdk()
+            ),
+            hooks.preInstall
+        )
+        val jiraStart = HookedJiraStart(JiraLaunchScript(), hooks.preStart)
         val privatePort = 8080
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(privatePort)
@@ -46,10 +48,10 @@ class HookedJiraStartIT {
             )
             val remoteReports = sshUbuntu.toSsh().newConnection().use { ssh ->
                 // when
-                val installed = jiraInstallation.install(ssh, server, hooks)
-                val started = jiraStart.start(ssh, installed, hooks)
+                val installed = jiraInstallation.install(ssh, server)
+                val started = jiraStart.start(ssh, installed)
                 stop(started, ssh)
-                hooks.listReports().flatMap { it.locate(ssh) }
+                hooks.reports.list().flatMap { it.locate(ssh) }
             }
 
             // then
@@ -72,14 +74,17 @@ class HookedJiraStartIT {
     fun shouldDownloadPartialReportsInCaseOfFailure() {
         // given
         val hooks = JiraNodeHooks.empty().apply {
-            hook(EarlyUbuntuSysstat())
-            hook(FailingHook())
+            preInstall.insert(EarlyUbuntuSysstat())
+            preInstall.postInstall.preStart.postStart.insert(FailingHook())
         }
-        val jiraInstallation = HookedJiraInstallation(ParallelInstallation(
-            jiraHomeSource = EmptyJiraHome(),
-            productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
-            jdk = S3HostedJdk()
-        ))
+        val jiraInstallation = HookedJiraInstallation(
+            ParallelInstallation(
+                jiraHomeSource = EmptyJiraHome(),
+                productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                jdk = S3HostedJdk()
+            ),
+            hooks = hooks.preInstall
+        )
         val privatePort = 8080
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(privatePort)
@@ -94,11 +99,11 @@ class HookedJiraStartIT {
             return@use sshUbuntu.toSsh().newConnection().use useSsh@{ ssh ->
                 // when
                 try {
-                    jiraInstallation.install(ssh, server, hooks)
+                    jiraInstallation.install(ssh, server)
                 } catch (e: Exception) {
                     println("Failed: ${e.message}")
                 }
-                return@useSsh hooks.listReports().flatMap { it.locate(ssh) }
+                return@useSsh hooks.reports.list().flatMap { it.locate(ssh) }
             }
         }
 
@@ -131,7 +136,7 @@ class HookedJiraStartIT {
 }
 
 private class FailingHook : PostStartHook {
-    override fun run(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks) {
+    override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks) {
         throw Exception("Expected failure")
     }
 }

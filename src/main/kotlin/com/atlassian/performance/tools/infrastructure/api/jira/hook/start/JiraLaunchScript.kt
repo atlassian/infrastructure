@@ -1,8 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.hook.start
 
 import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.JiraNodeHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.server.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.StartedJira
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
@@ -10,8 +9,7 @@ class JiraLaunchScript : JiraStart {
 
     override fun start(
         ssh: SshConnection,
-        installed: InstalledJira,
-        hooks: JiraNodeHooks
+        installed: InstalledJira
     ): StartedJira {
         ssh.execute(
             "${installed.jdk.use()}; ${installed.installation}/bin/start-jira.sh",

@@ -1,11 +1,10 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.hook.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.PostInstallHooks
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DisabledAutoBackup : PostInstallHook {
 
-    override fun run(
+    override fun call(
         ssh: SshConnection,
         jira: InstalledJira,
         hooks: PostInstallHooks
