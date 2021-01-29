@@ -1,8 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.jira.hook.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
 import com.atlassian.performance.tools.ssh.api.SshConnection
 

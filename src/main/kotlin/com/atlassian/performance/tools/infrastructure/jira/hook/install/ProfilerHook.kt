@@ -1,11 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.jira.hook.install
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.start.PostStartHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.PostInstallHook
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.install.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.start.PostStartHook
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHook
 import com.atlassian.performance.tools.infrastructure.api.profiler.Profiler
 import com.atlassian.performance.tools.infrastructure.jira.hook.RemoteMonitoringProcessReport
 import com.atlassian.performance.tools.ssh.api.SshConnection

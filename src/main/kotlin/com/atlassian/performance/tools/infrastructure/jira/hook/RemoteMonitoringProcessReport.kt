@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.jira.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.hook.report.Report
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Report
 import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitoringProcess
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
