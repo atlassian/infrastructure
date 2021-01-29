@@ -11,14 +11,12 @@ import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jvm.S3HostedJdk
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.infrastructure.ubuntu.EarlyUbuntuSysstat
-import com.atlassian.performance.tools.jvmtasks.api.Backoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
 import java.nio.file.Files
-import java.time.Duration
 import java.util.function.Consumer
 
 class HookedJiraStartIT {
@@ -140,11 +138,4 @@ private class FailingHook : PostStartHook {
     override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks) {
         throw Exception("Expected failure")
     }
-}
-
-class StaticBackoff(
-    private val backoff: Duration
-) : Backoff {
-
-    override fun backOff(attempt: Int): Duration = backoff
 }
