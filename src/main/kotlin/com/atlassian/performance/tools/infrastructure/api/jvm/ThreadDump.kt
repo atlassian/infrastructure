@@ -26,7 +26,7 @@ class ThreadDump(
      */
     fun gather(connection: SshConnection, destination: String) {
         val threadDumpName = Instant.now().toEpochMilli()
-        val command = "${jdk.use()}; jcmd $pid Thread.print > $destination/${threadDumpName}"
+        val command = "${jdk.use()}; jcmd $pid Thread.print > $destination/$threadDumpName"
         connection.execute("mkdir -p $destination")
         connection.execute(command)
     }

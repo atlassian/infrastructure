@@ -10,7 +10,7 @@ import java.time.temporal.ChronoUnit
 internal class Iostat : OsMetric {
     companion object {
         private val DELAY: Duration = Duration.ofSeconds(2)
-        private val LOG_PATH: String = "~/jpt-iostat.log"
+        private val LOG_PATH: String = "./jpt-iostat.log"
 
         private val TIME = "date -u \"+%d-%m-%Y %H:%M:%S UTC\""
         private val ADD_TIME =

@@ -11,7 +11,7 @@ class Jstat(
     companion object {
         val LOG_FILE_NAME = "jpt-jstat.log"
         private val INTERVAL: Duration = Duration.ofSeconds(2)
-        private val LOG_PATH: String = "~/$LOG_FILE_NAME"
+        private val LOG_PATH: String = "./$LOG_FILE_NAME"
 
         private val TIME = "date -Iseconds"
         private val ADD_TIME =
