@@ -26,8 +26,16 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.5...master
 
+### Added
+Progress on [JPERF-273]:
+- Allow multiple ways of installing Jira via `JiraInstallation`.
+- Represent the information required to use an already installed Jira via `InstalledJira`.
+- Represent a brand-new Jira instance via `EmptyJiraHome`.
+
 ### Fixed
 - Increase network-level retries for Jira/browser downloads. Decrease flakiness of such downloads on Ubuntu on WSL2.
+
+[JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
 
 ## [4.17.5] - 2020-12-15
 [4.17.5]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...release-4.17.5
