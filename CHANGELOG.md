@@ -27,6 +27,8 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.17.5...master
 
 ### Added
+- Point to remote files on SSH hosts via `RemotePath`.
+
 Progress on [JPERF-273]:
 - Allow multiple ways of installing Jira via `JiraInstallation`.
 - Represent the information required to use an already installed Jira via `InstalledJira`.
