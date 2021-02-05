@@ -4,6 +4,8 @@ import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
 import com.atlassian.performance.tools.infrastructure.api.distribution.ProductDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
+import com.atlassian.performance.tools.infrastructure.downloadRemotely
+import com.atlassian.performance.tools.infrastructure.installRemotely
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.util.concurrent.Executors
 
@@ -21,10 +23,10 @@ class ParallelInstallation(
             Thread(runnable, "jira-installation-${runnable.hashCode()}")
         }
         val product = pool.submitWithLogContext("product") {
-            productDistribution.install(ssh, ".")
+            productDistribution.installRemotely(ssh, ".")
         }
         val home = pool.submitWithLogContext("home") {
-            jiraHomeSource.download(ssh)
+            jiraHomeSource.downloadRemotely(ssh)
         }
         val java = pool.submitWithLogContext("java") {
             jdk.also { it.install(ssh) }

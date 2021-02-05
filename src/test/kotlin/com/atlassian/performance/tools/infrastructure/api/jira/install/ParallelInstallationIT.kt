@@ -36,12 +36,13 @@ class ParallelInstallationIT {
                 val installed = jiraInstallation.install(ssh, server)
 
                 // then
-                val serverXml = Files.createTempFile("downloaded-server", ".xml")
-                ssh.download(installed.installation + "/conf/server.xml", serverXml)
-                return@useSsh serverXml
+                return@useSsh installed
+                    .installation
+                    .resolve("conf/server.xml")
+                    .download(Files.createTempFile("downloaded-server", ".xml"))
             }
         }
 
-        assertThat(serverXml.toFile().readText()).contains("<Connector port=\"8080\"")
+        assertThat(serverXml.readText()).contains("<Connector port=\"8080\"")
     }
 }
