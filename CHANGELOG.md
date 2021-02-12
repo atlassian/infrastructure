@@ -32,10 +32,14 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Added
 - Point to remote files on SSH hosts via `RemotePath`.
 
-Progress on [JPERF-273]:
+Fix [JPERF-273]:
 - Allow multiple ways of installing Jira via `JiraInstallation` or starting it via `JiraStart`.
 - Represent the information required to use an already installed Jira via `InstalledJira` or `JiraStart` if started.
 - Represent a brand-new Jira instance via `EmptyJiraHome`.
+- Hook into Jira installation via `PreInstallHooks` and `PostInstallHooks`.
+- Hook into Jira start via `PreStartHooks` and `PostStartHooks`.
+- Let hooks insert new hooks.
+- Locate and download any logs, charts, profiles and other reports via `Report` (rather than hardcoding the paths).
 
 ### Fixed
 - Increase network-level retries for Jira/browser downloads. Decrease flakiness of such downloads on Ubuntu on WSL2.
