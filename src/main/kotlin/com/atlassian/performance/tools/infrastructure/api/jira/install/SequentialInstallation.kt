@@ -5,7 +5,6 @@ import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.downloadRemotely
 import com.atlassian.performance.tools.infrastructure.installRemotely
-import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class SequentialInstallation(
     private val jiraHomeSource: JiraHomeSource,
@@ -14,12 +13,13 @@ class SequentialInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        ssh: SshConnection,
         server: TcpServer
     ): InstalledJira {
-        val installation = productDistribution.installRemotely(ssh, ".")
-        val home = jiraHomeSource.downloadRemotely(ssh)
-        jdk.install(ssh)
-        return InstalledJira(home, installation, jdk, server)
+        server.ssh.newConnection().use { ssh ->
+            val installation = productDistribution.installRemotely(ssh, ".")
+            val home = jiraHomeSource.downloadRemotely(ssh)
+            jdk.install(ssh)
+            return InstalledJira(home, installation, jdk, server)
+        }
     }
 }

@@ -6,7 +6,6 @@ import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.downloadRemotely
 import com.atlassian.performance.tools.infrastructure.installRemotely
-import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.util.concurrent.Executors
 
 class ParallelInstallation(
@@ -16,23 +15,24 @@ class ParallelInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        ssh: SshConnection,
         server: TcpServer
     ): InstalledJira {
-        val pool = Executors.newCachedThreadPool { runnable ->
-            Thread(runnable, "jira-installation-${runnable.hashCode()}")
+        server.ssh.newConnection().use { ssh ->
+            val pool = Executors.newCachedThreadPool { runnable ->
+                Thread(runnable, "jira-installation-${runnable.hashCode()}")
+            }
+            val product = pool.submitWithLogContext("product") {
+                productDistribution.installRemotely(ssh, ".")
+            }
+            val home = pool.submitWithLogContext("home") {
+                jiraHomeSource.downloadRemotely(ssh)
+            }
+            val java = pool.submitWithLogContext("java") {
+                jdk.also { it.install(ssh) }
+            }
+            val jira = InstalledJira(home.get(), product.get(), java.get(), server)
+            pool.shutdownNow()
+            return jira
         }
-        val product = pool.submitWithLogContext("product") {
-            productDistribution.installRemotely(ssh, ".")
-        }
-        val home = pool.submitWithLogContext("home") {
-            jiraHomeSource.downloadRemotely(ssh)
-        }
-        val java = pool.submitWithLogContext("java") {
-            jdk.also { it.install(ssh) }
-        }
-        val jira = InstalledJira(home.get(), product.get(), java.get(), server)
-        pool.shutdownNow()
-        return jira
     }
 }

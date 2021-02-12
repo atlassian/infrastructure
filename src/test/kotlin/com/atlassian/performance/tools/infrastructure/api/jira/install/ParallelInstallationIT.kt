@@ -15,34 +15,39 @@ class ParallelInstallationIT {
     @Test
     fun shouldInstallJira() {
         // given
-        val jiraInstallation = ParallelInstallation(
+        val installation = ParallelInstallation(
             jiraHomeSource = EmptyJiraHome(),
             productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
             jdk = AdoptOpenJDK11()
         )
+
+        testOnServer { server ->
+            // when
+            val installed = installation.install(server)
+
+            // then
+            val serverXml = installed
+                .installation
+                .resolve("conf/server.xml")
+                .download(Files.createTempFile("downloaded-config", ".xml"))
+            assertThat(serverXml.readText()).contains("<Connector port=\"${server.privatePort}\"")
+        }
+    }
+
+    private fun <T> testOnServer(test: (TcpServer) -> T) {
         val privatePort = 8080
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(privatePort)
         })
-        val serverXml = container.start().use useContainer@{ sshUbuntu ->
+        container.start().use { sshUbuntu ->
             val server = TcpServer(
                 "localhost",
                 sshUbuntu.container.getMappedPort(privatePort),
                 privatePort,
-                "my-jira"
+                "my-jira",
+                sshUbuntu.toSsh()
             )
-            return@useContainer sshUbuntu.toSsh().newConnection().use useSsh@{ ssh ->
-                // when
-                val installed = jiraInstallation.install(ssh, server)
-
-                // then
-                return@useSsh installed
-                    .installation
-                    .resolve("conf/server.xml")
-                    .download(Files.createTempFile("downloaded-server", ".xml"))
-            }
+            test(server)
         }
-
-        assertThat(serverXml.readText()).contains("<Connector port=\"8080\"")
     }
 }
