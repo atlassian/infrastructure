@@ -2,7 +2,10 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install
 
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.HookedJiraInstallation
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.HookedJiraStart
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
@@ -11,22 +14,29 @@ import org.junit.Test
 import java.nio.file.Files
 import java.util.function.Consumer
 
-class JiraLaunchScriptIT {
+class HookedJiraStartIT {
 
     @Test
-    fun shouldInstallJira() {
+    fun shouldStartJiraWithHooks() {
         // given
-        val installation = ParallelInstallation(
-            jiraHomeSource = EmptyJiraHome(),
-            productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
-            jdk = AdoptOpenJDK()
+        val hooks = PreInstallHooks.default()
+        val installation = HookedJiraInstallation(
+            ParallelInstallation(
+                jiraHomeSource = EmptyJiraHome(),
+                productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                jdk = AdoptOpenJDK()
+            ),
+            hooks
         )
-        val start = JiraLaunchScript()
+        val start = HookedJiraStart(JiraLaunchScript(), hooks.preStart)
 
         testOnServer { server ->
             // when
             val installed = installation.install(server)
             val started = start.start(installed)
+            val reports = server.ssh.newConnection().use { ssh ->
+                hooks.reports.list().flatMap { it.locate(ssh) }
+            }
 
             // then
             val serverXml = installed
@@ -35,6 +45,13 @@ class JiraLaunchScriptIT {
                 .download(Files.createTempFile("downloaded-config", ".xml"))
             assertThat(serverXml.readText()).contains("<Connector port=\"${server.privatePort}\"")
             assertThat(started.pid).isPositive()
+            assertThat(reports).contains(
+                "jira-home/log/atlassian-jira.log",
+                "./atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+                "~/jpt-jstat.log",
+                "~/jpt-vmstat.log",
+                "~/jpt-iostat.log"
+            )
         }
     }
 
