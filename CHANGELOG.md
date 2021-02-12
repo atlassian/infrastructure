@@ -30,8 +30,8 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - Point to remote files on SSH hosts via `RemotePath`.
 
 Progress on [JPERF-273]:
-- Allow multiple ways of installing Jira via `JiraInstallation`.
-- Represent the information required to use an already installed Jira via `InstalledJira`.
+- Allow multiple ways of installing Jira via `JiraInstallation` or starting it via `JiraStart`.
+- Represent the information required to use an already installed Jira via `InstalledJira` or `JiraStart` if started.
 - Represent a brand-new Jira instance via `EmptyJiraHome`.
 
 ### Fixed
