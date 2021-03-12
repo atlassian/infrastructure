@@ -1,6 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.database
 
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
@@ -38,12 +39,12 @@ internal object Mysql {
         dataDir: String,
         extraParameters: Array<String>,
         extraArguments: Array<String>,
-        hostPort: Int = 3306
+        host: TcpHost? = null
     ) = DockerContainer.Builder()
         .imageName("mysql:5.7.32")
         .pullTimeout(Duration.ofMinutes(5))
         .parameters(
-            "-p $hostPort:3306",
+            host?.let { "-p ${it.publicPort}:${it.privatePort}" } ?: "-p 3306:3306",
             "-v `realpath $dataDir`:/var/lib/mysql",
             *extraParameters
         )

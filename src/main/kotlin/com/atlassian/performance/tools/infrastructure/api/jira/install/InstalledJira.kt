@@ -24,5 +24,5 @@ class InstalledJira(
     /**
      * Hosts Jira. Specifies sockets used by Jira to handle requests.
      */
-    val server: TcpServer
+    val host: TcpHost
 )

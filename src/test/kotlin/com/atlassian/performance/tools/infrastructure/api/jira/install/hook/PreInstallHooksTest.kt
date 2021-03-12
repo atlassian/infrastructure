@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.mock.UnimplementedSshConnection
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -12,7 +12,7 @@ import java.nio.file.Paths
 class PreInstallHooksTest {
 
     private val dummySsh = Ssh(SshHost("localhost", "dummyUser", Paths.get("dummyKey")))
-    private val dummyServer = TcpServer("doesn't matter", 123, "fake-server", dummySsh)
+    private val dummyServer = TcpHost("doesn't matter", 123, "fake-server", dummySsh)
 
     @Test
     fun shouldInsertDuringListing() {
@@ -47,7 +47,7 @@ private class CountingHook : PreInstallHook {
 
     var count = 0
 
-    override fun call(ssh: SshConnection, server: TcpServer, hooks: PreInstallHooks) {
+    override fun call(ssh: SshConnection, host: TcpHost, hooks: PreInstallHooks) {
         count++
     }
 }
@@ -55,7 +55,7 @@ private class CountingHook : PreInstallHook {
 private class InsertingHook(
     private val hook: PreInstallHook
 ) : PreInstallHook {
-    override fun call(ssh: SshConnection, server: TcpServer, hooks: PreInstallHooks) {
+    override fun call(ssh: SshConnection, host: TcpHost, hooks: PreInstallHooks) {
         hooks.insert(hook)
     }
 }

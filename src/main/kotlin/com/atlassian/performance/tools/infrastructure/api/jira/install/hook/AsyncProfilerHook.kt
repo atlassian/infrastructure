@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Report
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHook
@@ -11,9 +11,9 @@ import java.net.URI
 class AsyncProfilerHook : PreInstallHook {
 
     override fun call(
-        ssh: SshConnection,
-        server: TcpServer,
-        hooks: PreInstallHooks
+            ssh: SshConnection,
+            host: TcpHost,
+            hooks: PreInstallHooks
     ) {
         val directory = "async-profiler"
         val downloads = URI("https://github.com/jvm-profiling-tools/async-profiler/releases/download/")

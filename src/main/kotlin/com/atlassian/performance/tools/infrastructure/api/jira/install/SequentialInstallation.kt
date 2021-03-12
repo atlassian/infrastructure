@@ -13,13 +13,13 @@ class SequentialInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        server: TcpServer
+            host: TcpHost
     ): InstalledJira {
-        server.ssh.newConnection().use { ssh ->
+        host.ssh.newConnection().use { ssh ->
             val installation = productDistribution.installRemotely(ssh, ".")
             val home = jiraHomeSource.downloadRemotely(ssh)
             jdk.install(ssh)
-            return InstalledJira(home, installation, jdk, server)
+            return InstalledJira(home, installation, jdk, host)
         }
     }
 }

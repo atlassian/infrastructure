@@ -21,7 +21,7 @@ class JvmConfig(
             connection = ssh,
             config = config,
             gcLog = gcLog,
-            jiraIp = jira.server.ip
+            jiraIp = jira.host.ip
         )
         val report = FileListing(gcLog.path("*"))
         hooks.reports.add(report)
