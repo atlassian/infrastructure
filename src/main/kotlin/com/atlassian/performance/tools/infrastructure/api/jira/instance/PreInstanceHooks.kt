@@ -11,7 +11,7 @@ class PreInstanceHooks(
     private val hooks: Queue<PreInstanceHook> = ConcurrentLinkedQueue()
     val postInstance = PostInstanceHooks(nodes)
 
-    fun hook(hook: PreInstanceHook) {
+    fun insert(hook: PreInstanceHook) {
         hooks.add(hook)
     }
 

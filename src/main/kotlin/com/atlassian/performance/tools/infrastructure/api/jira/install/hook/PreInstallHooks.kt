@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
@@ -21,13 +21,13 @@ class PreInstallHooks private constructor(
     }
 
     internal fun call(
-        ssh: SshConnection,
-        server: TcpServer
+            ssh: SshConnection,
+            host: TcpHost
     ) {
         while (true) {
             hooks
                 .poll()
-                ?.call(ssh, server, this)
+                ?.call(ssh, host, this)
                 ?: break
         }
     }

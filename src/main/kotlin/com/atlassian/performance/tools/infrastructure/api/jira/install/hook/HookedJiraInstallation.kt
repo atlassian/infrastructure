@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.JiraInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 
 class HookedJiraInstallation(
     private val installation: JiraInstallation,
@@ -10,13 +10,13 @@ class HookedJiraInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        server: TcpServer
+        host: TcpHost
     ): InstalledJira {
-        server.ssh.newConnection().use { ssh ->
-            hooks.call(ssh, server)
+        host.ssh.newConnection().use { ssh ->
+            hooks.call(ssh, host)
         }
-        val installed = installation.install(server)
-        server.ssh.newConnection().use { ssh ->
+        val installed = installation.install(host)
+        host.ssh.newConnection().use { ssh ->
             hooks.postInstall.call(ssh, installed)
         }
         return installed

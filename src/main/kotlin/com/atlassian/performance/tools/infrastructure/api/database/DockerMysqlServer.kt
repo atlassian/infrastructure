@@ -1,8 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
+import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PostInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PostInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
@@ -16,10 +17,9 @@ import org.apache.logging.log4j.Logger
 import java.net.URI
 import java.time.Duration
 import java.time.Instant
-import java.util.function.Supplier
 
 class DockerMysqlServer private constructor(
-    private val serverSupplier: Supplier<TcpServer>,
+    private val infrastructure: Infrastructure,
     private val source: DatasetPackage,
     private val dockerImage: DockerImage,
     private val maxConnections: Int
@@ -28,8 +28,8 @@ class DockerMysqlServer private constructor(
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     override fun call(hooks: PreInstanceHooks) {
-        val server = serverSupplier.get()
-        server.ssh.newConnection().use { setup(it, server.publicPort) }
+        val server = infrastructure.serve(3306, "mysql")
+        server.ssh.newConnection().use { setup(it, server) }
         hooks.nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.ip))
             node.postInstall.insert(MysqlConnector())
@@ -37,11 +37,11 @@ class DockerMysqlServer private constructor(
         hooks.postInstance.insert(FixJiraUriViaMysql(server.ssh))
     }
 
-    private fun setup(ssh: SshConnection, publicPort: Int) {
+    private fun setup(ssh: SshConnection, host: TcpHost) {
         val mysqlData = source.download(ssh)
         dockerImage.run(
             ssh = ssh,
-            parameters = "-p $publicPort:3306 -v `realpath $mysqlData`:/var/lib/mysql",
+            parameters = "-p ${host.publicPort}:${host.privatePort} -v `realpath $mysqlData`:/var/lib/mysql",
             arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
         Ubuntu().install(ssh, listOf("mysql-client"))
@@ -56,7 +56,7 @@ class DockerMysqlServer private constructor(
     }
 
     class Builder(
-        private var serverSupplier: Supplier<TcpServer>,
+        private var infrastructure: Infrastructure,
         private var source: DatasetPackage
     ) {
 
@@ -65,13 +65,13 @@ class DockerMysqlServer private constructor(
             .build()
         private var maxConnections: Int = 151
 
-        fun serverSupplier(serverSupplier: Supplier<TcpServer>) = apply { this.serverSupplier = serverSupplier }
+        fun infrastructure(infrastructure: Infrastructure) = apply { this.infrastructure = infrastructure }
         fun source(source: DatasetPackage) = apply { this.source = source }
         fun dockerImage(dockerImage: DockerImage) = apply { this.dockerImage = dockerImage }
         fun maxConnections(maxConnections: Int) = apply { this.maxConnections = maxConnections }
 
         fun build(): DockerMysqlServer = DockerMysqlServer(
-            serverSupplier,
+            infrastructure,
             source,
             dockerImage,
             maxConnections

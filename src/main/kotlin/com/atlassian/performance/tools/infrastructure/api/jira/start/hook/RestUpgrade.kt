@@ -17,7 +17,7 @@ class RestUpgrade(
 
     override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks) {
         val threadDump = ThreadDump(jira.pid, jira.installed.jdk)
-        val privatePort = jira.installed.server.privatePort
+        val privatePort = jira.installed.host.privatePort
         val upgradesEndpoint = URI("http://$adminUsername:$adminPassword@localhost:$privatePort/rest/api/2/upgrade")
         hooks.reports.add(FileListing("thread-dumps/*"))
         waitForStatusToChange(

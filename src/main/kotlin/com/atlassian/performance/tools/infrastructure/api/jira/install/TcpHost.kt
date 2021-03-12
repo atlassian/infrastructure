@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.ssh.api.Ssh
 /**
  * Has open TCP sockets.
  */
-class TcpServer(
+class TcpHost(
     val ip: String,
     val publicPort: Int,
     val privatePort: Int,

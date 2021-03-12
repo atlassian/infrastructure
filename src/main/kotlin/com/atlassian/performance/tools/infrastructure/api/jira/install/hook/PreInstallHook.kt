@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
@@ -9,13 +9,13 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 interface PreInstallHook {
 
     /**
-     * @param [ssh] connects to the [server]
-     * @param [server] will install Jira
+     * @param [ssh] connects to the [host]
+     * @param [host] will install Jira
      * @param [hooks] inserts future hooks and reports
      */
     fun call(
-        ssh: SshConnection,
-        server: TcpServer,
-        hooks: PreInstallHooks
+            ssh: SshConnection,
+            host: TcpHost,
+            hooks: PreInstallHooks
     )
 }

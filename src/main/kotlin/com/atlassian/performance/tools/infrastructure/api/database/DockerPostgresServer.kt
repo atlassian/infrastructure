@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpServer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -11,7 +11,7 @@ import java.time.Duration
 import java.util.function.Supplier
 
 class DockerPostgresServer private constructor(
-    private val serverSupplier: Supplier<TcpServer>,
+    private val hostSupplier: Supplier<TcpHost>,
     private val dockerImage: DockerImage,
     private val maxConnections: Int
 ) : PreInstanceHook {
@@ -19,7 +19,7 @@ class DockerPostgresServer private constructor(
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     override fun call(hooks: PreInstanceHooks) {
-        val server = serverSupplier.get()
+        val server = hostSupplier.get()
         server.ssh.newConnection().use { setup(it) }
         hooks.nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.ip))
@@ -46,7 +46,7 @@ class DockerPostgresServer private constructor(
     }
 
     class Builder(
-        private var serverSupplier: Supplier<TcpServer>
+        private var hostSupplier: Supplier<TcpHost>
     ) {
 
         private var dockerImage = DockerImage.Builder("postgres:9.6.15")
@@ -54,12 +54,12 @@ class DockerPostgresServer private constructor(
             .build()
         private var maxConnections: Int = 200
 
-        fun serverSupplier(serverSupplier: Supplier<TcpServer>) = apply { this.serverSupplier = serverSupplier }
+        fun serverSupplier(hostSupplier: Supplier<TcpHost>) = apply { this.hostSupplier = hostSupplier }
         fun dockerImage(dockerImage: DockerImage) = apply { this.dockerImage = dockerImage }
         fun maxConnections(maxConnections: Int) = apply { this.maxConnections = maxConnections }
 
         fun build(): DockerPostgresServer = DockerPostgresServer(
-            serverSupplier,
+            hostSupplier,
             dockerImage,
             maxConnections
         )

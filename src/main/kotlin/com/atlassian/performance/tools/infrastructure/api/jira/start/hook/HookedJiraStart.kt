@@ -12,11 +12,11 @@ class HookedJiraStart(
     override fun start(
         installed: InstalledJira
     ): StartedJira {
-        installed.server.ssh.newConnection().use { ssh ->
+        installed.host.ssh.newConnection().use { ssh ->
             hooks.call(ssh, installed)
         }
         val started = start.start(installed)
-        installed.server.ssh.newConnection().use { ssh ->
+        installed.host.ssh.newConnection().use { ssh ->
             hooks.postStart.call(ssh, started)
         }
         return started
