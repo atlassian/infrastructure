@@ -30,7 +30,7 @@ class HookedJiraStartIT {
         )
         val start = HookedJiraStart(JiraLaunchScript(), hooks.preStart)
 
-        testOnServer { server ->
+        testOnServer("jira", 8080) { server ->
             // when
             val installed = installation.install(server)
             val started = start.start(installed)
@@ -55,8 +55,50 @@ class HookedJiraStartIT {
         }
     }
 
-    private fun <T> testOnServer(test: (TcpServer) -> T) {
-        val privatePort = 8080
+    @Test
+    fun shouldStartDataCenter() {
+        // given
+        val hooks = PreInstallHooks.default()
+        val installation = HookedJiraInstallation(
+            ParallelInstallation(
+                jiraHomeSource = EmptyJiraHome(),
+                productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                jdk = AdoptOpenJDK()
+            ),
+            hooks
+        )
+        val start = HookedJiraStart(JiraLaunchScript(), hooks.preStart)
+
+        testOnServer("jira1", 8080) { jira1 ->
+            testOnServer("jira2", 8080) { jira2 ->
+                testOnServer("mysql", 3306) { mysql ->
+                    // when
+                    val installed = installation.install(server)
+                    val started = start.start(installed)
+                    val reports = server.ssh.newConnection().use { ssh ->
+                        hooks.reports.list().flatMap { it.locate(ssh) }
+                    }
+
+                    // then
+                    val serverXml = installed
+                        .installation
+                        .resolve("conf/server.xml")
+                        .download(Files.createTempFile("downloaded-config", ".xml"))
+                    assertThat(serverXml.readText()).contains("<Connector port=\"${server.privatePort}\"")
+                    assertThat(started.pid).isPositive()
+                    assertThat(reports).contains(
+                        "jira-home/log/atlassian-jira.log",
+                        "./atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+                        "~/jpt-jstat.log",
+                        "~/jpt-vmstat.log",
+                        "~/jpt-iostat.log"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun <T> testOnServer(name: String, privatePort: Int, test: (TcpServer) -> T) {
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(privatePort)
         })
@@ -65,7 +107,7 @@ class HookedJiraStartIT {
                 "localhost",
                 sshUbuntu.container.getMappedPort(privatePort),
                 privatePort,
-                "my-jira",
+                name,
                 sshUbuntu.toSsh()
             )
             test(server)
