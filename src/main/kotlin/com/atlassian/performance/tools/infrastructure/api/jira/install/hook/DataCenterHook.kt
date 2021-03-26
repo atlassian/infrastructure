@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
 import com.atlassian.performance.tools.infrastructure.api.jira.SharedHome
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DataCenterHook(
@@ -12,7 +13,8 @@ class DataCenterHook(
     override fun call(
         ssh: SshConnection,
         jira: InstalledJira,
-        hooks: PostInstallHooks
+        hooks: PostInstallHooks,
+        reports: Reports
     ) {
         val localSharedHome = sharedHome.localSharedHome
         sharedHome.mount(ssh)

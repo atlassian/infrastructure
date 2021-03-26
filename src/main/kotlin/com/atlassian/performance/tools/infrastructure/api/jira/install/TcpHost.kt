@@ -11,17 +11,4 @@ class TcpHost(
     val privatePort: Int,
     val name: String,
     val ssh: Ssh
-) {
-    constructor(
-        ip: String,
-        port: Int,
-        name: String,
-        ssh: Ssh
-    ) : this(
-        ip,
-        port,
-        port,
-        name,
-        ssh
-    )
-}
+)

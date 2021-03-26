@@ -1,6 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.docker
 
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
@@ -29,7 +31,11 @@ class Docker private constructor(
         ubuntu.addKey(ssh, "7EA0A9C3F273FCD8")
 
         val release = ubuntu.getDistributionCodename(ssh)
-        ubuntu.addRepository(ssh, "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable", "docker");
+        ubuntu.addRepository(
+            ssh,
+            "deb [arch=amd64] https://download.docker.com/linux/ubuntu $release stable",
+            "docker"
+        );
 
         val version = "5:19.03.13~3-0~ubuntu-$release"
         ubuntu.install(
@@ -38,6 +44,9 @@ class Docker private constructor(
             timeout = mainPackageTimeout
         )
         ssh.execute("sudo service docker status || sudo service docker start")
+        IdempotentAction("poll docker") {
+            ssh.execute("sudo docker ps")
+        }.retry(2, StaticBackoff(Duration.ofSeconds(1)))
     }
 
     class Builder {

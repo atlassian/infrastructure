@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraNodeConfig
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHooks
 import com.atlassian.performance.tools.infrastructure.jira.install.hook.ProfilerHook
 import com.atlassian.performance.tools.infrastructure.jira.install.hook.SplunkForwarderHook
@@ -15,7 +16,6 @@ class PostInstallHooks private constructor(
 
     private val hooks: Queue<PostInstallHook> = ConcurrentLinkedQueue()
     val postStart = preStart.postStart
-    val reports = postStart.reports
 
     fun insert(
         hook: PostInstallHook
@@ -25,12 +25,13 @@ class PostInstallHooks private constructor(
 
     internal fun call(
         ssh: SshConnection,
-        jira: InstalledJira
+        jira: InstalledJira,
+        reports: Reports
     ) {
         while (true) {
             hooks
                 .poll()
-                ?.call(ssh, jira, this)
+                ?.call(ssh, jira, this, reports)
                 ?: break
         }
     }

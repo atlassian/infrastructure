@@ -1,64 +1,49 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
-import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
-import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
-import com.atlassian.performance.tools.infrastructure.api.jira.install.JiraInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.HookedJiraInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
-import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraStart
+import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.HookedJiraStart
-import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
 import java.net.URI
-import java.util.function.Supplier
 
 class JiraServerPlan private constructor(
+    private val plan: JiraNodePlan,
     private val infrastructure: Infrastructure,
-    val hooks: PreInstallHooks,
-    val installation: JiraInstallation,
-    val start: JiraStart
-) : Supplier<JiraInstance> {
+    private val hooks: PreInstanceHooks
+) : JiraInstancePlan {
 
-    override fun get(): JiraServer {
+    private val reports: Reports = Reports()
+
+    override fun materialize(): JiraInstance {
+        val nodeHooks = listOf(plan).map { it.hooks }
+        hooks.call(nodeHooks, reports)
         val jiraNode = infrastructure.serve(8080, "jira-node")
-        val installed = installation.install(jiraNode)
-        val started = start.start(installed)
-        return JiraServer(started)
+        val installed = plan.installation.install(jiraNode, reports)
+        val started = plan.start.start(installed, reports)
+        val instance = JiraServer(started)
+        hooks.postInstance.call(instance, reports)
+        return instance
     }
 
-    class JiraServer(
-        val node: StartedJira
+    override fun report(): Reports = reports.copy()
+
+    private class JiraServer(
+        node: StartedJira
     ) : JiraInstance {
         override val address: URI = node.installed.host.run { URI("http://$ip:$publicPort/") }
+        override val nodes: List<StartedJira> = listOf(node)
     }
 
     class Builder(
         private var infrastructure: Infrastructure
     ) {
-        private var hooks: PreInstallHooks = PreInstallHooks.default()
-        private var installation: JiraInstallation = HookedJiraInstallation(
-            ParallelInstallation(
-                EmptyJiraHome(),
-                PublicJiraSoftwareDistribution("7.13.0"),
-                OracleJDK()
-            ),
-            hooks
-        )
-        private var start: JiraStart = HookedJiraStart(JiraLaunchScript(), hooks.preStart)
+        private var plan: JiraNodePlan = JiraNodePlan.Builder().build()
+        private var hooks: PreInstanceHooks = PreInstanceHooks.default()
 
+        fun plan(plan: JiraNodePlan) = apply { this.plan = plan }
         fun infrastructure(infrastructure: Infrastructure) = apply { this.infrastructure = infrastructure }
-        fun hooks(hooks: PreInstallHooks) = apply { this.hooks = hooks } // TODO this doesn't affect the start or installation
-        fun installation(installation: JiraInstallation) = apply { this.installation = installation }
-        fun start(start: JiraStart) = apply { this.start = start }
+        fun hooks(hooks: PreInstanceHooks) = apply { this.hooks = hooks }
 
-        fun build() = JiraServerPlan(
-            infrastructure = infrastructure,
-            hooks = hooks,
-            installation = installation,
-            start = start
-        )
+        fun build(): JiraInstancePlan = JiraServerPlan(plan, infrastructure, hooks)
     }
 }

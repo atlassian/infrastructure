@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.start.hook
 
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraLaunchTimeouts
 import com.atlassian.performance.tools.infrastructure.api.jira.report.FileListing
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jvm.ThreadDump
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -15,11 +16,11 @@ class RestUpgrade(
     private val adminPassword: String
 ) : PostStartHook {
 
-    override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks) {
+    override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks, reports: Reports) {
         val threadDump = ThreadDump(jira.pid, jira.installed.jdk)
         val privatePort = jira.installed.host.privatePort
         val upgradesEndpoint = URI("http://$adminUsername:$adminPassword@localhost:$privatePort/rest/api/2/upgrade")
-        hooks.reports.add(FileListing("thread-dumps/*"))
+        reports.add(FileListing("thread-dumps/*"), jira.installed.host)
         waitForStatusToChange(
             statusQuo = "000",
             timeout = timeouts.offlineTimeout,

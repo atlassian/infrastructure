@@ -2,8 +2,10 @@ package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -18,10 +20,10 @@ class DockerPostgresServer private constructor(
 
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    override fun call(hooks: PreInstanceHooks) {
+    override fun call(nodes: List<PreInstallHooks>, hooks: PreInstanceHooks, reports: Reports) {
         val server = hostSupplier.get()
         server.ssh.newConnection().use { setup(it) }
-        hooks.nodes.forEach { node ->
+        nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.ip))
         }
     }
