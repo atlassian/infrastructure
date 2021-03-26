@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Report
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHook
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHooks
@@ -11,9 +12,10 @@ import java.net.URI
 class AsyncProfilerHook : PreInstallHook {
 
     override fun call(
-            ssh: SshConnection,
-            host: TcpHost,
-            hooks: PreInstallHooks
+        ssh: SshConnection,
+        host: TcpHost,
+        hooks: PreInstallHooks,
+        reports: Reports
     ) {
         val directory = "async-profiler"
         val downloads = URI("https://github.com/jvm-profiling-tools/async-profiler/releases/download/")
@@ -36,11 +38,12 @@ private class InstalledAsyncProfiler(
     override fun call(
         ssh: SshConnection,
         jira: StartedJira,
-        hooks: PostStartHooks
+        hooks: PostStartHooks,
+        reports: Reports
     ) {
         ssh.execute("$profilerPath -b 20000000 start ${jira.pid}")
         val profiler = StartedAsyncProfiler(jira.pid, profilerPath)
-        hooks.reports.add(profiler)
+        reports.add(profiler, jira.installed.host)
     }
 }
 

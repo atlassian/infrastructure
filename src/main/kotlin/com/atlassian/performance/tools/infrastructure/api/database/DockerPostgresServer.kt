@@ -5,8 +5,10 @@ import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -21,10 +23,11 @@ private val infrastructure: Infrastructure,
 
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    override fun call(hooks: PreInstanceHooks) {
+    override fun call(nodes: List<PreInstallHooks>, hooks: PreInstanceHooks, reports: Reports) {
+
         val server = infrastructure.serve(5432, "postgres")
         server.ssh.newConnection().use { setup(it, server) }
-        hooks.nodes.forEach { node ->
+        nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.ip))
         }
     }
@@ -34,7 +37,7 @@ private val infrastructure: Infrastructure,
         val containerName = DockerContainer.Builder()
             .imageName("postgres:9.6.15")
             .pullTimeout(ofMinutes(5))
-            .parameters(with(server) {"-p $publicPort:$privatePort"}, "-v `realpath $data`:/${TODO("download and mount Postgres data")}")
+            .parameters(with(server) {"-p $privatePort:$publicPort"}, "-v `realpath $data`:/${TODO("download and mount Postgres data")}")
             .arguments("-c 'listen_addresses='*''", "-c 'max_connections=$maxConnections'")
             .build()
             .run(ssh)

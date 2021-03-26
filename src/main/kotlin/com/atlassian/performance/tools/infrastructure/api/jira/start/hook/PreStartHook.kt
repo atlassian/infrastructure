@@ -1,6 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.start.hook
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
@@ -11,11 +12,13 @@ interface PreStartHook {
     /**
      * @param [ssh] connects to the [jira]
      * @param [jira] points to the installed Jira
-     * @param [hooks] inserts future hooks and reports
+     * @param [hooks] inserts future hooks
+     * @param [reports] accumulates reports
      */
     fun call(
         ssh: SshConnection,
         jira: InstalledJira,
-        hooks: PreStartHooks
+        hooks: PreStartHooks,
+        reports: Reports
     )
 }

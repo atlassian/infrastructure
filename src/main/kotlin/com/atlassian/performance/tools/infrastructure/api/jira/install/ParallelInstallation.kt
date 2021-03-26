@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
 import com.atlassian.performance.tools.infrastructure.api.distribution.ProductDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.downloadRemotely
 import com.atlassian.performance.tools.infrastructure.installRemotely
@@ -15,7 +16,8 @@ class ParallelInstallation(
 ) : JiraInstallation {
 
     override fun install(
-            host: TcpHost
+        host: TcpHost,
+        reports: Reports
     ): InstalledJira {
         host.ssh.newConnection().use { ssh ->
             val pool = Executors.newCachedThreadPool { runnable ->

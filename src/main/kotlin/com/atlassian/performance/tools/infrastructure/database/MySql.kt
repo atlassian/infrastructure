@@ -44,7 +44,7 @@ internal object Mysql {
         .imageName("mysql:5.7.32")
         .pullTimeout(Duration.ofMinutes(5))
         .parameters(
-            host?.let { "-p ${it.publicPort}:${it.privatePort}" } ?: "-p 3306:3306",
+            host?.let { "-p ${it.privatePort}:${it.publicPort}" } ?: "-p 3306:3306",
             "-v `realpath $dataDir`:/var/lib/mysql",
             *extraParameters
         )

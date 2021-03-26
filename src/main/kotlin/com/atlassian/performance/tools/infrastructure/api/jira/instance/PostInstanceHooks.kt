@@ -1,13 +1,10 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
-import java.net.URI
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class PostInstanceHooks(
-    val nodes: List<PreInstallHooks>
-) {
+class PostInstanceHooks private constructor() {
 
     private val hooks: Queue<PostInstanceHook> = ConcurrentLinkedQueue()
 
@@ -15,12 +12,18 @@ class PostInstanceHooks(
         hooks.add(hook)
     }
 
-    fun call(instance: URI) {
+    fun call(instance: JiraInstance, reports: Reports) {
         while (true) {
             hooks
                 .poll()
-                ?.call(instance, this)
+                ?.call(instance, this, reports)
                 ?: break
         }
+    }
+
+
+    companion object Factory {
+        fun default(): PostInstanceHooks = empty()
+        fun empty(): PostInstanceHooks = PostInstanceHooks()
     }
 }

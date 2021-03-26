@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentLinkedQueue
 class PostStartHooks private constructor() {
 
     private val hooks: Queue<PostStartHook> = ConcurrentLinkedQueue()
-    val reports = Reports()
 
     fun insert(
         hook: PostStartHook
@@ -19,12 +18,13 @@ class PostStartHooks private constructor() {
 
     internal fun call(
         ssh: SshConnection,
-        jira: StartedJira
+        jira: StartedJira,
+        reports: Reports
     ) {
         while (true) {
             hooks
                 .poll()
-                ?.call(ssh, jira, this)
+                ?.call(ssh, jira, this, reports)
                 ?: break
         }
     }

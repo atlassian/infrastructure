@@ -1,13 +1,15 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.start
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.ssh.api.Ssh
 import java.time.Duration
 
 class JiraLaunchScript : JiraStart {
 
     override fun start(
-        installed: InstalledJira
+        installed: InstalledJira,
+        reports: Reports
     ): StartedJira {
         val installation = installed.installation
         Ssh(installation.host).newConnection().use { ssh ->

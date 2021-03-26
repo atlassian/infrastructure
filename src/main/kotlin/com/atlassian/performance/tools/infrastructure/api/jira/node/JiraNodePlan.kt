@@ -5,43 +5,40 @@ import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
 import com.atlassian.performance.tools.infrastructure.api.jira.install.JiraInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.HookedJiraInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraStart
-import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.HookedJiraStart
 import com.atlassian.performance.tools.infrastructure.api.jvm.OracleJDK
+import com.atlassian.performance.tools.infrastructure.jira.install.hook.HookedJiraInstallation
+import com.atlassian.performance.tools.infrastructure.jira.start.hook.HookedJiraStart
 import net.jcip.annotations.NotThreadSafe
 
 class JiraNodePlan private constructor(
-    val hooks: PreInstallHooks,
     val installation: JiraInstallation,
-    val start: JiraStart
+    val start: JiraStart,
+    internal val hooks: PreInstallHooks
 ) {
 
     fun materialize(host: TcpHost) = JiraNode(host, this)
 
     @NotThreadSafe
     class Builder {
-        private var hooks: PreInstallHooks = PreInstallHooks.default()
-        private var installation: JiraInstallation = HookedJiraInstallation(
-            ParallelInstallation(
-                EmptyJiraHome(),
-                PublicJiraSoftwareDistribution("7.13.0"),
-                OracleJDK()
-            ),
-            hooks
+        private var installation: JiraInstallation = ParallelInstallation(
+            EmptyJiraHome(),
+            PublicJiraSoftwareDistribution("7.13.0"),
+            OracleJDK()
         )
-        private var start: JiraStart = HookedJiraStart(JiraLaunchScript(), hooks.preStart)
+        private var start: JiraStart = JiraLaunchScript()
+        private var hooks: PreInstallHooks = PreInstallHooks.default()
 
-        fun hooks(hooks: PreInstallHooks) = apply { this.hooks = hooks } // TODO this doesn't affect the start or installation
         fun installation(installation: JiraInstallation) = apply { this.installation = installation }
         fun start(start: JiraStart) = apply { this.start = start }
+        fun hooks(hooks: PreInstallHooks) = apply { this.hooks = hooks }
 
         fun build() = JiraNodePlan(
-            hooks = hooks,
-            installation = installation,
-            start = start
+            HookedJiraInstallation(installation, hooks),
+            HookedJiraStart(start, hooks.preStart),
+            hooks
         )
     }
 }

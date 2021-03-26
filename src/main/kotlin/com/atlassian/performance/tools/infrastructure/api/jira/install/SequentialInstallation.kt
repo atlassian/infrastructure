@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install
 
 import com.atlassian.performance.tools.infrastructure.api.distribution.ProductDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.downloadRemotely
 import com.atlassian.performance.tools.infrastructure.installRemotely
@@ -13,7 +14,8 @@ class SequentialInstallation(
 ) : JiraInstallation {
 
     override fun install(
-            host: TcpHost
+        host: TcpHost,
+        reports: Reports
     ): InstalledJira {
         host.ssh.newConnection().use { ssh ->
             val installation = productDistribution.installRemotely(ssh, ".")

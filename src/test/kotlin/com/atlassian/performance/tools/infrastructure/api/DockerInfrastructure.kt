@@ -22,13 +22,14 @@ internal class DockerInfrastructure : Infrastructure {
     override fun serve(port: Int, name: String): TcpHost {
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(port)
+            it.setPrivilegedMode(true)
         })
         val sshUbuntu = container.start()
         allocatedResources.offer(sshUbuntu)
         return TcpHost(
             "localhost",
-            sshUbuntu.container.getMappedPort(port),
             port,
+            sshUbuntu.container.getMappedPort(port),
             name,
             sshUbuntu.toSsh()
         )

@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
 import com.atlassian.performance.tools.infrastructure.Iostat
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHook
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHooks
@@ -15,7 +16,8 @@ class LateUbuntuSysstat : PostInstallHook {
     override fun call(
         ssh: SshConnection,
         jira: InstalledJira,
-        hooks: PostInstallHooks
+        hooks: PostInstallHooks,
+        reports: Reports
     ) {
         val ubuntu = Ubuntu()
         ubuntu.install(ssh, listOf("sysstat"))
@@ -28,8 +30,8 @@ class LateUbuntuSysstat : PostInstallHook {
 private class PostStartOsMetric(
     private val metric: OsMetric
 ) : PostStartHook {
-    override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks) {
+    override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks, reports: Reports) {
         val process = metric.start(ssh)
-        hooks.reports.add(RemoteMonitoringProcessReport(process))
+        reports.add(RemoteMonitoringProcessReport(process), jira.installed.host)
     }
 }
