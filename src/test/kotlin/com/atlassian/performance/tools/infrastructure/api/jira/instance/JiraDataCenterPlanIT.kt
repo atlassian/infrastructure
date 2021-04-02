@@ -3,7 +3,6 @@ package com.atlassian.performance.tools.infrastructure.api.jira.instance
 import com.atlassian.performance.tools.infrastructure.Datasets
 import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
-import com.atlassian.performance.tools.infrastructure.api.database.DockerMysqlServer
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
@@ -45,13 +44,12 @@ class JiraDataCenterPlanIT {
                     )
                 )
                 .start(JiraLaunchScript())
-                .hooks(PreInstallHooks.default())
+                .hooks(PreInstallHooks.default().also { Datasets.JiraSevenDataset.hookMysql(it.postStart) })
                 .build()
         }
-        val instanceHooks = PreInstanceHooks.default().also {
+        val instanceHooks = PreInstanceHooks.default()
             // TODO this plus `EmptyJiraHome()` = failing `DatabaseIpConfig` - couple them together or stop expecting a preexisting `dbconfig.xml`? but then what about missing lucene indexes?
-            it.insert(DockerMysqlServer.Builder(infrastructure, Datasets.JiraSevenDataset.mysql).build())
-        }
+            .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
         val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, Supplier { TODO() }, infrastructure)
 
         try {

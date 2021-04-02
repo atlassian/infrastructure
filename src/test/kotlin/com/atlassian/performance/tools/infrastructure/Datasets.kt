@@ -27,14 +27,16 @@ class Datasets {
             downloadTimeout = Duration.ofMinutes(6)
         )
 
-        fun hookMysql(
-            preInstanceHooks: PreInstanceHooks,
-            postStartHooks: PostStartHooks,
-            infrastructure: Infrastructure
-        ) {
+        fun hookMysql(preInstanceHooks: PreInstanceHooks, infrastructure: Infrastructure) {
             val mysqlServer = DockerMysqlServer.Builder(infrastructure, mysql).build()
             preInstanceHooks.insert(mysqlServer)
-            val dataUpgrade = RestUpgrade(JiraLaunchTimeouts.Builder().build(), "admin", "admin")
+        }
+
+        fun hookMysql(postStartHooks: PostStartHooks) {
+            val timeouts = JiraLaunchTimeouts.Builder()
+                .initTimeout(Duration.ofSeconds(30))
+                .build()
+            val dataUpgrade = RestUpgrade(timeouts, "admin", "admin")
             postStartHooks.insert(dataUpgrade)
         }
     }
