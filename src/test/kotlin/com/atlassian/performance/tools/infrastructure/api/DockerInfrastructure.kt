@@ -26,7 +26,7 @@ internal class DockerInfrastructure : Infrastructure {
             it.setPrivilegedMode(true)
         })
         val sshUbuntu = container.start()
-        allocatedResources.offer(sshUbuntu)
+        allocatedResources.add(sshUbuntu)
         return TcpHost(
             "localhost",
             port,
@@ -35,7 +35,7 @@ internal class DockerInfrastructure : Infrastructure {
         )
     }
 
-    override fun releaseResources() {
+    override fun close() {
         while (true) {
             allocatedResources
                 .poll()
