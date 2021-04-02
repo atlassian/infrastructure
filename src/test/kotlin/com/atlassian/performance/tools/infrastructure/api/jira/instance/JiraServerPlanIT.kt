@@ -27,7 +27,7 @@ class JiraServerPlanIT {
 
     @After
     fun tearDown() {
-        infrastructure.releaseResources()
+        infrastructure.close()
     }
 
     @Test
