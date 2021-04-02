@@ -3,14 +3,13 @@ package com.atlassian.performance.tools.infrastructure.database
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import java.time.Duration
-import java.time.Instant
+import java.time.Duration.ofSeconds
 
 internal object Mysql {
-    private val logger: Logger = LogManager.getLogger(this::class.java)
     private val ubuntu = Ubuntu()
 
     /**
@@ -44,7 +43,7 @@ internal object Mysql {
         .imageName("mysql:5.7.32")
         .pullTimeout(Duration.ofMinutes(5))
         .parameters(
-            host?.let { "-p ${it.privatePort}:${it.publicPort}" } ?: "-p 3306:3306",
+            host?.port?.let { "-p $it:$it" } ?: "-p 3306:3306",
             "-v `realpath $dataDir`:/var/lib/mysql",
             *extraParameters
         )
@@ -54,14 +53,8 @@ internal object Mysql {
         )
         .build()
 
-    fun awaitDatabase(ssh: SshConnection) {
-        val mysqlStart = Instant.now()
-        while (!ssh.safeExecute("mysql -h 127.0.0.1 -u root -e 'select 1;'").isSuccessful()) {
-            if (Instant.now() > mysqlStart + Duration.ofMinutes(15)) {
-                throw RuntimeException("MySQL didn't start in time")
-            }
-            logger.debug("Waiting for MySQL...")
-            Thread.sleep(Duration.ofSeconds(10).toMillis())
-        }
+    fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient) {
+        IdempotentAction("wait for MySQL start") { sqlClient.runSql(ssh, "select 1;") }
+            .retry(90, StaticBackoff(ofSeconds(10)))
     }
 }

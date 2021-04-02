@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.database.DockerMysqlServer
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
-import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
+import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
@@ -39,7 +39,7 @@ class JiraServerPlanIT {
             .hooks(hooks)
             .installation(
                 ParallelInstallation(
-                    jiraHomeSource = EmptyJiraHome(),
+                    jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),
                     productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
                     jdk = AdoptOpenJDK()
                 )
@@ -48,7 +48,7 @@ class JiraServerPlanIT {
             .hooks(hooks)
             .build()
         val instanceHooks = PreInstanceHooks.default()
-            .also { it.insert(DockerMysqlServer.Builder(infrastructure, Datasets().smallJiraSeven()).build()) }
+            .also { it.insert(DockerMysqlServer.Builder(infrastructure, Datasets.JiraSevenDataset.mysql).build()) }
         val jiraServerPlan = JiraServerPlan.Builder(infrastructure)
             .plan(nodePlan)
             .hooks(instanceHooks)
@@ -67,7 +67,7 @@ class JiraServerPlanIT {
             .installation
             .resolve("conf/server.xml")
             .download(Files.createTempFile("downloaded-config", ".xml"))
-        assertThat(serverXml.readText()).contains("<Connector port=\"${host.privatePort}\"")
+        assertThat(serverXml.readText()).contains("<Connector port=\"${host.port}\"")
         assertThat(theNode.pid).isPositive()
         assertThat(downloadedReports.resolve("jira-node-1").list()).contains(
             "jira-home/log/atlassian-jira.log",

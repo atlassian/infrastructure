@@ -43,7 +43,7 @@ class MySqlDatabase(
 
     override fun start(jira: URI, ssh: SshConnection) {
         val client = Mysql.installClient(ssh)
-        Mysql.awaitDatabase(ssh)
+        Mysql.awaitDatabase(ssh, client)
 
         client.runSql(ssh, "UPDATE jiradb.propertystring SET propertyvalue = '$jira' WHERE id IN (select id from jiradb.propertyentry where property_key like '%baseurl%');")
     }

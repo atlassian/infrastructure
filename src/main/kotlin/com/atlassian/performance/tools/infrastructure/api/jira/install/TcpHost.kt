@@ -7,8 +7,7 @@ import com.atlassian.performance.tools.ssh.api.Ssh
  */
 class TcpHost(
     val ip: String,
-    val publicPort: Int,
-    val privatePort: Int,
+    val port: Int,
     val name: String,
     val ssh: Ssh
 )

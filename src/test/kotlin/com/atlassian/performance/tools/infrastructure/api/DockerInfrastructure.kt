@@ -22,6 +22,7 @@ internal class DockerInfrastructure : Infrastructure {
     override fun serve(port: Int, name: String): TcpHost {
         val container = SshUbuntuContainer(Consumer {
             it.addExposedPort(port)
+            it.setPortBindings(listOf("$port:$port"))
             it.setPrivilegedMode(true)
         })
         val sshUbuntu = container.start()
@@ -29,7 +30,6 @@ internal class DockerInfrastructure : Infrastructure {
         return TcpHost(
             "localhost",
             port,
-            sshUbuntu.container.getMappedPort(port),
             name,
             sshUbuntu.toSsh()
         )

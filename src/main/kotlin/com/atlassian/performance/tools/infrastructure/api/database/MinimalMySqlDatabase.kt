@@ -23,7 +23,7 @@ class MinimalMysqlDatabase private constructor(
 
     override fun start(jira: URI, ssh: SshConnection) {
         val client = Mysql.installClient(ssh)
-        Mysql.awaitDatabase(ssh)
+        Mysql.awaitDatabase(ssh, client)
 
         // Based on [jira docs](https://confluence.atlassian.com/adminjiraserver/connecting-jira-applications-to-mysql-5-7-966063305.html)
         client.runSql(ssh, "CREATE USER 'jiradbuser'@'%' IDENTIFIED BY '$jiraDbUserPassword';")

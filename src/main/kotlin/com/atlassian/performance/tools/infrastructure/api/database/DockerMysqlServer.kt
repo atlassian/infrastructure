@@ -45,8 +45,8 @@ class DockerMysqlServer private constructor(
             host = server
         ).run(ssh)
         Ubuntu().install(ssh, listOf("mysql-client"))
-        val client = SshMysqlClient("127.0.0.1", server.privatePort)
-        Mysql.awaitDatabase(ssh)
+        val client = SshMysqlClient("127.0.0.1", server.port)
+        Mysql.awaitDatabase(ssh, client)
         return client
     }
 
