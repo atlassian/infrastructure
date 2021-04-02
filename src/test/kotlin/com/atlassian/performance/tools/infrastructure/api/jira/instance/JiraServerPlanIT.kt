@@ -3,7 +3,6 @@ package com.atlassian.performance.tools.infrastructure.api.jira.instance
 import com.atlassian.performance.tools.infrastructure.Datasets
 import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
-import com.atlassian.performance.tools.infrastructure.api.database.DockerMysqlServer
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
@@ -35,6 +34,7 @@ class JiraServerPlanIT {
     fun shouldStartJiraWithHooks() {
         // given
         val hooks = PreInstallHooks.default()
+            .also { Datasets.JiraSevenDataset.hookMysql(it.postStart) }
         val nodePlan = JiraNodePlan.Builder()
             .hooks(hooks)
             .installation(
@@ -48,7 +48,7 @@ class JiraServerPlanIT {
             .hooks(hooks)
             .build()
         val instanceHooks = PreInstanceHooks.default()
-            .also { it.insert(DockerMysqlServer.Builder(infrastructure, Datasets.JiraSevenDataset.mysql).build()) }
+            .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
         val jiraServerPlan = JiraServerPlan.Builder(infrastructure)
             .plan(nodePlan)
             .hooks(instanceHooks)
