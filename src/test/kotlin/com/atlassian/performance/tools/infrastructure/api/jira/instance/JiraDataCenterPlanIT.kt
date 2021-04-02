@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.database.DockerMysqlServer
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
-import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
+import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
@@ -39,7 +39,7 @@ class JiraDataCenterPlanIT {
             JiraNodePlan.Builder()
                 .installation(
                     ParallelInstallation(
-                        jiraHomeSource = EmptyJiraHome(),
+                        jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),
                         productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
                         jdk = AdoptOpenJDK()
                     )
@@ -50,7 +50,7 @@ class JiraDataCenterPlanIT {
         }
         val instanceHooks = PreInstanceHooks.default().also {
             // TODO this plus `EmptyJiraHome()` = failing `DatabaseIpConfig` - couple them together or stop expecting a preexisting `dbconfig.xml`? but then what about missing lucene indexes?
-            it.insert(DockerMysqlServer.Builder(infrastructure, Datasets().smallJiraSeven()).build())
+            it.insert(DockerMysqlServer.Builder(infrastructure, Datasets.JiraSevenDataset.mysql).build())
         }
         val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, Supplier { TODO() }, infrastructure)
 
@@ -65,7 +65,7 @@ class JiraDataCenterPlanIT {
                     .installation
                     .resolve("conf/server.xml")
                     .download(Files.createTempFile("downloaded-config", ".xml"))
-                assertThat(serverXml.readText()).contains("<Connector port=\"${installed.host.privatePort}\"")
+                assertThat(serverXml.readText()).contains("<Connector port=\"${installed.host.port}\"")
                 assertThat(node.pid).isPositive()
             }
         } finally {

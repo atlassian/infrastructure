@@ -13,7 +13,7 @@ import java.nio.file.Paths
 class PreInstallHooksTest {
 
     private val dummySsh = Ssh(SshHost("localhost", "dummyUser", Paths.get("dummyKey")))
-    private val dummyServer = TcpHost("doesn't matter", 123, 123, "fake-server", dummySsh)
+    private val dummyServer = TcpHost("doesn't matter", 123, "fake-server", dummySsh)
 
     @Test
     fun shouldInsertDuringListing() {

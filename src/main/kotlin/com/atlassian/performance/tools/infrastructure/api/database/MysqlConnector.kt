@@ -26,6 +26,6 @@ class MysqlConnector : PostInstallHook {
             backoff = StaticBackoff(Duration.ofSeconds(5))
         )
         ssh.execute("tar -xzf mysql-connector-java-5.1.40.tar.gz")
-        ssh.execute("cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar ${jira.installation}/lib")
+        ssh.execute("cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar ${jira.installation.path}/lib")
     }
 }

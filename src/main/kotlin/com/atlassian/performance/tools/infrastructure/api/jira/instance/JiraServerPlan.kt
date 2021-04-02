@@ -30,7 +30,7 @@ class JiraServerPlan private constructor(
     private class JiraServer(
         node: StartedJira
     ) : JiraInstance {
-        override val address: URI = node.installed.host.run { URI("http://$ip:$publicPort/") }
+        override val address: URI = node.installed.host.run { URI("http://$ip:$port/") }
         override val nodes: List<StartedJira> = listOf(node)
     }
 
