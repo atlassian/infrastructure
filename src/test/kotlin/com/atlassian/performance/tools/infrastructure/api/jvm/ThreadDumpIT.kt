@@ -1,11 +1,10 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import java.time.Duration
 
@@ -13,8 +12,8 @@ class ThreadDumpTest(
     private val jdk: JavaDevelopmentKit
 ) {
     fun shouldGatherThreadDump() {
-        SshUbuntuContainer.Builder().build().start().use { ubuntu ->
-            val ssh = ubuntu.toSsh()
+        DockerInfrastructure().use { infra ->
+            val ssh = infra.serveSsh()
             ssh.newConnection().use { connection ->
                 shouldGatherThreadDump(ssh, connection)
             }

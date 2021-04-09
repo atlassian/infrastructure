@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
+import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -30,6 +31,7 @@ class AdoptOpenJDK : VersionedJavaDevelopmentKit {
     override fun command(options: String) = "${jdkBin}java $options"
 
     private fun download(connection: SshConnection) {
+        Ubuntu().install(connection, listOf("curl"))
         IdempotentAction(
             description = "Download AdoptOpenJDK",
             action = {

@@ -1,11 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
+import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import java.io.File
 import java.time.Duration
@@ -31,8 +31,8 @@ class JstatSupport(
     private val jar = "/com/atlassian/performance/tools/infrastructure/api/jvm/$jarName"
 
     fun shouldSupportJstat() {
-        SshUbuntuContainer.Builder().build().start().use { ubuntu ->
-            val ssh = ubuntu.toSsh()
+        DockerInfrastructure().use { infra ->
+            val ssh = infra.serveSsh()
             ssh.newConnection().use { connection ->
                 shouldSupportJstat(ssh, connection)
             }
@@ -40,6 +40,7 @@ class JstatSupport(
     }
 
     private fun shouldSupportJstat(ssh: Ssh, connection: SshConnection) {
+        Ubuntu().install(connection, listOf("screen"), Duration.ofMinutes(2))
         connection.upload(File(this.javaClass.getResource(jar).toURI()), jarName)
         jdk.install(connection)
         ssh.runInBackground(jdk.command("-classpath $jarName samples.HelloWorld"))

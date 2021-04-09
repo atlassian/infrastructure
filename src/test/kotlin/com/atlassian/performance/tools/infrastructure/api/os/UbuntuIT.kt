@@ -1,10 +1,10 @@
 package com.atlassian.performance.tools.infrastructure.api.os
 
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
+import com.atlassian.performance.tools.infrastructure.api.Infrastructure
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.ssh.api.SshHost
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntu
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.apache.logging.log4j.Level
 import org.junit.After
 import org.junit.Before
@@ -14,23 +14,25 @@ import java.util.concurrent.*
 
 class UbuntuIT {
     private lateinit var executor: ExecutorService
-    private lateinit var sshUbuntu: SshUbuntu
+    private lateinit var infra: Infrastructure
+    private lateinit var sshUbuntu: TcpHost
 
     @Before
     fun before() {
         executor = Executors.newCachedThreadPool()
-        sshUbuntu = SshUbuntuContainer.Builder().build().start()
+        infra = DockerInfrastructure()
+        sshUbuntu = infra.serve(80, "UbuntuIT")
     }
 
     @After
     fun after() {
-        sshUbuntu.close()
+        infra.close()
         executor.shutdownNow()
     }
 
     @Test
     fun shouldRetry() {
-        sshUbuntu.toSsh().newConnection().use { connection ->
+        sshUbuntu.ssh.newConnection().use { connection ->
             Ubuntu().install(
                 ColdAptSshConnection(connection),
                 listOf("nano"),
@@ -80,7 +82,7 @@ class UbuntuIT {
     fun shouldBeThreadSafe() {
         val completion = ExecutorCompletionService<Unit>(executor)
         val readyToUseUbuntu = CountDownLatch(1)
-        val ssh = sshUbuntu.toSsh()
+        val ssh = sshUbuntu.ssh
 
         val installations = List(5) {
             Callable {

@@ -33,10 +33,16 @@ configurations.all {
                 "org.jetbrains:annotations" -> useVersion("15.0")
                 "com.google.code.findbugs:jsr305" -> useVersion("3.0.2")
                 "org.apache.commons:commons-compress" -> useVersion("1.9")
+                "commons-io:commons-io" -> useVersion("2.6")
+                "org.apache.commons:commons-lang3" -> useVersion("3.12.0")
             }
             when (requested.group) {
                 "org.jetbrains.kotlin" -> useVersion(kotlinVersion)
                 "org.apache.logging.log4j" -> useVersion(log4jVersion)
+                "org.bouncycastle" -> useVersion("1.64")
+                // Gradle 5 treats this module as conflicted, even though the range is compatible
+                // perhaps Gradle 6 will handle it better
+                "com.github.docker-java" -> useVersion("3.2.13")
             }
 
         }
@@ -70,6 +76,8 @@ dependencies {
     testCompile("com.atlassian.performance.tools:ssh-ubuntu:0.3.0")
     testCompile("org.rnorth.duct-tape:duct-tape:1.0.8")
     testCompile("org.threeten:threeten-extra:1.5.0")
+    testCompile("com.github.docker-java:docker-java-core:[3.2.5, 4.0.0)")
+    testCompile("com.github.docker-java:docker-java-transport-zerodep:[3.2.5, 4.0.0)")
 }
 
 fun webdriver(): List<String> = listOf(

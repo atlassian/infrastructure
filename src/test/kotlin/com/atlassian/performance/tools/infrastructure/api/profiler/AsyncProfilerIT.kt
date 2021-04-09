@@ -1,19 +1,19 @@
 package com.atlassian.performance.tools.infrastructure.api.profiler
 
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
+import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
+import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
+import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
+import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
 import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
-import com.atlassian.performance.tools.infrastructure.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.jira.install.ParallelInstallation
-import com.atlassian.performance.tools.infrastructure.jira.install.TcpServer
-import com.atlassian.performance.tools.infrastructure.jira.start.JiraLaunchScript
-import com.atlassian.performance.tools.infrastructure.toSsh
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.nio.file.Files.createTempFile
-import java.util.function.Consumer
 
 class AsyncProfilerIT {
 
@@ -32,17 +32,16 @@ class AsyncProfilerIT {
         val profiler = AsyncProfiler()
 
         testOnInstalledJira(ubuntuVersion) { installedJira ->
-            val sshClient = installedJira.server.ssh
-            sshClient.newConnection().use { ssh ->
+            installedJira.host.ssh.newConnection().use { ssh ->
                 // when
                 profiler.install(ssh)
-                val startedJira = JiraLaunchScript().start(installedJira)
+                val startedJira = JiraLaunchScript().start(installedJira, Reports())
                 val process = profiler.start(ssh, startedJira.pid)
                 Thread.sleep(5000)
                 process.stop(ssh)
 
                 // then
-                val profilerResult = RemotePath(sshClient.host, process.getResultPath())
+                val profilerResult = RemotePath(installedJira.host.ssh.host, process.getResultPath())
                     .download(createTempFile("profiler-result", ".svg"))
                 assertThat(profilerResult.readLines().take(5)).contains("<!DOCTYPE html>")
             }
@@ -50,27 +49,13 @@ class AsyncProfilerIT {
     }
 
     private fun <T> testOnInstalledJira(ubuntuVersion: String, test: (InstalledJira) -> T) {
-        val privatePort = 8080
-        val container = SshUbuntuContainer.Builder()
-            .version(ubuntuVersion)
-            .customization(Consumer {
-                it.addExposedPort(privatePort)
-                it.setPrivilegedMode(true)
-            })
-            .build()
-        container.start().use { sshUbuntu ->
-            val server = TcpServer(
-                "localhost",
-                sshUbuntu.container.getMappedPort(privatePort),
-                privatePort,
-                "my-jira",
-                sshUbuntu.toSsh()
-            )
+        DockerInfrastructure(ubuntuVersion).use { infra ->
+            val jiraNode: JiraNode = infra.serve(listOf(JiraNodePlan.Builder().build())).first()
             val installed = ParallelInstallation(
                 jiraHomeSource = EmptyJiraHome(),
                 productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
                 jdk = AdoptOpenJDK()
-            ).install(server)
+            ).install(jiraNode.host, Reports())
             test(installed)
         }
     }

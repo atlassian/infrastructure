@@ -23,7 +23,7 @@ class JvmConfig(
             connection = ssh,
             config = config,
             gcLog = gcLog,
-            jiraIp = jira.host.ip
+            jiraIp = jira.host.publicIp
         )
         val report = FileListing(gcLog.path("*"))
         reports.add(report, jira.host)

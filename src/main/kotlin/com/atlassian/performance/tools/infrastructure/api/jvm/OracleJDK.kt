@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
+import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -36,6 +37,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
     override fun command(options: String) = "${jreBin}java $options"
 
     private fun download(connection: SshConnection) {
+        Ubuntu().install(connection, listOf("curl"))
         val attempts = 0..3
         for (attempt in attempts) {
             try {
