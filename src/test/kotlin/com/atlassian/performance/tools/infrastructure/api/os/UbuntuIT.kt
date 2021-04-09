@@ -1,10 +1,10 @@
 package com.atlassian.performance.tools.infrastructure.api.os
 
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
+import com.atlassian.performance.tools.infrastructure.api.Infrastructure
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.ssh.api.SshHost
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntu
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.apache.logging.log4j.Level
 import org.junit.After
 import org.junit.Before
@@ -17,23 +17,25 @@ import java.util.concurrent.TimeUnit
 
 class UbuntuIT {
     private lateinit var executor: ExecutorService
-    private lateinit var sshUbuntu: SshUbuntu
+    private lateinit var infra: Infrastructure
+    private lateinit var sshUbuntu: TcpHost
 
     @Before
     fun before() {
         executor = Executors.newCachedThreadPool()
-        sshUbuntu = SshUbuntuContainer().start()
+        infra = DockerInfrastructure()
+        sshUbuntu = infra.serve(80, "UbuntuIT")
     }
 
     @After
     fun after() {
-        sshUbuntu.close()
+        infra.close()
         executor.shutdownNow()
     }
 
     @Test
     fun shouldRetry() {
-        sshUbuntu.toSsh().newConnection().use { connection ->
+        sshUbuntu.ssh.newConnection().use { connection ->
             Ubuntu().install(
                 ColdAptSshConnection(connection),
                 listOf("nano"),
@@ -81,26 +83,21 @@ class UbuntuIT {
 
     @Test
     fun shouldBeThreadSafe() {
-        val lock = Object()
         val concurrency = 5
         val latch = CountDownLatch(concurrency)
 
         (1..concurrency)
             .map {
-                executor.submit { installLftp(lock, latch) }
+                executor.submit { installLftp(latch) }
             }.map { it.get(5, TimeUnit.MINUTES) }
 
     }
 
-    private fun installLftp(lock: Any, latch: CountDownLatch) {
-        val ssh = synchronized(lock) {
-            sshUbuntu.toSsh()
-        }
-        ssh.newConnection().use { connection ->
+    private fun installLftp(latch: CountDownLatch) {
+        sshUbuntu.ssh.newConnection().use { connection ->
             latch.countDown()
             latch.await()
             Ubuntu().install(connection, listOf("lftp"))
         }
     }
-
 }

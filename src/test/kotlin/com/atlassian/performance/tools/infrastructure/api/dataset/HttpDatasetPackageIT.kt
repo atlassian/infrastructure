@@ -1,9 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.dataset
 
 import com.atlassian.performance.tools.infrastructure.Ls
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.ssh.api.Ssh
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions
 import org.junit.Test
 import java.net.URI
@@ -21,8 +20,8 @@ class HttpDatasetPackageIT {
             downloadTimeout = Duration.ofMinutes(1)
         )
 
-        val filesInDataset = SshUbuntuContainer().start().use { sshUbuntu ->
-            val ssh = sshUbuntu.toSsh()
+        val filesInDataset = DockerInfrastructure().use { infra ->
+            val ssh = infra.serve(80, "HttpDatasetPackageIT").ssh
             return@use RandomFilesGenerator(ssh).start().use {
                 ssh.newConnection().use { connection ->
                     val unpackedPath = dataset.download(connection)

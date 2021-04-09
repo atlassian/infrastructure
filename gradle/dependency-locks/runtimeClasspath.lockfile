@@ -23,7 +23,7 @@ com.squareup.okio:okio:1.14.0
 com.typesafe:config:1.2.1
 commons-cli:commons-cli:1.4
 commons-codec:commons-codec:1.10
-commons-io:commons-io:2.5
+commons-io:commons-io:2.6
 commons-logging:commons-logging:1.2
 io.github.bonigarcia:webdrivermanager:1.7.1
 javax.inject:javax.inject:1
@@ -58,8 +58,8 @@ org.apache.maven:maven-repository-metadata:3.5.2
 org.apache.maven:maven-resolver-provider:3.5.2
 org.apache.maven:maven-settings-builder:3.5.2
 org.apache.maven:maven-settings:3.5.2
-org.bouncycastle:bcpkix-jdk15on:1.56
-org.bouncycastle:bcprov-jdk15on:1.56
+org.bouncycastle:bcpkix-jdk15on:1.64
+org.bouncycastle:bcprov-jdk15on:1.64
 org.checkerframework:checker-compat-qual:2.0.0
 org.codehaus.mojo:animal-sniffer-annotations:1.14
 org.codehaus.plexus:plexus-component-annotations:1.7.1

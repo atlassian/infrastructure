@@ -24,7 +24,7 @@ class DockerPostgresServer private constructor(
         val server = hostSupplier.get()
         server.ssh.newConnection().use { setup(it) }
         nodes.forEach { node ->
-            node.postInstall.insert(DatabaseIpConfig(server.ip))
+            node.postInstall.insert(DatabaseIpConfig(server.publicIp))
         }
     }
 
