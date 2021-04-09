@@ -73,7 +73,7 @@ fun webdriver(): List<String> = listOf(
     "selenium-support",
     "selenium-chrome-driver"
 ).map { module ->
-    "org.seleniumhq.selenium:$module:3.11.0"
+    "org.seleniumhq.selenium:$module:[3.11.0, 3.999.999]"
 }
 
 fun log4j(
