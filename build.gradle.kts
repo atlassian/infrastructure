@@ -76,7 +76,8 @@ fun webdriver(): List<String> = listOf(
     "selenium-support",
     "selenium-chrome-driver"
 ).map { module ->
-    "org.seleniumhq.selenium:$module:3.141.59"
+    "org.seleniumhq.selenium:$module:[3.11.0, 3.999.999]"
+    // it's not `4.0.0)`, because their release channel is polluted with unstable versions like 4.0.0-alpha-1
 }
 
 fun log4j(
