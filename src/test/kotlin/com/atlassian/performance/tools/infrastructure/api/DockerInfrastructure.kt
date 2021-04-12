@@ -61,44 +61,51 @@ internal class DockerInfrastructure : Infrastructure {
             .createContainerCmd("rastasheep/ubuntu-sshd:18.04")
             .withHostConfig(
                 HostConfig()
-                    .withPublishAllPorts(true)
-//                    .withPrivileged(true)
-                    .withBinds(Bind(dockerDaemonSocket, Volume(dockerDaemonSocket)))
+                    .withPublishAllPorts(false)
+                    .withPortBindings(
+                        PortBinding(Ports.Binding("0.0.0.0", "0"), ExposedPort.tcp(22)),
+                        PortBinding(Ports.Binding("0.0.0.0", "0"), ExposedPort.tcp(port))
+                    )
+                    .withPrivileged(false)
+                    .withNetworkMode(network.response.id)
+//                    .withSecurityOpts(emptyList())
+//                    .withUsernsMode("host")
+//                    .withBinds(Bind(dockerDaemonSocket, Volume(dockerDaemonSocket)))
             )
-            .withExposedPorts(exposedPort)
+            .withExposedPorts(exposedPort, ExposedPort.tcp(22))
             .withName(name + "-" + UUID.randomUUID())
             .execAsResource(docker)
         allocatedResources.addLast(createdContainer)
         return start(createdContainer, exposedPort)
     }
 
+//    private fun start(
+//        created: CreatedContainer,
+//        port: ExposedPort
+//    ): TcpHost {
+//        val connectedContainer = docker  // TODO remove?
+//            .connectToNetworkCmd()
+//            .withContainerId(created.response.id)
+//            .withNetworkId(network.response.id)
+//            .execAsResource(docker)
+//        allocatedResources.addLast(connectedContainer)
+//        return start(created, port)
+//    }
+
     private fun start(
         created: CreatedContainer,
         port: ExposedPort
     ): TcpHost {
-        val connectedContainer = docker
-            .connectToNetworkCmd()
-            .withContainerId(created.response.id)
-            .withNetworkId(network.response.id)
-            .execAsResource(docker)
-        allocatedResources.addLast(connectedContainer)
-        return start(connectedContainer, port)
-    }
-
-    private fun start(
-        connected: ConnectedContainer,
-        port: ExposedPort
-    ): TcpHost {
         val startedContainer = docker
-            .startContainerCmd(connected.containerId)
+            .startContainerCmd(created.response.id)
             .execAsResource(docker)
         allocatedResources.addLast(startedContainer);
-        return install(startedContainer, connected, port)
+        return install(startedContainer, port)
     }
 
     private fun install(
         started: StartedContainer,
-        connected: ConnectedContainer,
+//        connected: ConnectedContainer,
         port: ExposedPort
     ): TcpHost {
         val networkSettings = docker
@@ -108,7 +115,7 @@ internal class DockerInfrastructure : Infrastructure {
         val ip = networkSettings
             .networks
             .values
-            .single { it.networkID == connected.networkId }
+            .single { it.networkID == network.response.id }
             .ipAddress!!
         val portBindings = networkSettings.ports.bindings
         val sshPort = getHostPort(portBindings, ExposedPort.tcp(22))
@@ -128,7 +135,7 @@ internal class DockerInfrastructure : Infrastructure {
     }
 
     private fun getHostPort(
-        portBindings: MutableMap<ExposedPort, Array<Ports.Binding>>,
+        portBindings: Map<ExposedPort, Array<Ports.Binding>>,
         port: ExposedPort
     ): Int {
         return portBindings[port]!!
