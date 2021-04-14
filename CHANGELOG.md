@@ -36,8 +36,10 @@ Progress on [JPERF-273]:
 
 ### Fixed
 - Increase network-level retries for Jira/browser downloads. Decrease flakiness of such downloads on Ubuntu on WSL2.
+- Download ChromeDriver version that matches installed Chrome version. Fix [JPERF-732].
 
 [JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
+[JPERF-732]: https://ecosystem.atlassian.net/browse/JPERF-732
 
 ## [4.17.5] - 2020-12-15
 [4.17.5]: https://github.com/atlassian/infrastructure/compare/release-4.17.4...release-4.17.5
