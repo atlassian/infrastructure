@@ -1,6 +1,6 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.start
+package com.atlassian.performance.tools.infrastructure.jira.start
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.jira.install.InstalledJira
 import com.atlassian.performance.tools.ssh.api.Ssh
 import java.time.Duration
 
