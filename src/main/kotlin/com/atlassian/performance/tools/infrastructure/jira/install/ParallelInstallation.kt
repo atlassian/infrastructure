@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.install
+package com.atlassian.performance.tools.infrastructure.jira.install
 
 import com.atlassian.performance.tools.concurrency.api.submitWithLogContext
 import com.atlassian.performance.tools.infrastructure.api.distribution.ProductDistribution
