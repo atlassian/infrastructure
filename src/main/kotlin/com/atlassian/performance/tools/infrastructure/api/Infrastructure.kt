@@ -1,10 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.api
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 
 interface Infrastructure : AutoCloseable {
-    fun serve(jiraNodePlans: List<JiraNodePlan>): List<JiraNode>
+    
+    /**
+     * @return can be reached by the caller via [TcpHost.publicIp] and by the rest of the infra via [TcpHost.privateIp]
+     */
     fun serve(port: Int, name: String): TcpHost
 }

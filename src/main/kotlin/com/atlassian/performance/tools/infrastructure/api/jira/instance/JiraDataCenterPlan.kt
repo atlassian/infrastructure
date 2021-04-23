@@ -7,17 +7,17 @@ import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.LoadBalancer
+import com.atlassian.performance.tools.infrastructure.api.loadbalancer.LoadBalancerPlan
 import java.net.URI
 import java.time.Duration
-import java.util.function.Supplier
 import kotlin.streams.asStream
 import kotlin.streams.toList
 
 class JiraDataCenterPlan constructor(
-    val nodePlans: List<JiraNodePlan>,
-    val instanceHooks: PreInstanceHooks,
-    val loadBalancerSupplier: Supplier<LoadBalancer>,
-    val infrastructure: Infrastructure
+    private val nodePlans: List<JiraNodePlan>,
+    private val instanceHooks: PreInstanceHooks,
+    private val balancerPlan: LoadBalancerPlan,
+    private val infrastructure: Infrastructure
 ) : JiraInstancePlan {
 
     private val reports: Reports = Reports()
@@ -25,13 +25,17 @@ class JiraDataCenterPlan constructor(
 
     override fun materialize(): JiraInstance {
         instanceHooks.call(nodePlans.map { it.hooks }, reports)
-        val nodes = infrastructure.serve(nodePlans)
+        val nodes = nodePlans.mapIndexed { nodeIndex, nodePlan ->
+            val nodeNumber = nodeIndex + 1
+            val host = infrastructure.serve(8080, "jira-node-$nodeNumber")
+            nodePlan.materialize(host)
+        }
+        val balancer = balancerPlan.materialize(nodes)
         val installed = installInParallel(nodes)
         val started = installed.map { it.start(reports) }
-        val loadBalancer = loadBalancerSupplier.get()
-        val instance = JiraDataCenter(started, loadBalancer)
+        val instance = JiraDataCenter(started, balancer)
         instanceHooks.postInstance.call(instance, reports)
-        loadBalancer.waitUntilHealthy(loadBalancingPatience)
+        balancer.waitUntilHealthy(loadBalancingPatience)
         return instance
     }
 

@@ -5,17 +5,23 @@ import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
+import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
+import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHook
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHooks
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
+import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApacheProxyPlan
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import java.lang.Exception
 import java.nio.file.Files
-import java.util.function.Supplier
 
 class JiraDataCenterPlanIT {
 
@@ -48,9 +54,9 @@ class JiraDataCenterPlanIT {
                 .build()
         }
         val instanceHooks = PreInstanceHooks.default()
-            // TODO this plus `EmptyJiraHome()` = failing `DatabaseIpConfig` - couple them together or stop expecting a preexisting `dbconfig.xml`? but then what about missing lucene indexes?
             .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
-        val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, Supplier { TODO() }, infrastructure)
+        val balancerPlan = ApacheProxyPlan(80, infrastructure)
+        val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, balancerPlan, infrastructure)
 
         // when
         val dataCenter = dcPlan.materialize()
@@ -71,6 +77,12 @@ class JiraDataCenterPlanIT {
     @Test
     fun shouldProvideLogsToDiagnoseFailure() {
         // given
+        class FailingHook : PreStartHook {
+            override fun call(ssh: SshConnection, jira: InstalledJira, hooks: PreStartHooks, reports: Reports) {
+                throw Exception("Failing deliberately before Jira starts")
+            }
+        }
+
         val nodePlans = listOf(1, 2).map {
             JiraNodePlan.Builder()
                 .installation(
@@ -81,13 +93,11 @@ class JiraDataCenterPlanIT {
                     )
                 )
                 .start(JiraLaunchScript())
-                .hooks(PreInstallHooks.default().also { Datasets.JiraSevenDataset.hookMysql(it.postStart) })
+                .hooks(PreInstallHooks.default().also { it.preStart.insert(FailingHook()) })
                 .build()
         }
-        val instanceHooks = PreInstanceHooks.default()
-            // TODO this plus `EmptyJiraHome()` = failing `DatabaseIpConfig` - couple them together or stop expecting a preexisting `dbconfig.xml`? but then what about missing lucene indexes?
-            .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
-        val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, Supplier { TODO() }, infrastructure)
+        val balancerPlan = ApacheProxyPlan(80, infrastructure)
+        val dcPlan = JiraDataCenterPlan(nodePlans, PreInstanceHooks.default(), balancerPlan, infrastructure)
 
         try {
             // when
