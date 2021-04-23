@@ -9,7 +9,7 @@ class DockerIT {
     @Test
     fun installWorks() {
         DockerInfrastructure().use { infra ->
-            infra.serve().newConnection().use { connection ->
+            infra.serveTest().newConnection().use { connection ->
                 //workaround for a bug in Docker download site for bionic
                 val packageFile = "containerd.io_1.2.2-3_amd64.deb"
                 Ubuntu().install(connection,listOf( "curl"))

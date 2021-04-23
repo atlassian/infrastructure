@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.os
 
 import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.ssh.api.SshHost
 import org.apache.logging.log4j.Level
@@ -18,13 +18,13 @@ import java.util.concurrent.TimeUnit
 class UbuntuIT {
     private lateinit var executor: ExecutorService
     private lateinit var infra: Infrastructure
-    private lateinit var sshUbuntu: TcpHost
+    private lateinit var sshUbuntu: Ssh
 
     @Before
     fun before() {
         executor = Executors.newCachedThreadPool()
         infra = DockerInfrastructure()
-        sshUbuntu = infra.serve(80, "UbuntuIT")
+        sshUbuntu = infra.serveSsh("UbuntuIT")
     }
 
     @After
@@ -35,7 +35,7 @@ class UbuntuIT {
 
     @Test
     fun shouldRetry() {
-        sshUbuntu.ssh.newConnection().use { connection ->
+        sshUbuntu.newConnection().use { connection ->
             Ubuntu().install(
                 ColdAptSshConnection(connection),
                 listOf("nano"),
@@ -94,7 +94,7 @@ class UbuntuIT {
     }
 
     private fun installLftp(latch: CountDownLatch) {
-        sshUbuntu.ssh.newConnection().use { connection ->
+        sshUbuntu.newConnection().use { connection ->
             latch.countDown()
             latch.await()
             Ubuntu().install(connection, listOf("lftp"))

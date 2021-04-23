@@ -20,7 +20,7 @@ internal class PageLoadTimeoutRecoveryTest {
             val fastResource = httpServer.register(FastResponse())
             val slowResource = httpServer.register(SlowResponse())
             DockerInfrastructure().use { infra ->
-                val ssh = infra.serve()
+                val ssh = infra.serveTest()
                 ssh.forwardRemotePort(httpServer.getPort(), httpServer.getPort()).use {
                     val localChromedriverPort = findFreePort()
                     ssh.forwardLocalPort(localChromedriverPort, remoteChromedriverPort).use {

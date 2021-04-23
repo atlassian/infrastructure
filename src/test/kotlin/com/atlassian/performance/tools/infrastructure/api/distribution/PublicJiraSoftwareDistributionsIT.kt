@@ -9,7 +9,7 @@ class PublicJiraSoftwareDistributionsIT {
     @Test
     fun shouldDownloadJiraSoftware() {
         DockerInfrastructure().use { infra ->
-            infra.serve().newConnection().use { connection ->
+            infra.serveTest().newConnection().use { connection ->
                 val jiraDistribution: ProductDistribution = PublicJiraSoftwareDistribution("7.2.0")
                 val targetFolder = "test"
                 connection.execute("mkdir $targetFolder")

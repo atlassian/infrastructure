@@ -8,7 +8,7 @@ class OracleJdkIT {
     @Test
     fun shouldSupportJstatAndThreadDumps() {
         DockerInfrastructure().use { infra ->
-            infra.serve().newConnection().use { connection ->
+            infra.serveTest().newConnection().use { connection ->
                 val jdk = OracleJDK()
                 JstatSupport(jdk).shouldSupportJstat(connection)
                 ThreadDumpTest().shouldGatherThreadDump(jdk, connection)

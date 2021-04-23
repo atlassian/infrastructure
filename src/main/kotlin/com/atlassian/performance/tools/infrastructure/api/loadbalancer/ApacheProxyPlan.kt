@@ -15,20 +15,19 @@ import java.net.URI
 import java.time.Duration
 
 class ApacheProxyPlan(
-    private val httpPort: Int,
     private val infrastructure: Infrastructure
 ) : LoadBalancerPlan {
 
     private val configPath = "/etc/apache2/sites-enabled/000-default.conf"
 
     override fun materialize(nodes: List<JiraNode>): LoadBalancer {
-        val proxyNode = infrastructure.serve(httpPort, "apache-proxy")
+        val proxyNode = infrastructure.serveTcp("apache-proxy")
         IdempotentAction("Installing and configuring apache load balancer") {
             proxyNode.ssh.newConnection().use { connection ->
                 tryToProvision(connection, nodes)
             }
         }.retry(2, ExponentialBackoff(Duration.ofSeconds(5)))
-        val balancerEndpoint = URI("http://${proxyNode.privateIp}:$httpPort/")
+        val balancerEndpoint = URI("http://${proxyNode.privateIp}:${proxyNode.port}/")
         nodes.forEach { it.plan.hooks.preStart.insert(InjectProxy(balancerEndpoint)) }
         return ApacheProxy(balancerEndpoint)
     }

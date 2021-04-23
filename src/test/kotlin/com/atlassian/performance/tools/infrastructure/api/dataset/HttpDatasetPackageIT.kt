@@ -21,7 +21,7 @@ class HttpDatasetPackageIT {
         )
 
         val filesInDataset = DockerInfrastructure().use { infra ->
-            val ssh = infra.serve(80, "HttpDatasetPackageIT").ssh
+            val ssh = infra.serveSsh("HttpDatasetPackageIT")
             return@use RandomFilesGenerator(ssh).start().use {
                 ssh.newConnection().use { connection ->
                     val unpackedPath = dataset.download(connection)

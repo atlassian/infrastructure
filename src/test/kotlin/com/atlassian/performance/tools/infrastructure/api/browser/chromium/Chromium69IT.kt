@@ -14,7 +14,7 @@ class Chromium69IT {
     @Test
     fun shouldInstallBrowser() {
         DockerInfrastructure().use { infra ->
-            infra.serve().newConnection().use { connection ->
+            infra.serveTest().newConnection().use { connection ->
                 val installedBefore = isChromiumInstalled(connection)
 
                 Chromium69().install(connection)
