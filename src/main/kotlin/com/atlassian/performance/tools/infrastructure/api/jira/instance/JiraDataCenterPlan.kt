@@ -27,7 +27,7 @@ class JiraDataCenterPlan constructor(
         instanceHooks.call(nodePlans.map { it.hooks }, reports)
         val nodes = nodePlans.mapIndexed { nodeIndex, nodePlan ->
             val nodeNumber = nodeIndex + 1
-            val host = infrastructure.serve(8080, "jira-node-$nodeNumber")
+            val host = infrastructure.serveTcp("jira-node-$nodeNumber")
             nodePlan.materialize(host)
         }
         val balancer = balancerPlan.materialize(nodes)

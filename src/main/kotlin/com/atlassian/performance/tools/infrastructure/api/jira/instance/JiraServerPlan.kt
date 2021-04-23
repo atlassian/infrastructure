@@ -17,7 +17,7 @@ class JiraServerPlan private constructor(
     override fun materialize(): JiraInstance {
         val nodeHooks = listOf(plan).map { it.hooks }
         hooks.call(nodeHooks, reports)
-        val jiraNode = infrastructure.serve(8080, "jira-node")
+        val jiraNode = infrastructure.serveTcp("jira-node")
         val installed = plan.installation.install(jiraNode, reports)
         val started = plan.start.start(installed, reports)
         val instance = JiraServer(started)

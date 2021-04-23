@@ -28,6 +28,7 @@ internal class DockerInfrastructure(
     private val allocatedResources: Deque<AutoCloseable> = ConcurrentLinkedDeque()
     private val docker: DockerClient
     private val network: DockerNetwork
+    override val subnet: String
 
 
     init {
@@ -40,11 +41,34 @@ internal class DockerInfrastructure(
             .withName(randomUUID().toString())
             .execAsResource(docker)
         allocatedResources.add(network)
+        subnet = docker
+            .inspectNetworkCmd()
+            .withNetworkId(network.response.id)
+            .exec()
+            .ipam
+            .config
+            .first()
+            .subnet
     }
 
-    fun serveSsh(): Ssh = serve(888, "ssh").ssh
+    fun serveSsh(): Ssh = serveSsh("ssh")
 
-    override fun serve(port: Int, name: String): TcpHost {
+    override fun serveSsh(name: String): Ssh {
+        return serveTcp(888, name).ssh
+    }
+
+    override fun serveTcp(name: String): TcpHost {
+        return when {
+            name.startsWith("jira-node") -> serveTcp(8080, name) // TODO this is a contract on undocumented behavior
+            name.startsWith("mysql") -> serveTcp(3306, name)
+            else -> serveTcp(
+                888,
+                name
+            ) // TODO pre-provision all the hosts rather than on-demand - unlock batch provisioning (CFN Stack), picking EC2 types, SSD storage, TCP port ranges, subnets, etc.
+        }
+    }
+
+    private fun serveTcp(port: Int, name: String): TcpHost {
         docker
             .pullImageCmd("rastasheep/ubuntu-sshd")
             .withTag(ubuntuVersion)

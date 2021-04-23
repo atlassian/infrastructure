@@ -24,7 +24,7 @@ class DockerMysqlServer private constructor(
         hooks: PreInstanceHooks,
         reports: Reports
     ) {
-        val server = infrastructure.serve(3306, "mysql")
+        val server = infrastructure.serveTcp("mysql")
         val client = server.ssh.newConnection().use { setup(it, server) }
         nodes.forEach { node ->
             node.postInstall.insert(DatabaseIpConfig(server.privateIp))

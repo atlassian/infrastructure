@@ -20,7 +20,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
-import java.lang.Exception
 import java.nio.file.Files
 
 class JiraDataCenterPlanIT {
@@ -40,22 +39,26 @@ class JiraDataCenterPlanIT {
     @Test
     fun shouldStartDataCenter() {
         // given
+        val jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome)
         val nodePlans = listOf(1, 2).map {
+            val nodeHooks = PreInstallHooks.default()
+                .also { Datasets.JiraSevenDataset.hookMysql(it.postStart) }
             JiraNodePlan.Builder()
                 .installation(
                     ParallelInstallation(
-                        jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),
+                        jiraHomeSource = jiraHomeSource,
                         productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
                         jdk = AdoptOpenJDK()
                     )
                 )
                 .start(JiraLaunchScript())
-                .hooks(PreInstallHooks.default().also { Datasets.JiraSevenDataset.hookMysql(it.postStart) })
+                .hooks(nodeHooks)
                 .build()
         }
         val instanceHooks = PreInstanceHooks.default()
             .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
-        val balancerPlan = ApacheProxyPlan(80, infrastructure)
+            .also { it.insert(SharedHomeHook(jiraHomeSource, infrastructure)) }
+        val balancerPlan = ApacheProxyPlan(infrastructure)
         val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, balancerPlan, infrastructure)
 
         // when
@@ -96,7 +99,7 @@ class JiraDataCenterPlanIT {
                 .hooks(PreInstallHooks.default().also { it.preStart.insert(FailingHook()) })
                 .build()
         }
-        val balancerPlan = ApacheProxyPlan(80, infrastructure)
+        val balancerPlan = ApacheProxyPlan(infrastructure)
         val dcPlan = JiraDataCenterPlan(nodePlans, PreInstanceHooks.default(), balancerPlan, infrastructure)
 
         try {

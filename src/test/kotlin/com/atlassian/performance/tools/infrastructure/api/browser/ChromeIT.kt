@@ -11,7 +11,7 @@ class ChromeIT {
     @Test
     fun shouldInstallChromeBrowser() {
         DockerInfrastructure().use { infra ->
-            infra.serve(80, "ChromeIT").ssh.newConnection().use { connection ->
+            infra.serveSsh("ChromeIT").newConnection().use { connection ->
                 val wasInstalledBefore = isChromeInstalled(connection)
 
                 Chrome().install(connection)

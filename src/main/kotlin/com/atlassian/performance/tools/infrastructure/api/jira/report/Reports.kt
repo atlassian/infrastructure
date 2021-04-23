@@ -10,7 +10,7 @@ import java.nio.file.Paths
 import java.util.*
 import java.util.concurrent.ConcurrentLinkedQueue
 
-class Reports private constructor(
+class Reports private constructor( // TODO turn into SPI to allow AWS CLI transport (S3)
     private val hostReports: Queue<HostReport>
 ) {
     constructor() : this(ConcurrentLinkedQueue())

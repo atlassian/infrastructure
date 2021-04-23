@@ -50,7 +50,7 @@ class AsyncProfilerIT {
 
     private fun <T> testOnInstalledJira(ubuntuVersion: String, test: (InstalledJira) -> T) {
         DockerInfrastructure(ubuntuVersion).use { infra ->
-            val jiraNode = infra.serve(777, "jira")
+            val jiraNode = infra.serveTcp("jira")
             val installed = ParallelInstallation(
                 jiraHomeSource = EmptyJiraHome(),
                 productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
