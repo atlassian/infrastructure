@@ -15,6 +15,7 @@ import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
 import java.time.Duration
 import java.util.*
+import java.util.UUID.randomUUID
 import java.util.concurrent.ConcurrentLinkedDeque
 
 internal class DockerInfrastructure : Infrastructure {
@@ -30,14 +31,15 @@ internal class DockerInfrastructure : Infrastructure {
         allocatedResources.add(docker)
         network = docker
             .createNetworkCmd()
-            .withName(UUID.randomUUID().toString())
+            .withName(randomUUID().toString())
             .execAsResource(docker)
         allocatedResources.add(network)
     }
 
     override fun serve(jiraNodePlans: List<JiraNodePlan>): List<JiraNode> {
         return jiraNodePlans.mapIndexed { nodeIndex, plan ->
-            plan.materialize(serve(8080, "jira-node-$nodeIndex"))
+            val nodeNumber = nodeIndex + 1
+            plan.materialize(serve(8080, "jira-node-$nodeNumber"))
         }
     }
 
@@ -56,57 +58,41 @@ internal class DockerInfrastructure : Infrastructure {
             .exec(PullImageResultCallback())
             .awaitCompletion()
         val exposedPort = ExposedPort.tcp(port)
-        val dockerDaemonSocket = "/var/run/docker.sock"
         val createdContainer = docker
             .createContainerCmd("rastasheep/ubuntu-sshd:18.04")
             .withHostConfig(
                 HostConfig()
-                    .withPublishAllPorts(false)
-                    .withPortBindings(
-                        PortBinding(Ports.Binding("0.0.0.0", "0"), ExposedPort.tcp(22)),
-                        PortBinding(Ports.Binding("0.0.0.0", "0"), ExposedPort.tcp(port))
-                    )
-                    .withPrivileged(false)
+                    .withPublishAllPorts(true)
+//                    .withPortBindings(
+//                        PortBinding(Ports.Binding("0.0.0.0", "0"), ExposedPort.tcp(22)),
+//                        PortBinding(Ports.Binding("0.0.0.0", "0"), exposedPort)
+//                    )
+                    .withPrivileged(true)
                     .withNetworkMode(network.response.id)
-//                    .withSecurityOpts(emptyList())
-//                    .withUsernsMode("host")
-//                    .withBinds(Bind(dockerDaemonSocket, Volume(dockerDaemonSocket)))
             )
             .withExposedPorts(exposedPort, ExposedPort.tcp(22))
-            .withName(name + "-" + UUID.randomUUID())
+            .withName("$name-${randomUUID()}")
             .execAsResource(docker)
         allocatedResources.addLast(createdContainer)
-        return start(createdContainer, exposedPort)
+        return start(createdContainer, exposedPort, name)
     }
-
-//    private fun start(
-//        created: CreatedContainer,
-//        port: ExposedPort
-//    ): TcpHost {
-//        val connectedContainer = docker  // TODO remove?
-//            .connectToNetworkCmd()
-//            .withContainerId(created.response.id)
-//            .withNetworkId(network.response.id)
-//            .execAsResource(docker)
-//        allocatedResources.addLast(connectedContainer)
-//        return start(created, port)
-//    }
 
     private fun start(
         created: CreatedContainer,
-        port: ExposedPort
+        port: ExposedPort,
+        name: String
     ): TcpHost {
         val startedContainer = docker
             .startContainerCmd(created.response.id)
             .execAsResource(docker)
         allocatedResources.addLast(startedContainer);
-        return install(startedContainer, port)
+        return install(startedContainer, port, name)
     }
 
     private fun install(
         started: StartedContainer,
-//        connected: ConnectedContainer,
-        port: ExposedPort
+        port: ExposedPort,
+        name: String
     ): TcpHost {
         val networkSettings = docker
             .inspectContainerCmd(started.id)
@@ -117,9 +103,7 @@ internal class DockerInfrastructure : Infrastructure {
             .values
             .single { it.networkID == network.response.id }
             .ipAddress!!
-        val portBindings = networkSettings.ports.bindings
-        val sshPort = getHostPort(portBindings, ExposedPort.tcp(22))
-        val tcpPort = getHostPort(portBindings, port)
+        val sshPort = getHostPort(networkSettings, ExposedPort.tcp(22))
         val sshHost = SshHost(
             ipAddress = "localhost",
             userName = "root",
@@ -131,14 +115,16 @@ internal class DockerInfrastructure : Infrastructure {
             it.execute("apt-get update", Duration.ofMinutes(2))
             it.execute("apt-get -y install sudo gnupg screen")
         }
-        return TcpHost("localhost", ip, tcpPort, started.id, ssh)
+        return TcpHost("localhost", ip, port.port, name, ssh)
     }
 
     private fun getHostPort(
-        portBindings: Map<ExposedPort, Array<Ports.Binding>>,
+        networkSettings: NetworkSettings,
         port: ExposedPort
     ): Int {
-        return portBindings[port]!!
+        return networkSettings
+            .ports
+            .bindings[port]!!
             .single()
             .hostPortSpec
             .toInt()
