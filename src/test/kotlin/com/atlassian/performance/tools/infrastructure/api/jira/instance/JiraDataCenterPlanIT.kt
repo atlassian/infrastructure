@@ -52,30 +52,67 @@ class JiraDataCenterPlanIT {
             .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
         val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, Supplier { TODO() }, infrastructure)
 
+        // when
+        val dataCenter = dcPlan.materialize()
+
+        // then
+        dataCenter.nodes.forEach { node ->
+            val installed = node.installed
+            val serverXml = installed
+                .installation
+                .resolve("conf/server.xml")
+                .download(Files.createTempFile("downloaded-config", ".xml"))
+            assertThat(serverXml.readText()).contains("<Connector port=\"${installed.host.port}\"")
+            assertThat(node.pid).isPositive()
+        }
+    }
+
+
+    @Test
+    fun shouldProvideLogsToDiagnoseFailure() {
+        // given
+        val nodePlans = listOf(1, 2).map {
+            JiraNodePlan.Builder()
+                .installation(
+                    ParallelInstallation(
+                        jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),
+                        productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                        jdk = AdoptOpenJDK()
+                    )
+                )
+                .start(JiraLaunchScript())
+                .hooks(PreInstallHooks.default().also { Datasets.JiraSevenDataset.hookMysql(it.postStart) })
+                .build()
+        }
+        val instanceHooks = PreInstanceHooks.default()
+            // TODO this plus `EmptyJiraHome()` = failing `DatabaseIpConfig` - couple them together or stop expecting a preexisting `dbconfig.xml`? but then what about missing lucene indexes?
+            .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
+        val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, Supplier { TODO() }, infrastructure)
+
         try {
             // when
-            val dataCenter = dcPlan.materialize()
-
-            // then
-            dataCenter.nodes.forEach { node ->
-                val installed = node.installed
-                val serverXml = installed
-                    .installation
-                    .resolve("conf/server.xml")
-                    .download(Files.createTempFile("downloaded-config", ".xml"))
-                assertThat(serverXml.readText()).contains("<Connector port=\"${installed.host.port}\"")
-                assertThat(node.pid).isPositive()
-            }
+            dcPlan.materialize()
         } finally {
             val reports = dcPlan.report().downloadTo(Files.createTempDirectory("jira-dc-plan-"))
+            // then
             assertThat(reports).isDirectory()
-            assertThat(reports.resolve("jira-node-1").list()).contains(
-                "jira-home/log/atlassian-jira.log",
-                "./atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
-                "~/jpt-jstat.log",
-                "~/jpt-vmstat.log",
-                "~/jpt-iostat.log"
+            val fileTree = reports
+                .walkTopDown()
+                .map { reports.toPath().relativize(it.toPath()) }
+                .toList()
+            assertThat(fileTree.map { it.toString() }).contains(
+                "jira-node-1/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+                "jira-node-1/root/thread-dumps",
+                "jira-node-2/root/~/jpt-jstat.log",
+                "jira-node-2/root/~/jpt-vmstat.log",
+                "jira-node-2/root/~/jpt-iostat.log"
             )
+            assertThat(fileTree.filter { it.fileName.toString().startsWith("access_log") })
+                .`as`("access logs")
+                .isNotEmpty
+            assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
+                .`as`("GC logs")
+                .isNotEmpty
         }
     }
 }

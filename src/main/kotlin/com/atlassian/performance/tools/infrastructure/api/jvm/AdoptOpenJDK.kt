@@ -19,6 +19,7 @@ class AdoptOpenJDK : VersionedJavaDevelopmentKit {
     override fun getMajorVersion() = 8
 
     override fun install(connection: SshConnection) {
+        Ubuntu().install(connection, listOf("curl"))
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
         connection.execute("echo '${use()}' >> ~/.profile")
