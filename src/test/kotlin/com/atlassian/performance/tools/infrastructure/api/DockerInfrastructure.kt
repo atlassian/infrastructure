@@ -1,15 +1,18 @@
 package com.atlassian.performance.tools.infrastructure.api
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
-import com.atlassian.performance.tools.infrastructure.lib.docker.*
+import com.atlassian.performance.tools.infrastructure.lib.docker.CreatedContainer
+import com.atlassian.performance.tools.infrastructure.lib.docker.DockerNetwork
+import com.atlassian.performance.tools.infrastructure.lib.docker.StartedContainer
+import com.atlassian.performance.tools.infrastructure.lib.docker.execAsResource
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshHost
 import com.atlassian.performance.tools.ssh.api.auth.PasswordAuthentication
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.PullImageResultCallback
-import com.github.dockerjava.api.model.*
+import com.github.dockerjava.api.model.ExposedPort
+import com.github.dockerjava.api.model.HostConfig
+import com.github.dockerjava.api.model.NetworkSettings
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
@@ -36,13 +39,6 @@ internal class DockerInfrastructure : Infrastructure {
         allocatedResources.add(network)
     }
 
-    override fun serve(jiraNodePlans: List<JiraNodePlan>): List<JiraNode> {
-        return jiraNodePlans.mapIndexed { nodeIndex, plan ->
-            val nodeNumber = nodeIndex + 1
-            plan.materialize(serve(8080, "jira-node-$nodeNumber"))
-        }
-    }
-
     fun serve(): Ssh {
         return serve("ssh")
     }
@@ -63,10 +59,6 @@ internal class DockerInfrastructure : Infrastructure {
             .withHostConfig(
                 HostConfig()
                     .withPublishAllPorts(true)
-//                    .withPortBindings(
-//                        PortBinding(Ports.Binding("0.0.0.0", "0"), ExposedPort.tcp(22)),
-//                        PortBinding(Ports.Binding("0.0.0.0", "0"), exposedPort)
-//                    )
                     .withPrivileged(true)
                     .withNetworkMode(network.response.id)
             )
