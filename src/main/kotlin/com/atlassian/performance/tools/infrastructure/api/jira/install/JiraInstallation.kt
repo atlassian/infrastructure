@@ -4,7 +4,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import net.jcip.annotations.ThreadSafe
 
 /**
- * @since 4.18.0
+ * @since 4.19.0
  */
 @ThreadSafe
 interface JiraInstallation {
