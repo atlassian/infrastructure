@@ -11,5 +11,6 @@ interface Infrastructure : AutoCloseable { // TODO rename to ServerRoom
      * @return can be reached by the caller via [TcpHost.publicIp] and by the rest of the infra via [TcpHost.privateIp]
      */
     fun serveTcp(name: String): TcpHost
+    fun serve(name: String, tcpPorts: List<Int>, udpPorts: List<Int>): TcpHost
     fun serveSsh(name: String): Ssh
 }
