@@ -3,6 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.loadbalancer
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHook
@@ -24,7 +25,7 @@ class ApacheProxyPlan(
         val proxyNode = infrastructure.serveTcp("apache-proxy")
         IdempotentAction("Installing and configuring apache load balancer") {
             proxyNode.ssh.newConnection().use { connection ->
-                tryToProvision(connection, nodes)
+                tryToProvision(connection, nodes, proxyNode)
             }
         }.retry(2, ExponentialBackoff(Duration.ofSeconds(5)))
         val balancerEndpoint = URI("http://${proxyNode.privateIp}:${proxyNode.port}/")
@@ -32,8 +33,9 @@ class ApacheProxyPlan(
         return ApacheProxy(balancerEndpoint)
     }
 
-    private fun tryToProvision(ssh: SshConnection, nodes: List<JiraNode>) {
+    private fun tryToProvision(ssh: SshConnection, nodes: List<JiraNode>, proxyNode: TcpHost) {
         Ubuntu().install(ssh, listOf("apache2"))
+        Sed().replace(ssh, "Listen 80", "Listen ${proxyNode.port}", "/etc/apache2/ports.conf")
         ssh.execute("sudo rm $configPath")
         ssh.execute("sudo touch $configPath")
         val mods = listOf(
@@ -47,7 +49,7 @@ class ApacheProxyPlan(
         )
         appendConfig(ssh, "<Proxy balancer://mycluster>")
         nodes.forEachIndexed { index, node ->
-            appendConfig(ssh, "\tBalancerMember http://${node.host.publicIp}:${node.host.port} route=$index")
+            appendConfig(ssh, "\tBalancerMember http://${node.host.privateIp}:${node.host.port} route=$index")
         }
         appendConfig(ssh, "</Proxy>\n")
         appendConfig(ssh, "ProxyPass / balancer://mycluster/ stickysession=ROUTEID")
