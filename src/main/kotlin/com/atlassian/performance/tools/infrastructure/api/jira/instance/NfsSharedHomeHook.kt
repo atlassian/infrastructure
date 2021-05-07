@@ -11,7 +11,7 @@ import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-internal class SharedHomeHook(
+internal class NfsSharedHomeHook(
     private val jiraHomeSource: JiraHomeSource,
     private val infrastructure: Infrastructure
 ) : PreInstanceHook {
@@ -24,7 +24,7 @@ internal class SharedHomeHook(
             export(ssh)
         }
         val sharedHome = RemotePath(server.host, localHome)
-        nodes.forEach { it.postInstall.insert(SharedHomeMount(sharedHome)) }
+        nodes.forEach { it.postInstall.insert(NfsMount(sharedHome)) }
     }
 
     private fun download(ssh: SshConnection) {
@@ -41,7 +41,7 @@ internal class SharedHomeHook(
         return ssh.execute("sudo service nfs-kernel-server restart")
     }
 
-    private class SharedHomeMount(
+    private class NfsMount(
         private val sharedHome: RemotePath
     ) : PostInstallHook {
 

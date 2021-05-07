@@ -58,23 +58,29 @@ internal class DockerInfrastructure : Infrastructure {
 
 
     override fun serveTcp(name: String): TcpHost {
+        // TODO pre-provision all the hosts rather than on-demand - unlock batch provisioning (CFN Stack), picking EC2 types, SSD storage, TCP port ranges, subnets, etc.
         return when {
             name.startsWith("jira-node") -> serveTcp(8080, name) // TODO this is a contract on undocumented behavior
             name.startsWith("mysql") -> serveTcp(3306, name)
-            else -> serveTcp(
-                888,
-                name
-            ) // TODO pre-provision all the hosts rather than on-demand - unlock batch provisioning (CFN Stack), picking EC2 types, SSD storage, TCP port ranges, subnets, etc.
+            name.startsWith("samba") -> serveTcp(3306, name)
+            else -> serveTcp(888, name)
         }
     }
 
-    private fun serveTcp(port: Int, name: String): TcpHost {
+    private fun serveTcp(tcpPort: Int, name: String): TcpHost {
+        return serve(name, listOf(tcpPort), emptyList())
+    }
+
+
+    override fun serve(name: String, tcpPorts: List<Int>, udpPorts: List<Int>): TcpHost {
+        val ports = tcpPorts.map { ExposedPort.tcp(it) } +
+            udpPorts.map { ExposedPort.udp(it) } +
+            ExposedPort.tcp(22)
         docker
             .pullImageCmd("rastasheep/ubuntu-sshd")
             .withTag("18.04")
             .exec(PullImageResultCallback())
             .awaitCompletion()
-        val exposedPort = ExposedPort.tcp(port)
         val createdContainer = docker
             .createContainerCmd("rastasheep/ubuntu-sshd:18.04")
             .withHostConfig(
@@ -83,28 +89,28 @@ internal class DockerInfrastructure : Infrastructure {
                     .withPrivileged(true)
                     .withNetworkMode(network.response.id)
             )
-            .withExposedPorts(exposedPort, ExposedPort.tcp(22))
+            .withExposedPorts(ports)
             .withName("$name-${randomUUID()}")
             .execAsResource(docker)
         allocatedResources.addLast(createdContainer)
-        return start(createdContainer, exposedPort, name)
+        return start(createdContainer, tcpPorts.first(), name)
     }
 
     private fun start(
         created: CreatedContainer,
-        port: ExposedPort,
+        tcpPort: Int,
         name: String
     ): TcpHost {
         val startedContainer = docker
             .startContainerCmd(created.response.id)
             .execAsResource(docker)
         allocatedResources.addLast(startedContainer);
-        return install(startedContainer, port, name)
+        return install(startedContainer, tcpPort, name)
     }
 
     private fun install(
         started: StartedContainer,
-        port: ExposedPort,
+        tcpPort: Int,
         name: String
     ): TcpHost {
         val networkSettings = docker
@@ -128,7 +134,7 @@ internal class DockerInfrastructure : Infrastructure {
             it.execute("apt-get update", Duration.ofMinutes(2))
             it.execute("apt-get -y install sudo gnupg screen")
         }
-        return TcpHost("localhost", ip, port.port, name, ssh)
+        return TcpHost("localhost", ip, tcpPort, name, ssh)
     }
 
     private fun getHostPort(

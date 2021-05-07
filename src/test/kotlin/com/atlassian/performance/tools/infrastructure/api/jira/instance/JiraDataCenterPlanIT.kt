@@ -57,7 +57,7 @@ class JiraDataCenterPlanIT {
         }
         val instanceHooks = PreInstanceHooks.default()
             .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
-            .also { it.insert(SharedHomeHook(jiraHomeSource, infrastructure)) }
+            .also { it.insert(SambaSharedHomeHook(jiraHomeSource, infrastructure)) }
         val balancerPlan = ApacheProxyPlan(infrastructure)
         val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, balancerPlan, infrastructure)
 
