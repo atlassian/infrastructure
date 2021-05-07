@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.jira.install
+package com.atlassian.performance.tools.infrastructure.api.jira.install
 
 import com.atlassian.performance.tools.ssh.api.Ssh
 

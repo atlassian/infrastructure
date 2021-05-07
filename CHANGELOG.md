@@ -194,10 +194,16 @@ Empty release to test changes in release process.
 ### Added
 - Point to remote files on SSH hosts via `RemotePath`.
 
+Progress on [JPERF-273]:
+- Allow multiple ways of installing Jira via `JiraInstallation` or starting it via `JiraStart`.
+- Represent the information required to use an already installed Jira via `InstalledJira` or `JiraStart` if started.
+- Represent a brand-new Jira instance via `EmptyJiraHome`.
+
 ### Fixed
 - Increase network-level retries for Jira/browser downloads. Decrease flakiness of such downloads on Ubuntu on WSL2.
 - Download ChromeDriver version that matches installed Chrome version. Fix [JPERF-732].
 
+[JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
 [JPERF-732]: https://ecosystem.atlassian.net/browse/JPERF-732
 
 ## [4.17.5] - 2020-12-15
