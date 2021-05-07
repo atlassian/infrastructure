@@ -1,7 +1,10 @@
-package com.atlassian.performance.tools.infrastructure.jira.install
+package com.atlassian.performance.tools.infrastructure.api.jira.install
 
 import net.jcip.annotations.ThreadSafe
 
+/**
+ * @since 4.18.0
+ */
 @ThreadSafe
 interface JiraInstallation {
 
