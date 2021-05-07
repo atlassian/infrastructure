@@ -26,12 +26,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.18.0...master
 
-## [4.18.0] - 2021-04-14
-[4.18.0]: https://github.com/atlassian/infrastructure/compare/release-4.17.5...release-4.18.0
-
 ### Added
-- Point to remote files on SSH hosts via `RemotePath`.
-
 Fix [JPERF-273]:
 - Allow multiple ways of installing Jira via `JiraInstallation` or starting it via `JiraStart`.
 - Represent the information required to use an already installed Jira via `InstalledJira` or `JiraStart` if started.
@@ -41,11 +36,18 @@ Fix [JPERF-273]:
 - Let hooks insert new hooks.
 - Locate and download any logs, charts, profiles and other reports via `Report` (rather than hardcoding the paths).
 
+[JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
+
+## [4.18.0] - 2021-04-14
+[4.18.0]: https://github.com/atlassian/infrastructure/compare/release-4.17.5...release-4.18.0
+
+### Added
+- Point to remote files on SSH hosts via `RemotePath`.
+
 ### Fixed
 - Increase network-level retries for Jira/browser downloads. Decrease flakiness of such downloads on Ubuntu on WSL2.
 - Download ChromeDriver version that matches installed Chrome version. Fix [JPERF-732].
 
-[JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
 [JPERF-732]: https://ecosystem.atlassian.net/browse/JPERF-732
 
 ## [4.17.5] - 2020-12-15

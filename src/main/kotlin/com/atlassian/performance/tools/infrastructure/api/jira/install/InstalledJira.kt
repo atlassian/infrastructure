@@ -6,7 +6,7 @@ import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
 /**
  * Points to an already installed Jira.
  *
- * @since 4.18.0
+ * @since 4.19.0
  */
 class InstalledJira(
     /**
