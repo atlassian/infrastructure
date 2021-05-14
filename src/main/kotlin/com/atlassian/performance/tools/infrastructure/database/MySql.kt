@@ -3,6 +3,8 @@ package com.atlassian.performance.tools.infrastructure.database
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.docker.DeadContainerCheck
+import com.atlassian.performance.tools.jvmtasks.api.Backoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -54,7 +56,17 @@ internal object Mysql {
         .build()
 
     fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient) {
+        val backoff = StaticBackoff(ofSeconds(10))
+        awaitDatabase(ssh, sqlClient, backoff)
+    }
+
+    fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient, containerName: String) {
+        val backoff = DeadContainerCheck(containerName, ssh, StaticBackoff(ofSeconds(10)))
+        awaitDatabase(ssh, sqlClient, backoff)
+    }
+
+    private fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient, backoff: Backoff) {
         IdempotentAction("wait for MySQL start") { sqlClient.runSql(ssh, "select 1;") }
-            .retry(90, StaticBackoff(ofSeconds(10)))
+            .retry(90, backoff)
     }
 }
