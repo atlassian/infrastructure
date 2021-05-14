@@ -144,7 +144,7 @@ internal class DockerInfrastructure : Infrastructure {
         return networkSettings
             .ports
             .bindings[port]!!
-            .single()
+            .single { it.hostIp == "0.0.0.0" } // include just the IP4 bind
             .hostPortSpec
             .toInt()
     }
