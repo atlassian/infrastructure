@@ -1,6 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
 import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
+import com.atlassian.performance.tools.infrastructure.assertInterruptedJava
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.Ssh
@@ -25,7 +26,8 @@ class ThreadDumpTest(
         val destination = "thread-dumps"
         connection.execute("""echo "public class Test { public static void main(String[] args) { try { Thread.sleep(java.time.Duration.ofMinutes(1).toMillis()); } catch (InterruptedException e) { throw new RuntimeException(e); } }}" > Test.java """.trimIndent())
         connection.execute("${jdk.use()}; javac Test.java")
-        ssh.runInBackground("${jdk.use()}; java Test").use {
+        val process = ssh.runInBackground("${jdk.use()}; java Test")
+        try {
             val pid = IdempotentAction("Get PID") {
                 getPid(connection, jdk)
             }.retry(maxAttempts = 2, backoff = StaticBackoff(Duration.ofSeconds(1)))
@@ -35,6 +37,8 @@ class ThreadDumpTest(
             val threadDumpFile = connection.execute("ls $destination").output
             val threadDump = connection.execute("cat $destination/$threadDumpFile").output
             assertThat(threadDump).contains("Full thread dump Java HotSpot")
+        } finally {
+            process.stop(Duration.ofSeconds(1)).assertInterruptedJava()
         }
     }
 
