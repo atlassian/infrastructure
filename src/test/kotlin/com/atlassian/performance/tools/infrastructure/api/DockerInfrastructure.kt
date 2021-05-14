@@ -10,9 +10,7 @@ import com.atlassian.performance.tools.ssh.api.SshHost
 import com.atlassian.performance.tools.ssh.api.auth.PasswordAuthentication
 import com.github.dockerjava.api.DockerClient
 import com.github.dockerjava.api.command.PullImageResultCallback
-import com.github.dockerjava.api.model.ExposedPort
-import com.github.dockerjava.api.model.HostConfig
-import com.github.dockerjava.api.model.NetworkSettings
+import com.github.dockerjava.api.model.*
 import com.github.dockerjava.core.DefaultDockerClientConfig
 import com.github.dockerjava.core.DockerClientImpl
 import com.github.dockerjava.zerodep.ZerodepDockerHttpClient
@@ -86,9 +84,18 @@ internal class DockerInfrastructure(
             .withHostConfig(
                 HostConfig()
                     .withPublishAllPorts(true)
-                    .withPrivileged(true)
+//                    .withPrivileged(true)
+                    .withBinds(Bind("/var/run/docker.sock", Volume("/var/run/docker.sock")))
+//                    .withMounts(
+//                        Mount()
+//                            .withSource("/var/run/docker.sock")
+//                            .withTarget("/var/run/docker.sock")
+//                            .withType(MountType.VOLUME)
+//                            .let { listOf(it) }
+//                    )
                     .withNetworkMode(network.response.id)
             )
+//            .withVolumes(Volume("/var/run/docker.sock"))
             .withExposedPorts(ports)
             .withName("$name-${randomUUID()}")
             .execAsResource(docker)
