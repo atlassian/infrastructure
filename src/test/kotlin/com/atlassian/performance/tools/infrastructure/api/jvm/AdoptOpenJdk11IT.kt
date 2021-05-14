@@ -8,9 +8,7 @@ class AdoptOpenJdk11IT {
     @Test
     fun shouldSupportJstat() {
         DockerInfrastructure().use { infra ->
-            infra.serveTest().newConnection().use { connection ->
-                JstatSupport(AdoptOpenJDK11()).shouldSupportJstat(connection)
-            }
+            JstatSupport(AdoptOpenJDK11(), infra.serveTest()).shouldSupportJstat()
         }
     }
 }

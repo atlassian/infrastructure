@@ -8,9 +8,7 @@ class OpenJdkIT {
     @Test
     fun shouldSupportJstat() {
         DockerInfrastructure().use { infra ->
-            infra.serveTest().newConnection().use { connection ->
-                JstatSupport(OpenJDK()).shouldSupportJstat(connection)
-            }
+            JstatSupport(OpenJDK(), infra.serveTest()).shouldSupportJstat()
         }
     }
 }

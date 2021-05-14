@@ -28,7 +28,7 @@ internal class PageLoadTimeoutRecoveryTest {
                             chromium.install(connection)
                         }
                         val chromedriverUri = URI("http://localhost:$localChromedriverPort")
-                        SshChromium(ssh.newConnection(), chromedriverUri).start().use { sshDriver ->
+                        SshChromium(ssh, chromedriverUri).start().use { sshDriver ->
                             val driver = sshDriver.getDriver()
                             setPageLoadTimeout(driver)
 
@@ -46,7 +46,7 @@ internal class PageLoadTimeoutRecoveryTest {
     }
 
     private fun findFreePort(): Int {
-        return ServerSocket(0).use { socket -> return socket.localPort }
+        return ServerSocket(0).use { socket -> socket.localPort }
     }
 
     private class FastResponse : MockHttpServer.RequestHandler {
