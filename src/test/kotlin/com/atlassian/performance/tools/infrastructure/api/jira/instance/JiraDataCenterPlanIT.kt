@@ -5,22 +5,24 @@ import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
-import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
-import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHook
-import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHook
+import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHooks
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApacheProxyPlan
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
+import java.time.Duration.ofMinutes
 
 class JiraDataCenterPlanIT {
 
@@ -83,9 +85,11 @@ class JiraDataCenterPlanIT {
     @Test
     fun shouldProvideLogsToDiagnoseFailure() {
         // given
-        class FailingHook : PreStartHook {
-            override fun call(ssh: SshConnection, jira: InstalledJira, hooks: PreStartHooks, reports: Reports) {
-                throw Exception("Failing deliberately before Jira starts")
+        class FailingHook : PostStartHook {
+            override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks, reports: Reports) {
+                val installed = jira.installed
+                ssh.execute("${installed.jdk.use()}; ${installed.installation.path}/bin/stop-jira.sh", ofMinutes(1))
+                throw Exception("Failing deliberately after Jira started")
             }
         }
 
@@ -99,36 +103,35 @@ class JiraDataCenterPlanIT {
                     )
                 )
                 .start(JiraLaunchScript())
-                .hooks(PreInstallHooks.default().also { it.preStart.insert(FailingHook()) })
+                .hooks(PreInstallHooks.default().also { it.postStart.insert(FailingHook()) })
                 .build()
         }
         val balancerPlan = ApacheProxyPlan(infrastructure)
         val dcPlan = JiraDataCenterPlan(nodePlans, PreInstanceHooks.default(), balancerPlan, infrastructure)
 
-        try {
-            // when
+        // when
+        val thrown = catchThrowable {
             dcPlan.materialize()
-        } finally {
-            val reports = dcPlan.report().downloadTo(Files.createTempDirectory("jira-dc-plan-"))
-            // then
-            assertThat(reports).isDirectory()
-            val fileTree = reports
-                .walkTopDown()
-                .map { reports.toPath().relativize(it.toPath()) }
-                .toList()
-            assertThat(fileTree.map { it.toString() }).contains(
-                "jira-node-1/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
-                "jira-node-1/root/thread-dumps",
-                "jira-node-2/root/~/jpt-jstat.log",
-                "jira-node-2/root/~/jpt-vmstat.log",
-                "jira-node-2/root/~/jpt-iostat.log"
-            )
-            assertThat(fileTree.filter { it.fileName.toString().startsWith("access_log") })
-                .`as`("access logs")
-                .isNotEmpty
-            assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
-                .`as`("GC logs")
-                .isNotEmpty
         }
+
+        val reports = dcPlan.report().downloadTo(Files.createTempDirectory("jira-dc-plan-"))
+        // then
+        assertThat(thrown).hasMessageStartingWith("Failing deliberately")
+        assertThat(reports).isDirectory()
+        val fileTree = reports
+            .walkTopDown()
+            .map { reports.toPath().relativize(it.toPath()) }
+            .toList()
+        assertThat(fileTree.map { it.toString() }).contains(
+            "jira-node-1/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+            "jira-node-1/root/~/jpt-jstat.log",
+            "jira-node-2/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out"
+        )
+        assertThat(fileTree.filter { it.fileName.toString() == "atlassian-jira.log" })
+            .`as`("Jira log from $fileTree")
+            .isNotEmpty
+        assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
+            .`as`("GC logs from $fileTree")
+            .isNotEmpty
     }
 }
