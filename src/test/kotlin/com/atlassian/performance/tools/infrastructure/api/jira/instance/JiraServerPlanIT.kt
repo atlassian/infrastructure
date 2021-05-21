@@ -59,7 +59,7 @@ class JiraServerPlanIT {
 
         val theNode = jiraServer.nodes.single()
         val host = theNode.installed.host
-        val downloadedReports = jiraServerPlan.report().downloadTo(Files.createTempDirectory("jira-server-plan-"))
+        val reports = jiraServerPlan.report().downloadTo(Files.createTempDirectory("jira-server-plan-"))
 
         // then
         val serverXml = theNode
@@ -69,12 +69,23 @@ class JiraServerPlanIT {
             .download(Files.createTempFile("downloaded-config", ".xml"))
         assertThat(serverXml.readText()).contains("<Connector port=\"${host.port}\"")
         assertThat(theNode.pid).isPositive()
-        assertThat(downloadedReports.resolve("jira-node-1").list()).contains(
-            "jira-home/log/atlassian-jira.log",
-            "./atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
-            "~/jpt-jstat.log",
-            "~/jpt-vmstat.log",
-            "~/jpt-iostat.log"
+        assertThat(reports).isDirectory()
+        val fileTree = reports
+            .walkTopDown()
+            .map { reports.toPath().relativize(it.toPath()) }
+            .toList()
+        assertThat(fileTree.map { it.toString() }).contains(
+            "jira-node/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+            "jira-node/root/thread-dumps",
+            "jira-node/root/~/jpt-jstat.log",
+            "jira-node/root/~/jpt-vmstat.log",
+            "jira-node/root/~/jpt-iostat.log"
         )
+        assertThat(fileTree.filter { it.fileName.toString().startsWith("access_log") })
+            .`as`("access logs from $fileTree")
+            .isNotEmpty
+        assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
+            .`as`("GC logs from $fileTree")
+            .isNotEmpty
     }
 }

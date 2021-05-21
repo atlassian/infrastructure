@@ -34,7 +34,7 @@ class Datasets {
 
         fun hookMysql(postStartHooks: PostStartHooks) {
             val timeouts = JiraLaunchTimeouts.Builder()
-                .initTimeout(Duration.ofSeconds(30))
+                .initTimeout(Duration.ofSeconds(45))
                 .build()
             val dataUpgrade = RestUpgrade(timeouts, "admin", "admin")
             postStartHooks.insert(dataUpgrade)
