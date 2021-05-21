@@ -49,7 +49,7 @@ class Docker private constructor(
             ssh.execute("sudo docker ps")
         }.retry(2, StaticBackoff(Duration.ofSeconds(1)))
         ssh.execute("sudo docker info")
-        ssh.execute("echo '{\"storage-driver\": \"overlay2\"}' | sudo tee /etc/docker/daemon.json")
+        ssh.execute("echo '{\"storage-driver\": \"vfs\"}' | sudo tee /etc/docker/daemon.json")
         ssh.execute("sudo cat /etc/docker/daemon.json")
         ssh.execute("sudo service docker restart")
         IdempotentAction("poll docker") {
