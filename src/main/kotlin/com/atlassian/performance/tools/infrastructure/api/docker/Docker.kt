@@ -43,19 +43,12 @@ class Docker private constructor(
             packages = listOf("docker-ce=$version"),
             timeout = mainPackageTimeout
         )
-        ssh.execute("sudo service docker status || sudo service docker start")
-        ssh.safeExecute("sudo cat /etc/docker/daemon.json")
-        IdempotentAction("poll docker") {
-            ssh.execute("sudo docker ps")
-        }.retry(2, StaticBackoff(Duration.ofSeconds(1)))
-        ssh.execute("sudo docker info")
+        ssh.execute("sudo mkdir -p /etc/docker")
         ssh.execute("echo '{\"storage-driver\": \"vfs\"}' | sudo tee /etc/docker/daemon.json")
-        ssh.execute("sudo cat /etc/docker/daemon.json")
-        ssh.execute("sudo service docker restart")
+        ssh.execute("sudo service docker status || sudo service docker start")
         IdempotentAction("poll docker") {
             ssh.execute("sudo docker ps")
         }.retry(2, StaticBackoff(Duration.ofSeconds(1)))
-        ssh.execute("sudo docker info")
     }
 
     class Builder {
