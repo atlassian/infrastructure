@@ -85,7 +85,7 @@ internal class DockerInfrastructure : Infrastructure {
                 HostConfig()
                     .withPublishAllPorts(true)
                     .withPrivileged(true)
-                    .withBinds(Bind("/var/run/docker.sock", Volume("/var/run/docker.sock")))
+//                    .withBinds(Bind("/var/run/docker.sock", Volume("/var/run/docker.sock")))
 //                    .withMounts(
 //                        Mount()
 //                            .withSource("/var/run/docker.sock")
