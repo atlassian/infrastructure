@@ -10,11 +10,14 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreI
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
+import com.atlassian.performance.tools.io.api.resolveSafely
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
+import java.nio.file.Paths
+import java.time.Instant
 
 class JiraServerPlanIT {
 
@@ -55,7 +58,15 @@ class JiraServerPlanIT {
             .build()
 
         // when
-        val jiraServer = jiraServerPlan.materialize()
+        val jiraServer = try {
+            jiraServerPlan.materialize()
+        } catch (e: Exception) {
+            val debugging = Paths.get("build/test-artifacts/")
+                .resolveSafely(javaClass.simpleName)
+                .resolveSafely(Instant.now().toString())
+            jiraServerPlan.report().downloadTo(debugging)
+            throw Exception("Jira Server plan failed to materialize, debugging info available in $debugging", e)
+        }
 
         val theNode = jiraServer.nodes.single()
         val host = theNode.installed.host
@@ -76,7 +87,6 @@ class JiraServerPlanIT {
             .toList()
         assertThat(fileTree.map { it.toString() }).contains(
             "jira-node/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
-            "jira-node/root/thread-dumps",
             "jira-node/root/~/jpt-jstat.log",
             "jira-node/root/~/jpt-vmstat.log",
             "jira-node/root/~/jpt-iostat.log"

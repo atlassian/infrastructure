@@ -32,6 +32,12 @@ jobs:
       with:
         name: test-reports
         path: build/reports/tests
+    - name: Upload test artifacts
+      if: always()
+      uses: actions/upload-artifact@v2
+      with:
+        name: test-artifacts
+        path: build/test-artifacts
   release:
     runs-on: ubuntu-latest
     permissions:
