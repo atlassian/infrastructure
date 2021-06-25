@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure.api.jira.instance
+package com.atlassian.performance.tools.infrastructure.api.jira.sharedhome
 
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
@@ -6,12 +6,15 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.Installed
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.jira.sharedhome.SharedHomeProperty
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
-internal class NfsSharedHomeHook(
+class NfsSharedHome(
     private val jiraHomeSource: JiraHomeSource,
     private val infrastructure: Infrastructure
 ) : PreInstanceHook {
@@ -52,11 +55,8 @@ internal class NfsSharedHomeHook(
             ssh.execute("mkdir -p $mountTarget")
             ssh.execute("sudo mount -o soft,intr,rsize=8192,wsize=8192 $mountSource $mountTarget")
             ssh.execute("sudo chown ubuntu:ubuntu $mountTarget")
-            val mountedPath = "`realpath $mountTarget`"
-            val jiraHome = jira.home.path
-            ssh.execute("echo ehcache.object.port = 40011 >> $jiraHome/cluster.properties")
-            ssh.execute("echo jira.node.id = ${jira.host.name} >> $jiraHome/cluster.properties")
-            ssh.execute("echo jira.shared.home = $mountedPath >> $jiraHome/cluster.properties")
+            val mounted = "`realpath $mountTarget`"
+            SharedHomeProperty(jira).set(mounted, ssh)
         }
     }
 }

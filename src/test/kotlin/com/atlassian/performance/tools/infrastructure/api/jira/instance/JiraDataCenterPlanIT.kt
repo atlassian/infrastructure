@@ -9,6 +9,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelI
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
+import com.atlassian.performance.tools.infrastructure.api.jira.sharedhome.SambaSharedHome
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHook
@@ -59,9 +60,12 @@ class JiraDataCenterPlanIT {
         }
         val instanceHooks = PreInstanceHooks.default()
             .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
-            .also { it.insert(SambaSharedHomeHook(jiraHomeSource, infrastructure)) }
-        val balancerPlan = ApacheProxyPlan(infrastructure)
-        val dcPlan = JiraDataCenterPlan(nodePlans, instanceHooks, balancerPlan, infrastructure)
+            .also { it.insert(SambaSharedHome(jiraHomeSource, infrastructure)) }
+        val dcPlan = JiraDataCenterPlan.Builder(infrastructure)
+            .nodePlans(nodePlans)
+            .instanceHooks(instanceHooks)
+            .balancerPlan(ApacheProxyPlan(infrastructure))
+            .build()
 
         // when
         val dataCenter = dcPlan.materialize()
@@ -106,8 +110,9 @@ class JiraDataCenterPlanIT {
                 .hooks(PreInstallHooks.default().also { it.postStart.insert(FailingHook()) })
                 .build()
         }
-        val balancerPlan = ApacheProxyPlan(infrastructure)
-        val dcPlan = JiraDataCenterPlan(nodePlans, PreInstanceHooks.default(), balancerPlan, infrastructure)
+        val dcPlan = JiraDataCenterPlan.Builder(infrastructure)
+            .nodePlans(nodePlans)
+            .build()
 
         // when
         val thrown = catchThrowable {
