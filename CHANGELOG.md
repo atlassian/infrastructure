@@ -35,6 +35,7 @@ Fix [JPERF-273]:
 - Hook into Jira start via `PreStartHooks` and `PostStartHooks`.
 - Let hooks insert new hooks.
 - Locate and download any logs, charts, profiles and other reports via `Report` (rather than hardcoding the paths).
+- Expose preset `NfsSharedHome` or `SambaSharedHome` for Data Center.
 
 [JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
 
