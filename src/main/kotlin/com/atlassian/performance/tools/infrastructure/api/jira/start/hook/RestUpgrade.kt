@@ -6,6 +6,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.report.FileListin
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.jvm.ThreadDump
+import com.atlassian.performance.tools.infrastructure.jira.report.JiraLandingPage
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.net.URI
 import java.time.Duration
@@ -70,6 +71,7 @@ class RestUpgrade(
                 if (deadline < Instant.now()) {
                     reports.add(JiraLogs().report(jira.installed), jira)
                     reports.add(FileListing("thread-dumps/*"), jira)
+                    reports.add(JiraLandingPage(jira), jira)
                     throw Exception("$upgradesEndpoint failed to get out of $statusQuo status within $timeout")
                 }
                 threadDump.gather(ssh, "thread-dumps")
