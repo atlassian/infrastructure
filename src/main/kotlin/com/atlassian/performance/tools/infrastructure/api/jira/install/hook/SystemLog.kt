@@ -7,7 +7,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class SystemLog : PreInstallHook {
 
-    override fun call(ssh: SshConnection, host: TcpHost, hooks: PreInstallHooks, reports: Reports) {
-        reports.add(FileListing("/var/log/syslog"), host)
+    override fun call(ssh: SshConnection, tcp: TcpHost, hooks: PreInstallHooks, reports: Reports) {
+        reports.add(FileListing("/var/log/syslog"), tcp)
     }
 }

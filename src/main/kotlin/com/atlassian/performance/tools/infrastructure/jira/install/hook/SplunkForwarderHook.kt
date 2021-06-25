@@ -18,6 +18,6 @@ internal class SplunkForwarderHook(
         reports: Reports
     ) {
         splunk.jsonifyLog4j(ssh, "${jira.installation.path}/atlassian-jira/WEB-INF/classes/log4j.properties")
-        splunk.run(ssh, jira.host.name, "/home/ubuntu/jirahome/log")
+        splunk.run(ssh, jira.http.tcp.name, "/home/ubuntu/jirahome/log")
     }
 }

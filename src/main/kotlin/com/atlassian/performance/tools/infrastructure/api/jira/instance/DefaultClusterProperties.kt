@@ -11,7 +11,7 @@ class DefaultClusterProperties : PostInstallHook {
 
     override fun call(ssh: SshConnection, jira: InstalledJira, hooks: PostInstallHooks, reports: Reports) {
         ClusterProperties(jira).apply {
-            set("jira.node.id", jira.host.name, ssh)
+            set("jira.node.id", jira.http.tcp.name, ssh)
             set("ehcache.object.port", "40011", ssh)
         }
     }

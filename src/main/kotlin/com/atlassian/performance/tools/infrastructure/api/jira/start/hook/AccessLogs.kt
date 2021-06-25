@@ -8,6 +8,6 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 class AccessLogs : PreStartHook {
 
     override fun call(ssh: SshConnection, jira: InstalledJira, hooks: PreStartHooks, reports: Reports) {
-        reports.add(FileListing("${jira.installation.path}/logs/*access*"), jira.host)
+        reports.add(FileListing("${jira.installation.path}/logs/*access*"), jira)
     }
 }

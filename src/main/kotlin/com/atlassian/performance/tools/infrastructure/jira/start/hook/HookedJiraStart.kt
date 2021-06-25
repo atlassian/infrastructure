@@ -15,11 +15,11 @@ class HookedJiraStart(
         installed: InstalledJira,
         reports: Reports
     ): StartedJira {
-        installed.host.ssh.newConnection().use { ssh ->
+        installed.http.tcp.ssh.newConnection().use { ssh ->
             hooks.call(ssh, installed, reports)
         }
         val started = start.start(installed, reports)
-        installed.host.ssh.newConnection().use { ssh ->
+        installed.http.tcp.ssh.newConnection().use { ssh ->
             hooks.postStart.call(ssh, started, reports)
         }
         return started

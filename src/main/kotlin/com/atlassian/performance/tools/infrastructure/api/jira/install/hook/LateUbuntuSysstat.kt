@@ -32,6 +32,6 @@ private class PostStartOsMetric(
 ) : PostStartHook {
     override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks, reports: Reports) {
         val process = metric.start(ssh)
-        reports.add(RemoteMonitoringProcessReport(process), jira.installed.host)
+        reports.add(RemoteMonitoringProcessReport(process), jira)
     }
 }

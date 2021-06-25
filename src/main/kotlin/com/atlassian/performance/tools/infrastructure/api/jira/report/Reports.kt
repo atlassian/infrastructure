@@ -1,6 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.report
 
+import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
 import com.atlassian.performance.tools.io.api.ensureDirectory
 import com.atlassian.performance.tools.io.api.resolveSafely
@@ -15,11 +17,16 @@ class Reports private constructor( // TODO turn into SPI to allow AWS CLI transp
 ) {
     constructor() : this(ConcurrentLinkedQueue())
 
-    fun add(
-        report: Report,
-        host: TcpHost
-    ) {
-        hostReports.add(HostReport(host, report))
+    fun add(report: Report, started: StartedJira) {
+        add(report, started.installed)
+    }
+
+    fun add(report: Report, installed: InstalledJira) {
+        add(report, installed.http.tcp)
+    }
+
+    fun add(report: Report, tcp: TcpHost) {
+        hostReports.add(HostReport(tcp, report))
     }
 
     fun downloadTo(

@@ -37,7 +37,7 @@ private class InstalledProfiler(
     ) {
         val process = profiler.start(ssh, jira.pid)
         if (process != null) {
-            reports.add(RemoteMonitoringProcessReport(process), jira.installed.host)
+            reports.add(RemoteMonitoringProcessReport(process), jira)
         }
     }
 }

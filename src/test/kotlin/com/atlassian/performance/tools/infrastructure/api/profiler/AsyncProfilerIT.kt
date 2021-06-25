@@ -32,7 +32,7 @@ class AsyncProfilerIT {
         val profiler = AsyncProfiler()
 
         testOnInstalledJira(ubuntuVersion) { installedJira ->
-            installedJira.host.ssh.newConnection().use { ssh ->
+            installedJira.http.tcp.ssh.newConnection().use { ssh ->
                 // when
                 profiler.install(ssh)
                 val startedJira = JiraLaunchScript().start(installedJira, Reports())
@@ -41,7 +41,7 @@ class AsyncProfilerIT {
                 process.stop(ssh)
 
                 // then
-                val profilerResult = RemotePath(installedJira.host.ssh.host, process.getResultPath())
+                val profilerResult = RemotePath(installedJira.http.tcp.ssh.host, process.getResultPath())
                     .download(createTempFile("profiler-result", ".svg"))
                 assertThat(profilerResult.readLines().take(5)).contains("<!DOCTYPE html>")
             }

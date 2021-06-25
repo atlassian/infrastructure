@@ -10,13 +10,13 @@ import net.jcip.annotations.ThreadSafe
 interface JiraInstallation {
 
     /**
-     * Installs Jira on [host].
+     * Installs Jira on [tcp].
      *
-     * @param [host] will host the Jira
+     * @param [tcp] will host the Jira
      * @param [reports] accumulates reports
      */
     fun install(
-        host: TcpHost,
+        tcp: TcpHost,
         reports: Reports
     ): InstalledJira
 }
