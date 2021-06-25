@@ -48,7 +48,7 @@ private class CountingHook : PreInstallHook {
 
     var count = 0
 
-    override fun call(ssh: SshConnection, host: TcpHost, hooks: PreInstallHooks, reports: Reports) {
+    override fun call(ssh: SshConnection, tcp: TcpHost, hooks: PreInstallHooks, reports: Reports) {
         count++
     }
 }
@@ -56,7 +56,7 @@ private class CountingHook : PreInstallHook {
 private class InsertingHook(
     private val hook: PreInstallHook
 ) : PreInstallHook {
-    override fun call(ssh: SshConnection, host: TcpHost, hooks: PreInstallHooks, reports: Reports) {
+    override fun call(ssh: SshConnection, tcp: TcpHost, hooks: PreInstallHooks, reports: Reports) {
         hooks.insert(hook)
     }
 }

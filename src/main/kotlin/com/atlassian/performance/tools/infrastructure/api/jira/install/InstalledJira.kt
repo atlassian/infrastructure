@@ -22,7 +22,7 @@ class InstalledJira(
      */
     val jdk: JavaDevelopmentKit,
     /**
-     * Hosts Jira. Specifies sockets used by Jira to handle requests.
+     * Connects to Jira on HTTP level or below.
      */
-    val host: TcpHost
+    val http: HttpHost
 )

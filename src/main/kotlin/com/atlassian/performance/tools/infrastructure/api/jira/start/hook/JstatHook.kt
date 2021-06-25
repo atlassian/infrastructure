@@ -14,6 +14,6 @@ class JstatHook : PostStartHook {
         reports: Reports
     ) {
         val process = jira.installed.jdk.jstatMonitoring.start(ssh, jira.pid)
-        reports.add(RemoteMonitoringProcessReport(process), jira.installed.host)
+        reports.add(RemoteMonitoringProcessReport(process), jira)
     }
 }

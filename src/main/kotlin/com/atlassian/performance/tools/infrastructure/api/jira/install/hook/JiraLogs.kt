@@ -10,7 +10,7 @@ import java.nio.file.Paths
 class JiraLogs : PostInstallHook {
 
     override fun call(ssh: SshConnection, jira: InstalledJira, hooks: PostInstallHooks, reports: Reports) {
-        reports.add(report(jira), jira.host)
+        reports.add(report(jira), jira)
     }
 
     fun report(jira: InstalledJira): Report {

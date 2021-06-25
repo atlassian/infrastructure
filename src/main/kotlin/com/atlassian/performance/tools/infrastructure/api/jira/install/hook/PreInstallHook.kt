@@ -10,14 +10,14 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 interface PreInstallHook {
 
     /**
-     * @param [ssh] connects to the [host]
-     * @param [host] will install Jira
+     * @param [ssh] connects to the [tcp]
+     * @param [tcp] will install Jira
      * @param [hooks] inserts future hooks
      * @param [reports] accumulates reports
      */
     fun call(
         ssh: SshConnection,
-        host: TcpHost,
+        tcp: TcpHost,
         hooks: PreInstallHooks,
         reports: Reports
     )

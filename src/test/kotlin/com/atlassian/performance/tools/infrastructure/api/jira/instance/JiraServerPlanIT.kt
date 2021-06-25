@@ -67,18 +67,16 @@ class JiraServerPlanIT {
             jiraServerPlan.report().downloadTo(debugging)
             throw Exception("Jira Server plan failed to materialize, debugging info available in $debugging", e)
         }
-
-        val theNode = jiraServer.nodes.single()
-        val host = theNode.installed.host
         val reports = jiraServerPlan.report().downloadTo(Files.createTempDirectory("jira-server-plan-"))
 
         // then
+        val theNode = jiraServer.nodes.single()
         val serverXml = theNode
             .installed
             .installation
             .resolve("conf/server.xml")
             .download(Files.createTempFile("downloaded-config", ".xml"))
-        assertThat(serverXml.readText()).contains("<Connector port=\"${host.port}\"")
+        assertThat(serverXml.readText()).contains("<Connector port=\"${theNode.installed.http.tcp.port}\"")
         assertThat(theNode.pid).isPositive()
         assertThat(reports).isDirectory()
         val fileTree = reports

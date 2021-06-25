@@ -12,14 +12,14 @@ class HookedJiraInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        host: TcpHost,
+        tcp: TcpHost,
         reports: Reports
     ): InstalledJira {
-        host.ssh.newConnection().use { ssh ->
-            hooks.call(ssh, host, reports)
+        tcp.ssh.newConnection().use { ssh ->
+            hooks.call(ssh, tcp, reports)
         }
-        val installed = installation.install(host, reports)
-        host.ssh.newConnection().use { ssh ->
+        val installed = installation.install(tcp, reports)
+        tcp.ssh.newConnection().use { ssh ->
             hooks.postInstall.call(ssh, installed, reports)
         }
         return installed

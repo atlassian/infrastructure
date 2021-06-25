@@ -77,9 +77,9 @@ class JiraDataCenterPlanIT {
                 .installation
                 .resolve("conf/server.xml")
                 .download(Files.createTempFile("downloaded-config", ".xml"))
-            assertThat(serverXml.readText()).contains("<Connector port=\"${installed.host.port}\"")
+            assertThat(serverXml.readText()).contains("<Connector port=\"${installed.http.tcp.port}\"")
             assertThat(node.pid).isPositive()
-            installed.host.ssh.newConnection().use { ssh ->
+            installed.http.tcp.ssh.newConnection().use { ssh ->
                 ssh.execute("wget ${dataCenter.address}")
             }
         }

@@ -35,13 +35,11 @@ class RestUpgrade(
         private val threadDump: ThreadDump,
         private val reports: Reports
     ) {
-        private val upgradesEndpoint: URI
-
-        init {
-            val ip = jira.installed.host.privateIp
-            val port = jira.installed.host.port
-            upgradesEndpoint = URI("http://$adminUsername:$adminPassword@$ip:$port/rest/api/2/upgrade")
-        }
+        private val upgradesEndpoint: URI = jira
+            .installed
+            .http
+            .addressPrivately(adminUsername, adminPassword)
+            .resolve("rest/api/2/upgrade")
 
         fun waitUntilOnline() {
             waitForStatusToChange("000", timeouts.offlineTimeout)
@@ -70,8 +68,8 @@ class RestUpgrade(
                     break
                 }
                 if (deadline < Instant.now()) {
-                    reports.add(JiraLogs().report(jira.installed), jira.installed.host)
-                    reports.add(FileListing("thread-dumps/*"), jira.installed.host)
+                    reports.add(JiraLogs().report(jira.installed), jira)
+                    reports.add(FileListing("thread-dumps/*"), jira)
                     throw Exception("$upgradesEndpoint failed to get out of $statusQuo status within $timeout")
                 }
                 threadDump.gather(ssh, "thread-dumps")

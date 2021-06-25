@@ -13,7 +13,7 @@ class AsyncProfilerHook : PreInstallHook {
 
     override fun call(
         ssh: SshConnection,
-        host: TcpHost,
+        tcp: TcpHost,
         hooks: PreInstallHooks,
         reports: Reports
     ) {
@@ -43,7 +43,7 @@ private class InstalledAsyncProfiler(
     ) {
         ssh.execute("$profilerPath -b 20000000 start ${jira.pid}")
         val profiler = StartedAsyncProfiler(jira.pid, profilerPath)
-        reports.add(profiler, jira.installed.host)
+        reports.add(profiler, jira)
     }
 }
 

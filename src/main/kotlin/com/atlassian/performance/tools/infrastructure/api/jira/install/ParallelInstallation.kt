@@ -16,10 +16,10 @@ class ParallelInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        host: TcpHost,
+        tcp: TcpHost,
         reports: Reports
     ): InstalledJira {
-        host.ssh.newConnection().use { ssh ->
+        tcp.ssh.newConnection().use { ssh ->
             val pool = Executors.newCachedThreadPool { runnable ->
                 Thread(runnable, "jira-installation-${runnable.hashCode()}")
             }
@@ -32,7 +32,7 @@ class ParallelInstallation(
             val java = pool.submitWithLogContext("java") {
                 jdk.also { it.install(ssh) }
             }
-            val jira = InstalledJira(home.get(), product.get(), java.get(), host)
+            val jira = InstalledJira(home.get(), product.get(), java.get(), HttpHost(tcp, "", false))
             pool.shutdownNow()
             return jira
         }
