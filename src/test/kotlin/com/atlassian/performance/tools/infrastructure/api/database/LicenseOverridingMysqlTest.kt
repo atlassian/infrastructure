@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
+import com.atlassian.performance.tools.infrastructure.mock.RememberingDatabase
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
@@ -161,19 +162,4 @@ class LicenseOverridingMysqlTest {
         val underlyingDatabase: RememberingDatabase,
         val ssh: RememberingSshConnection
     )
-
-    private class RememberingDatabase : Database {
-
-        var setup = false
-        var started = false
-
-        override fun setup(ssh: SshConnection): String {
-            setup = true
-            return "."
-        }
-
-        override fun start(jira: URI, ssh: SshConnection) {
-            started = true
-        }
-    }
 }
