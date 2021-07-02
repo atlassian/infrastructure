@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Report
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
@@ -13,7 +13,7 @@ class AsyncProfilerHook : PreInstallHook {
 
     override fun call(
         ssh: SshConnection,
-        tcp: TcpHost,
+        http: HttpNode,
         hooks: PreInstallHooks,
         reports: Reports
     ) {

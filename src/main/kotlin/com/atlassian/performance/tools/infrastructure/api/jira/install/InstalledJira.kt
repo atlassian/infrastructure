@@ -24,5 +24,5 @@ class InstalledJira(
     /**
      * Connects to Jira on HTTP level or below.
      */
-    val http: HttpHost
+    val http: HttpNode
 )

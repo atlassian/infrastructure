@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.util.*
@@ -22,13 +22,13 @@ class PreInstallHooks private constructor(
 
     internal fun call(
         ssh: SshConnection,
-        host: TcpHost,
+        http: HttpNode,
         reports: Reports
     ) {
         while (true) {
             hooks
                 .poll()
-                ?.call(ssh, host, this, reports)
+                ?.call(ssh, http, this, reports)
                 ?: break
         }
     }

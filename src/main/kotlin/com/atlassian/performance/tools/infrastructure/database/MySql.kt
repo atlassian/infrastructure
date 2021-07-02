@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.database
 
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.infrastructure.docker.DeadContainerCheck
 import com.atlassian.performance.tools.jvmtasks.api.Backoff
@@ -40,7 +40,7 @@ internal object Mysql {
         dataDir: String,
         extraParameters: Array<String>,
         extraArguments: Array<String>,
-        host: TcpHost? = null
+        host: TcpNode? = null
     ) = DockerContainer.Builder()
         .imageName("mysql:5.7.32")
         .pullTimeout(Duration.ofMinutes(5))

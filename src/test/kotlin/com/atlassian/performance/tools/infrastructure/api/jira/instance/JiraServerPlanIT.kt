@@ -7,7 +7,6 @@ import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJir
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
 import com.atlassian.performance.tools.io.api.resolveSafely
@@ -38,7 +37,7 @@ class JiraServerPlanIT {
         // given
         val hooks = PreInstallHooks.default()
             .also { Datasets.JiraSevenDataset.hookMysql(it.postStart) }
-        val nodePlan = JiraNodePlan.Builder()
+        val nodePlan = JiraNodePlan.Builder(infrastructure)
             .hooks(hooks)
             .installation(
                 ParallelInstallation(
@@ -61,11 +60,7 @@ class JiraServerPlanIT {
         val jiraServer = try {
             jiraServerPlan.materialize()
         } catch (e: Exception) {
-            val debugging = Paths.get("build/test-artifacts/")
-                .resolveSafely(javaClass.simpleName)
-                .resolveSafely(Instant.now().toString())
-            jiraServerPlan.report().downloadTo(debugging)
-            throw Exception("Jira Server plan failed to materialize, debugging info available in $debugging", e)
+            debug(jiraServerPlan, e)
         }
         val reports = jiraServerPlan.report().downloadTo(Files.createTempDirectory("jira-server-plan-"))
 
@@ -95,5 +90,21 @@ class JiraServerPlanIT {
         assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
             .`as`("GC logs from $fileTree")
             .isNotEmpty
+    }
+
+    private fun debug(
+        jiraServerPlan: JiraInstancePlan,
+        e: Exception
+    ) : Nothing {
+        val debugging = Paths.get("build/test-artifacts/")
+            .resolveSafely(javaClass.simpleName)
+            .resolveSafely(Instant.now().toString())
+        try {
+            jiraServerPlan.report().downloadTo(debugging)
+        } catch (debuggingException: Exception) {
+            debuggingException.addSuppressed(e)
+            throw debuggingException
+        }
+        throw Exception("Jira Server plan failed to materialize, debugging info available in $debugging", e)
     }
 }

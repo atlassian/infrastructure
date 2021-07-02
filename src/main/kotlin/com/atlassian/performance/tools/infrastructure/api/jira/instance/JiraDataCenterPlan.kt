@@ -1,10 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApacheProxyPlan
@@ -18,8 +17,7 @@ import kotlin.streams.toList
 class JiraDataCenterPlan private constructor(
     private val nodePlans: List<JiraNodePlan>,
     private val instanceHooks: PreInstanceHooks,
-    private val balancerPlan: LoadBalancerPlan,
-    private val infrastructure: Infrastructure
+    private val balancerPlan: LoadBalancerPlan
 ) : JiraInstancePlan {
 
     private val reports: Reports = Reports()
@@ -27,13 +25,13 @@ class JiraDataCenterPlan private constructor(
 
     override fun materialize(): JiraInstance {
         instanceHooks.call(nodePlans.map { it.hooks }, reports)
-        val nodes = nodePlans.mapIndexed { nodeIndex, nodePlan ->
+        val http = nodePlans.mapIndexed { nodeIndex, plan ->
             val nodeNumber = nodeIndex + 1
-            val host = infrastructure.serveTcp("jira-node-$nodeNumber")
-            nodePlan.materialize(host)
+            val http = plan.infrastructure.serveHttp("jira-node-$nodeNumber")
+            PlannedHttpNode(http, plan)
         }
-        val balancer = balancerPlan.materialize(nodes)
-        val installed = installInParallel(nodes)
+        val balancer = balancerPlan.materialize(http.map { it.http }, nodePlans.map { it.hooks.preStart })
+        val installed = installInParallel(http)
         val started = installed.map { it.start(reports) }
         val instance = JiraDataCenter(started, balancer)
         instanceHooks.postInstance.call(instance, reports)
@@ -43,25 +41,28 @@ class JiraDataCenterPlan private constructor(
 
     override fun report(): Reports = reports.copy()
 
-    private fun installInParallel(nodes: List<JiraNode>) = nodes
+    private fun installInParallel(nodes: Collection<PlannedHttpNode>): List<PlannedInstalledJira> = nodes
         .asSequence()
         .asStream()
         .parallel()
-        .map { jiraNode ->
-            jiraNode
-                .plan
-                .installation
-                .install(jiraNode.host, reports)
-                .let { installedJira -> InstalledJiraNode(installedJira, jiraNode.plan) }
-        }
+        .map { it.install(reports) }
         .toList()
 
-    private class InstalledJiraNode(
-        private val installedJira: InstalledJira,
-        private val nodePlan: JiraNodePlan
+    private class PlannedHttpNode(
+        val http: HttpNode,
+        val plan: JiraNodePlan
+    ) {
+        fun install(reports: Reports): PlannedInstalledJira {
+            return plan.installation.install(http, reports).let { PlannedInstalledJira(it, plan) }
+        }
+    }
+
+    private class PlannedInstalledJira(
+        val installed: InstalledJira,
+        val plan: JiraNodePlan
     ) {
         fun start(reports: Reports): StartedJira {
-            return nodePlan.start.start(installedJira, reports)
+            return plan.start.start(installed, reports)
         }
     }
 
@@ -74,21 +75,20 @@ class JiraDataCenterPlan private constructor(
     }
 
     class Builder(
-        private var infrastructure: Infrastructure
+        infrastructure: Infrastructure
     ) {
         private var nodePlans: List<JiraNodePlan> = listOf(1, 2).map {
-            JiraNodePlan.Builder()
+            JiraNodePlan.Builder(infrastructure)
                 .hooks(PreInstallHooks.default().apply { postInstall.insert(DefaultClusterProperties()) })
                 .build()
         }
         private var instanceHooks: PreInstanceHooks = PreInstanceHooks.default()
         private var balancerPlan: LoadBalancerPlan = ApacheProxyPlan(infrastructure)
 
-        fun infrastructure(infrastructure: Infrastructure) = apply { this.infrastructure = infrastructure }
         fun nodePlans(nodePlans: List<JiraNodePlan>) = apply { this.nodePlans = nodePlans }
         fun instanceHooks(instanceHooks: PreInstanceHooks) = apply { this.instanceHooks = instanceHooks }
         fun balancerPlan(balancerPlan: LoadBalancerPlan) = apply { this.balancerPlan = balancerPlan }
 
-        fun build(): JiraInstancePlan = JiraDataCenterPlan(nodePlans, instanceHooks, balancerPlan, infrastructure)
+        fun build(): JiraInstancePlan = JiraDataCenterPlan(nodePlans, instanceHooks, balancerPlan)
     }
 }

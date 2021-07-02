@@ -5,8 +5,6 @@ import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJir
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
@@ -50,7 +48,7 @@ class AsyncProfilerIT {
 
     private fun <T> testOnInstalledJira(ubuntuVersion: String, test: (InstalledJira) -> T) {
         DockerInfrastructure(ubuntuVersion).use { infra ->
-            val jiraNode = infra.serveTcp("jira")
+            val jiraNode = infra.serveHttp("jira")
             val installed = ParallelInstallation(
                 jiraHomeSource = EmptyJiraHome(),
                 productDistribution = PublicJiraSoftwareDistribution("7.13.0"),

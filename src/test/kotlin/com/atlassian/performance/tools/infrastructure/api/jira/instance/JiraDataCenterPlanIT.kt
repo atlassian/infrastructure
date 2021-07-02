@@ -7,7 +7,6 @@ import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJir
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.sharedhome.SambaSharedHome
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraLaunchScript
@@ -46,7 +45,7 @@ class JiraDataCenterPlanIT {
         val nodePlans = listOf(1, 2).map {
             val nodeHooks = PreInstallHooks.default()
                 .also { Datasets.JiraSevenDataset.hookMysql(it.postStart) }
-            JiraNodePlan.Builder()
+            JiraNodePlan.Builder(infrastructure)
                 .installation(
                     ParallelInstallation(
                         jiraHomeSource = jiraHomeSource,
@@ -98,7 +97,7 @@ class JiraDataCenterPlanIT {
         }
 
         val nodePlans = listOf(1, 2).map {
-            JiraNodePlan.Builder()
+            JiraNodePlan.Builder(infrastructure)
                 .installation(
                     ParallelInstallation(
                         jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),

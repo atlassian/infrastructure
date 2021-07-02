@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.*
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
@@ -33,7 +33,7 @@ class DockerMysqlServer private constructor(
         hooks.postInstance.insert(FixJiraUriViaMysql(client, server.ssh))
     }
 
-    private fun setup(ssh: SshConnection, server: TcpHost): SshSqlClient {
+    private fun setup(ssh: SshConnection, server: TcpNode): SshSqlClient {
         val mysqlDataLocation = source.download(ssh)
         val containerName = Mysql.container(
             dataDir = mysqlDataLocation,

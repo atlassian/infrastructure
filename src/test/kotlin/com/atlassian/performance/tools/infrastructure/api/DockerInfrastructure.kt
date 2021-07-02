@@ -1,6 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api
 
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.lib.docker.CreatedContainer
 import com.atlassian.performance.tools.infrastructure.lib.docker.DockerNetwork
 import com.atlassian.performance.tools.infrastructure.lib.docker.StartedContainer
@@ -55,7 +56,7 @@ internal class DockerInfrastructure(
         return serveTcp(888, name).ssh
     }
 
-    override fun serveTcp(name: String): TcpHost {
+    override fun serveTcp(name: String): TcpNode {
         // TODO pre-provision all the hosts rather than on-demand - unlock batch provisioning (CFN Stack), picking EC2 types, SSD storage, TCP port ranges, subnets, etc.
         return when {
             name.startsWith("jira-node") -> serveTcp(8080, name) // TODO this is a contract on undocumented behavior
@@ -65,12 +66,20 @@ internal class DockerInfrastructure(
         }
     }
 
-    private fun serveTcp(tcpPort: Int, name: String): TcpHost {
+    override fun serveHttp(name: String): HttpNode {
+        return HttpNode(
+            serveTcp(80, name),
+            "/",
+            false
+        )
+    }
+
+    private fun serveTcp(tcpPort: Int, name: String): TcpNode {
         return serve(name, listOf(tcpPort), emptyList())
     }
 
 
-    override fun serve(name: String, tcpPorts: List<Int>, udpPorts: List<Int>): TcpHost {
+    override fun serve(name: String, tcpPorts: List<Int>, udpPorts: List<Int>): TcpNode {
         val ports = tcpPorts.map { ExposedPort.tcp(it) } +
             udpPorts.map { ExposedPort.udp(it) } +
             ExposedPort.tcp(22)
@@ -107,7 +116,7 @@ internal class DockerInfrastructure(
         created: CreatedContainer,
         tcpPort: Int,
         name: String
-    ): TcpHost {
+    ): TcpNode {
         val startedContainer = docker
             .startContainerCmd(created.response.id)
             .execAsResource(docker)
@@ -119,7 +128,7 @@ internal class DockerInfrastructure(
         started: StartedContainer,
         tcpPort: Int,
         name: String
-    ): TcpHost {
+    ): TcpNode {
         val networkSettings = docker
             .inspectContainerCmd(started.id)
             .exec()
@@ -141,7 +150,7 @@ internal class DockerInfrastructure(
             it.execute("apt-get update", Duration.ofMinutes(2))
             it.execute("apt-get -y install sudo gnupg screen")
         }
-        return TcpHost("localhost", ip, tcpPort, name, ssh)
+        return TcpNode("localhost", ip, tcpPort, name, ssh)
     }
 
     private fun getHostPort(

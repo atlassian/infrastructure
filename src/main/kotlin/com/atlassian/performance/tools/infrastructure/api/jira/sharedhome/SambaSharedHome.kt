@@ -3,7 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.sharedhome
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
@@ -38,7 +38,7 @@ class SambaSharedHome(
         return sharedHome
     }
 
-    private fun export(ssh: SshConnection, sharedHome: String, server: TcpHost): SambaMount {
+    private fun export(ssh: SshConnection, sharedHome: String, server: TcpNode): SambaMount {
         Ubuntu().install(ssh, listOf("samba"))
         val shareName = "samba-jira-home"
         val share = """

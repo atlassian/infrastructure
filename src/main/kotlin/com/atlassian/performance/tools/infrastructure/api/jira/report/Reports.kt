@@ -1,7 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.report
 
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
 import com.atlassian.performance.tools.io.api.ensureDirectory
@@ -22,10 +23,14 @@ class Reports private constructor( // TODO turn into SPI to allow AWS CLI transp
     }
 
     fun add(report: Report, installed: InstalledJira) {
-        add(report, installed.http.tcp)
+        add(report, installed.http)
     }
 
-    fun add(report: Report, tcp: TcpHost) {
+    fun add(report: Report, http: HttpNode) {
+        hostReports.add(HostReport(http.tcp, report))
+    }
+
+    fun add(report: Report, tcp: TcpNode) {
         hostReports.add(HostReport(tcp, report))
     }
 
@@ -60,7 +65,7 @@ class Reports private constructor( // TODO turn into SPI to allow AWS CLI transp
     }
 
     private class HostReport(
-        val host: TcpHost,
+        val host: TcpNode,
         val report: Report
     )
 }
