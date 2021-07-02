@@ -1,14 +1,12 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNodePlan
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import java.net.URI
 
 class JiraServerPlan private constructor(
     private val plan: JiraNodePlan,
-    private val infrastructure: Infrastructure,
     private val hooks: PreInstanceHooks
 ) : JiraInstancePlan {
 
@@ -17,8 +15,8 @@ class JiraServerPlan private constructor(
     override fun materialize(): JiraInstance {
         val nodeHooks = listOf(plan).map { it.hooks }
         hooks.call(nodeHooks, reports)
-        val jiraNode = infrastructure.serveTcp("jira-node")
-        val installed = plan.installation.install(jiraNode, reports)
+        val http = plan.infrastructure.serveHttp("jira-node")
+        val installed = plan.installation.install(http, reports)
         val started = plan.start.start(installed, reports)
         val instance = JiraServer(started)
         hooks.postInstance.call(instance, reports)
@@ -35,15 +33,14 @@ class JiraServerPlan private constructor(
     }
 
     class Builder(
-        private var infrastructure: Infrastructure
+        infrastructure: Infrastructure
     ) {
-        private var plan: JiraNodePlan = JiraNodePlan.Builder().build()
+        private var plan: JiraNodePlan = JiraNodePlan.Builder(infrastructure).build()
         private var hooks: PreInstanceHooks = PreInstanceHooks.default()
 
         fun plan(plan: JiraNodePlan) = apply { this.plan = plan }
-        fun infrastructure(infrastructure: Infrastructure) = apply { this.infrastructure = infrastructure }
         fun hooks(hooks: PreInstanceHooks) = apply { this.hooks = hooks }
 
-        fun build(): JiraInstancePlan = JiraServerPlan(plan, infrastructure, hooks)
+        fun build(): JiraInstancePlan = JiraServerPlan(plan, hooks)
     }
 }

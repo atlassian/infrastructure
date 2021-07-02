@@ -7,7 +7,7 @@ import com.atlassian.performance.tools.ssh.api.Ssh
  * @param [ssh] connects to the host via [publicIp]
  * @param [port] accepts connections at within the [privateIp] network
  */
-class TcpHost(
+class TcpNode(
     val publicIp: String,
     val privateIp: String,
     val port: Int,

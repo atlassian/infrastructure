@@ -16,10 +16,10 @@ class ParallelInstallation(
 ) : JiraInstallation {
 
     override fun install(
-        tcp: TcpHost,
+        http: HttpNode,
         reports: Reports
     ): InstalledJira {
-        tcp.ssh.newConnection().use { ssh ->
+        http.tcp.ssh.newConnection().use { ssh ->
             val pool = Executors.newCachedThreadPool { runnable ->
                 Thread(runnable, "jira-installation-${runnable.hashCode()}")
             }
@@ -32,7 +32,8 @@ class ParallelInstallation(
             val java = pool.submitWithLogContext("java") {
                 jdk.also { it.install(ssh) }
             }
-            val jira = InstalledJira(home.get(), product.get(), java.get(), HttpHost(tcp, "", false))
+            TODO("${http.tcp.privateIp} is ignored and `InstalledJira.installation.resolve('server.xml')` still hardcodes `<Connector port=\"8080\"`")
+            val jira = InstalledJira(home.get(), product.get(), java.get(), http)
             pool.shutdownNow()
             return jira
         }

@@ -2,9 +2,9 @@ package com.atlassian.performance.tools.infrastructure.api.loadbalancer
 
 import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.Sed
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
-import com.atlassian.performance.tools.infrastructure.api.jira.node.JiraNode
+import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHook
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHooks
@@ -21,21 +21,21 @@ class ApacheProxyPlan(
 
     private val configPath = "/etc/apache2/sites-enabled/000-default.conf"
 
-    override fun materialize(nodes: List<JiraNode>): LoadBalancer {
-        val proxyNode = infrastructure.serveTcp("apache-proxy")
+    override fun materialize(nodes: List<HttpNode>, hooks: List<PreStartHooks>): LoadBalancer {
+        val proxyNode = infrastructure.serveHttp("apache-proxy")
         IdempotentAction("Installing and configuring apache load balancer") {
-            proxyNode.ssh.newConnection().use { connection ->
+            proxyNode.tcp.ssh.newConnection().use { connection ->
                 tryToProvision(connection, nodes, proxyNode)
             }
         }.retry(2, ExponentialBackoff(Duration.ofSeconds(5)))
-        val balancerEndpoint = URI("http://${proxyNode.privateIp}:${proxyNode.port}/")
-        nodes.forEach { it.plan.hooks.preStart.insert(InjectProxy(balancerEndpoint)) }
+        val balancerEndpoint = proxyNode.addressPrivately()
+        hooks.forEach { it.insert(InjectProxy(balancerEndpoint)) }
         return ApacheProxy(balancerEndpoint)
     }
 
-    private fun tryToProvision(ssh: SshConnection, nodes: List<JiraNode>, proxyNode: TcpHost) {
+    private fun tryToProvision(ssh: SshConnection, nodes: List<HttpNode>, proxyNode: HttpNode) {
         Ubuntu().install(ssh, listOf("apache2"))
-        Sed().replace(ssh, "Listen 80", "Listen ${proxyNode.port}", "/etc/apache2/ports.conf")
+        Sed().replace(ssh, "Listen 80", "Listen ${proxyNode.tcp.port}", "/etc/apache2/ports.conf")
         ssh.execute("sudo rm $configPath")
         ssh.execute("sudo touch $configPath")
         val mods = listOf(
@@ -48,8 +48,8 @@ class ApacheProxyPlan(
             "Header add Set-Cookie \\\"ROUTEID=.%{BALANCER_WORKER_ROUTE}e; path=/\\\" env=BALANCER_ROUTE_CHANGED"
         )
         appendConfig(ssh, "<Proxy balancer://mycluster>")
-        nodes.forEachIndexed { index, node ->
-            appendConfig(ssh, "\tBalancerMember http://${node.host.privateIp}:${node.host.port} route=$index")
+        nodes.forEachIndexed { index, http ->
+            appendConfig(ssh, "\tBalancerMember ${http.addressPrivately()} route=$index")
         }
         appendConfig(ssh, "</Proxy>\n")
         appendConfig(ssh, "ProxyPass / balancer://mycluster/ stickysession=ROUTEID")

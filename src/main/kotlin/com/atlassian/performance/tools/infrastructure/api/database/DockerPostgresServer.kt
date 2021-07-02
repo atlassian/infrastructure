@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
-import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpHost
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
@@ -13,7 +13,7 @@ import java.time.Duration
 import java.util.function.Supplier
 
 class DockerPostgresServer private constructor(
-    private val hostSupplier: Supplier<TcpHost>,
+    private val hostSupplier: Supplier<TcpNode>,
     private val dockerImage: DockerImage,
     private val maxConnections: Int
 ) : PreInstanceHook {
@@ -48,7 +48,7 @@ class DockerPostgresServer private constructor(
     }
 
     class Builder(
-        private var hostSupplier: Supplier<TcpHost>
+        private var hostSupplier: Supplier<TcpNode>
     ) {
 
         private var dockerImage = DockerImage.Builder("postgres:9.6.15")
@@ -56,7 +56,7 @@ class DockerPostgresServer private constructor(
             .build()
         private var maxConnections: Int = 200
 
-        fun serverSupplier(hostSupplier: Supplier<TcpHost>) = apply { this.hostSupplier = hostSupplier }
+        fun serverSupplier(hostSupplier: Supplier<TcpNode>) = apply { this.hostSupplier = hostSupplier }
         fun dockerImage(dockerImage: DockerImage) = apply { this.dockerImage = dockerImage }
         fun maxConnections(maxConnections: Int) = apply { this.maxConnections = maxConnections }
 

@@ -2,8 +2,8 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install
 
 import java.net.URI
 
-class HttpHost internal constructor(
-    val tcp: TcpHost,
+class HttpNode internal constructor(
+    val tcp: TcpNode,
     private val basePath: String,
     private val supportsTls: Boolean
 ) {
