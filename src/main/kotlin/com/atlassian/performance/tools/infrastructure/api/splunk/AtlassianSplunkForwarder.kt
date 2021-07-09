@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.splunk
 
-import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
@@ -12,7 +12,9 @@ class AtlassianSplunkForwarder(
 ) : SplunkForwarder {
 
     override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
-        val logstashImage = DockerImage("docker.elastic.co/logstash/logstash-oss:6.2.4", Duration.ofMinutes(5))
+        val logstashImage = DockerImage.Builder("docker.elastic.co/logstash/logstash-oss:6.2.4")
+            .pullTimeout(Duration.ofMinutes(5))
+            .build()
         val logstashConfFilePath = "~/logstash.conf"
 
         sshConnection.execute("""cat > $logstashConfFilePath <<'EOF'

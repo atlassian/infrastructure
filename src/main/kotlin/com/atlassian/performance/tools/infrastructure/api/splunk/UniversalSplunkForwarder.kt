@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.splunk
 
-import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.Sed
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 
@@ -13,7 +13,7 @@ class UniversalSplunkForwarder(
 ) : SplunkForwarder {
 
     override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
-        val splunkForwarderImage = DockerImage("splunk/universalforwarder:6.5.3-monitor")
+        val splunkForwarderImage = DockerImage.Builder("splunk/universalforwarder:6.5.3-monitor").build()
 
         val parameters = listOf(
             "--hostname $name",
@@ -29,7 +29,7 @@ class UniversalSplunkForwarder(
             "--volume /var/log:/docker/log:ro",
             "--volume /var/run/docker.sock:/var/run/docker.sock:ro")
 
-        splunkForwarderImage.run(sshConnection, parameters.joinToString(" "))
+        splunkForwarderImage.run(sshConnection, parameters.joinToString(" "), "")
     }
 
     override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String) {

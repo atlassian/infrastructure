@@ -1,17 +1,14 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
-import com.atlassian.performance.tools.infrastructure.toSsh
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import org.junit.Test
 
 class AdoptOpenJdkIT {
 
     @Test
     fun shouldSupportJstat() {
-        SshUbuntuContainer().start().use { ssh ->
-            ssh.toSsh().newConnection().use { connection ->
-                JstatSupport(AdoptOpenJDK()).shouldSupportJstat(connection)
-            }
+        DockerInfrastructure().use { infra ->
+            JstatSupport(AdoptOpenJDK(), infra.serveTest()).shouldSupportJstat()
         }
     }
 }
