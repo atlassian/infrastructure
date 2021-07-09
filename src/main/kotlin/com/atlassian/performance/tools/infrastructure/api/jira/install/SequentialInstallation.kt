@@ -6,6 +6,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.downloadRemotely
 import com.atlassian.performance.tools.infrastructure.installRemotely
+import com.atlassian.performance.tools.infrastructure.jira.install.TomcatConfig
 
 class SequentialInstallation(
     private val jiraHomeSource: JiraHomeSource,
@@ -21,7 +22,9 @@ class SequentialInstallation(
             val installation = productDistribution.installRemotely(ssh, ".")
             val home = jiraHomeSource.downloadRemotely(ssh)
             jdk.install(ssh)
-            return InstalledJira(home, installation, jdk, http)
+            val jira = InstalledJira(home, installation, jdk, http)
+            TomcatConfig(jira, 8080).fixHttp(ssh)
+            return jira
         }
     }
 }

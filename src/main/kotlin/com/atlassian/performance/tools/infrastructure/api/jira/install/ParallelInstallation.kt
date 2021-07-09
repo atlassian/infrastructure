@@ -7,6 +7,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.downloadRemotely
 import com.atlassian.performance.tools.infrastructure.installRemotely
+import com.atlassian.performance.tools.infrastructure.jira.install.TomcatConfig
 import java.util.concurrent.Executors
 
 class ParallelInstallation(
@@ -32,9 +33,9 @@ class ParallelInstallation(
             val java = pool.submitWithLogContext("java") {
                 jdk.also { it.install(ssh) }
             }
-            TODO("${http.tcp.privateIp} is ignored and `InstalledJira.installation.resolve('server.xml')` still hardcodes `<Connector port=\"8080\"`")
             val jira = InstalledJira(home.get(), product.get(), java.get(), http)
             pool.shutdownNow()
+            TomcatConfig(jira, 8080).fixHttp(ssh)
             return jira
         }
     }
