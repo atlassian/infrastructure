@@ -42,7 +42,7 @@ class NfsSharedHome(
     private fun export(ssh: SshConnection): SshConnection.SshResult {
         Ubuntu().install(ssh, listOf("nfs-kernel-server"))
         val options = "rw,sync,no_subtree_check,no_root_squash"
-        ssh.execute("sudo echo '$localHome ${networked.subnetCidr}($options)' | sudo tee -a /etc/exports")
+        ssh.execute("sudo echo '$localHome ${networked.subnet()}($options)' | sudo tee -a /etc/exports")
         return ssh.execute("sudo service nfs-kernel-server restart")
     }
 

@@ -26,12 +26,12 @@ import java.util.concurrent.ConcurrentLinkedDeque
 
 internal class DockerInfrastructure(
     private val ubuntuVersion: String = "18.04"
-) : SshServerRoom, TcpServerRoom, HttpServerRoom, Networked {
+) : SshServerRoom, TcpServerRoom, HttpServerRoom, Networked, AutoCloseable {
 
     private val allocatedResources: Deque<AutoCloseable> = ConcurrentLinkedDeque()
     private val docker: DockerClient
     private val network: DockerNetwork
-    override val subnetCidr: String
+    private val subnetCidr: String
 
 
     init {
@@ -53,6 +53,8 @@ internal class DockerInfrastructure(
             .first()
             .subnet
     }
+
+    override fun subnet(): String = subnetCidr
 
     fun serveSsh(): Ssh = serveSsh("ssh")
 
