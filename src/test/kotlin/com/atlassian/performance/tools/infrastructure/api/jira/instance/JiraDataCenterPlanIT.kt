@@ -2,7 +2,6 @@ package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
 import com.atlassian.performance.tools.infrastructure.Datasets
 import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomePackage
 import com.atlassian.performance.tools.infrastructure.api.jira.install.ParallelInstallation
@@ -26,7 +25,7 @@ import java.time.Duration.ofMinutes
 
 class JiraDataCenterPlanIT {
 
-    private lateinit var infrastructure: Infrastructure
+    private lateinit var infrastructure: DockerInfrastructure
 
     @Before
     fun setUp() {

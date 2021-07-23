@@ -1,6 +1,5 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.sharedhome
 
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
@@ -10,6 +9,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreI
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
+import com.atlassian.performance.tools.infrastructure.api.network.TcpServerRoom
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.infrastructure.jira.sharedhome.SharedHomeProperty
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -17,11 +17,11 @@ import java.util.*
 
 class SambaSharedHome(
     private val jiraHomeSource: JiraHomeSource,
-    private val infrastructure: Infrastructure
+    private val serverRoom: TcpServerRoom
 ) : PreInstanceHook {
 
     override fun call(nodes: List<PreInstallHooks>, hooks: PreInstanceHooks, reports: Reports) {
-        val server = infrastructure.serve("samba-shared-home", listOf(139, 445), listOf(137, 138))
+        val server = serverRoom.serveTcp("samba-shared-home", listOf(139, 445), listOf(137, 138))
         val mount = server.ssh.newConnection().use { ssh ->
             val sharedHome = download(ssh)
             export(ssh, sharedHome, server)

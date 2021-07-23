@@ -1,8 +1,8 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
+import com.atlassian.performance.tools.infrastructure.api.network.HttpServerRoom
 import java.net.URI
 
 class JiraServerPlan private constructor(
@@ -15,7 +15,7 @@ class JiraServerPlan private constructor(
     override fun materialize(): JiraInstance {
         val nodeHooks = listOf(plan).map { it.hooks }
         hooks.call(nodeHooks, reports)
-        val http = plan.infrastructure.serveHttp("jira-node")
+        val http = plan.serverRoom.serveHttp("jira-node")
         val installed = plan.installation.install(http, reports)
         val started = plan.start.start(installed, reports)
         val instance = JiraServer(started)
@@ -33,10 +33,14 @@ class JiraServerPlan private constructor(
     }
 
     class Builder(
-        infrastructure: Infrastructure
+        private var plan: JiraNodePlan
+
     ) {
-        private var plan: JiraNodePlan = JiraNodePlan.Builder(infrastructure).build()
         private var hooks: PreInstanceHooks = PreInstanceHooks.default()
+
+        constructor(serverRoom: HttpServerRoom) : this(
+            plan = JiraNodePlan.Builder(serverRoom).build()
+        )
 
         fun plan(plan: JiraNodePlan) = apply { this.plan = plan }
         fun hooks(hooks: PreInstanceHooks) = apply { this.hooks = hooks }

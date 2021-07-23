@@ -1,7 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.os
 
 import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.ssh.api.SshHost
@@ -14,7 +13,7 @@ import java.util.concurrent.*
 
 class UbuntuIT {
     private lateinit var executor: ExecutorService
-    private lateinit var infra: Infrastructure
+    private lateinit var infra: DockerInfrastructure
     private lateinit var ssh: Ssh
 
     @Before

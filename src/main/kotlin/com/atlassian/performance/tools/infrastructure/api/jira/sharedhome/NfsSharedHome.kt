@@ -1,6 +1,5 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.sharedhome
 
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
@@ -9,6 +8,8 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreI
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
+import com.atlassian.performance.tools.infrastructure.api.network.Networked
+import com.atlassian.performance.tools.infrastructure.api.network.SshServerRoom
 import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.infrastructure.jira.sharedhome.SharedHomeProperty
@@ -16,7 +17,8 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class NfsSharedHome(
     private val jiraHomeSource: JiraHomeSource,
-    private val infrastructure: Infrastructure
+    private val infrastructure: SshServerRoom,
+    private val networked: Networked
 ) : PreInstanceHook {
     private val localHome = "/home/ubuntu/jira-shared-home"
 
@@ -40,7 +42,7 @@ class NfsSharedHome(
     private fun export(ssh: SshConnection): SshConnection.SshResult {
         Ubuntu().install(ssh, listOf("nfs-kernel-server"))
         val options = "rw,sync,no_subtree_check,no_root_squash"
-        ssh.execute("sudo echo '$localHome ${infrastructure.subnet}($options)' | sudo tee -a /etc/exports")
+        ssh.execute("sudo echo '$localHome ${networked.subnetCidr}($options)' | sudo tee -a /etc/exports")
         return ssh.execute("sudo service nfs-kernel-server restart")
     }
 
