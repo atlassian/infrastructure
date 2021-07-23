@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install
 
 import java.net.URI
 
-class HttpNode internal constructor(
+class HttpNode(
     val tcp: TcpNode,
     private val basePath: String,
     private val supportsTls: Boolean
