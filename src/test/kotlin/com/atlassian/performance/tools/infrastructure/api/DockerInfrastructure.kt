@@ -2,6 +2,10 @@ package com.atlassian.performance.tools.infrastructure.api
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
+import com.atlassian.performance.tools.infrastructure.api.network.HttpServerRoom
+import com.atlassian.performance.tools.infrastructure.api.network.Networked
+import com.atlassian.performance.tools.infrastructure.api.network.SshServerRoom
+import com.atlassian.performance.tools.infrastructure.api.network.TcpServerRoom
 import com.atlassian.performance.tools.infrastructure.lib.docker.CreatedContainer
 import com.atlassian.performance.tools.infrastructure.lib.docker.DockerNetwork
 import com.atlassian.performance.tools.infrastructure.lib.docker.StartedContainer
@@ -20,12 +24,12 @@ import java.util.*
 import java.util.UUID.randomUUID
 import java.util.concurrent.ConcurrentLinkedDeque
 
-internal class DockerInfrastructure : Infrastructure {
+internal class DockerInfrastructure : SshServerRoom, TcpServerRoom, HttpServerRoom, Networked {
 
     private val allocatedResources: Deque<AutoCloseable> = ConcurrentLinkedDeque()
     private val docker: DockerClient
     private val network: DockerNetwork
-    override val subnet: String
+    override val subnetCidr: String
 
     init {
         val dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build()
@@ -37,7 +41,7 @@ internal class DockerInfrastructure : Infrastructure {
             .withName(randomUUID().toString())
             .execAsResource(docker)
         allocatedResources.add(network)
-        subnet = docker
+        subnetCidr = docker
             .inspectNetworkCmd()
             .withNetworkId(network.response.id)
             .exec()
@@ -75,11 +79,11 @@ internal class DockerInfrastructure : Infrastructure {
     }
 
     private fun serveTcp(tcpPort: Int, name: String): TcpNode {
-        return serve(name, listOf(tcpPort), emptyList())
+        return serveTcp(name, listOf(tcpPort), emptyList())
     }
 
 
-    override fun serve(name: String, tcpPorts: List<Int>, udpPorts: List<Int>): TcpNode {
+    override fun serveTcp(name: String, tcpPorts: List<Int>, udpPorts: List<Int>): TcpNode {
         val ports = tcpPorts.map { ExposedPort.tcp(it) } +
             udpPorts.map { ExposedPort.udp(it) } +
             ExposedPort.tcp(22)

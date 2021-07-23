@@ -1,13 +1,12 @@
 package com.atlassian.performance.tools.infrastructure.api.loadbalancer
 
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHook
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHooks
+import com.atlassian.performance.tools.infrastructure.api.network.HttpServerRoom
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
@@ -16,13 +15,13 @@ import java.net.URI
 import java.time.Duration
 
 class ApacheProxyPlan(
-    private val infrastructure: Infrastructure
+    private val serverRoom: HttpServerRoom
 ) : LoadBalancerPlan {
 
     private val configPath = "/etc/apache2/sites-enabled/000-default.conf"
 
     override fun materialize(nodes: List<HttpNode>, hooks: List<PreStartHooks>): LoadBalancer {
-        val proxyNode = infrastructure.serveHttp("apache-proxy")
+        val proxyNode = serverRoom.serveHttp("apache-proxy")
         IdempotentAction("Installing and configuring apache load balancer") {
             proxyNode.tcp.ssh.newConnection().use { connection ->
                 tryToProvision(connection, nodes, proxyNode)

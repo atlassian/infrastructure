@@ -1,12 +1,12 @@
 package com.atlassian.performance.tools.infrastructure
 
-import com.atlassian.performance.tools.infrastructure.api.Infrastructure
 import com.atlassian.performance.tools.infrastructure.api.database.DockerMysqlServer
 import com.atlassian.performance.tools.infrastructure.api.dataset.HttpDatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraLaunchTimeouts
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.RestUpgrade
+import com.atlassian.performance.tools.infrastructure.api.network.TcpServerRoom
 import java.net.URI
 import java.time.Duration
 
@@ -27,8 +27,8 @@ class Datasets {
             downloadTimeout = Duration.ofMinutes(6)
         )
 
-        fun hookMysql(preInstanceHooks: PreInstanceHooks, infrastructure: Infrastructure) {
-            val mysqlServer = DockerMysqlServer.Builder(infrastructure, mysql).build()
+        fun hookMysql(preInstanceHooks: PreInstanceHooks, serverRoom: TcpServerRoom) {
+            val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql).build()
             preInstanceHooks.insert(mysqlServer)
         }
 
