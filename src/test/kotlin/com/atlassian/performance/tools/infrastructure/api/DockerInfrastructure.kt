@@ -24,7 +24,7 @@ import java.util.*
 import java.util.UUID.randomUUID
 import java.util.concurrent.ConcurrentLinkedDeque
 
-internal class DockerInfrastructure : SshServerRoom, TcpServerRoom, HttpServerRoom, Networked {
+internal class DockerInfrastructure : SshServerRoom, TcpServerRoom, HttpServerRoom, Networked, AutoCloseable {
 
     private val allocatedResources: Deque<AutoCloseable> = ConcurrentLinkedDeque()
     private val docker: DockerClient
