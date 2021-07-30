@@ -12,7 +12,7 @@ interface PreInstanceHook {
      */
     fun call(
         nodes: List<PreInstallHooks>,
-        hooks: PreInstanceHooks,
+        hooks: PostInstanceHooks,
         reports: Reports
     )
 }

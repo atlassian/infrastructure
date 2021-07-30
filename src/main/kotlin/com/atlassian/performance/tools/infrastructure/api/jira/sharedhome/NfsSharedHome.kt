@@ -6,8 +6,8 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
+import com.atlassian.performance.tools.infrastructure.api.jira.instance.PostInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHook
-import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.network.Networked
 import com.atlassian.performance.tools.infrastructure.api.network.TcpServerRoom
@@ -22,7 +22,7 @@ class NfsSharedHome(
 ) : PreInstanceHook {
     private val localHome = "/home/ubuntu/jira-shared-home"
 
-    override fun call(nodes: List<PreInstallHooks>, hooks: PreInstanceHooks, reports: Reports) {
+    override fun call(nodes: List<PreInstallHooks>, hooks: PostInstanceHooks, reports: Reports) {
         val tcp = infrastructure.serveTcp("shared-home")
         tcp.ssh.newConnection().use { ssh ->
             download(ssh)

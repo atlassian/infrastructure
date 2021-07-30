@@ -16,12 +16,9 @@ class PreInstanceHooks private constructor(
     }
 
     internal fun call(nodes: List<PreInstallHooks>, reports: Reports) {
-        while (true) {
-            hooks
-                .poll()
-                ?.call(nodes, this, reports)
-                ?: break
-        }
+        hooks
+            .parallelStream()
+            .forEach { it.call(nodes, postInstance, reports) }
     }
 
     companion object Factory {

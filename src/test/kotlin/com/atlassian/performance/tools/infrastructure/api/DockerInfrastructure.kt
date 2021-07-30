@@ -33,7 +33,6 @@ internal class DockerInfrastructure(
     private val network: DockerNetwork
     private val subnetCidr: String
 
-
     init {
         val dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build()
         val dockerHttp = ZerodepDockerHttpClient.Builder().dockerHost(dockerConfig.dockerHost).build()
