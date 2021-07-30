@@ -29,7 +29,7 @@ internal class DockerInfrastructure : SshServerRoom, TcpServerRoom, HttpServerRo
     private val allocatedResources: Deque<AutoCloseable> = ConcurrentLinkedDeque()
     private val docker: DockerClient
     private val network: DockerNetwork
-    override val subnetCidr: String
+    private val subnetCidr: String
 
     init {
         val dockerConfig = DefaultDockerClientConfig.createDefaultConfigBuilder().build()
@@ -177,4 +177,6 @@ internal class DockerInfrastructure : SshServerRoom, TcpServerRoom, HttpServerRo
                 ?: break
         }
     }
+
+    override fun subnet(): String = subnetCidr
 }

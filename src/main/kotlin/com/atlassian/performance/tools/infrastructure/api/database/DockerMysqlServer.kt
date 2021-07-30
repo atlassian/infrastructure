@@ -27,7 +27,7 @@ class DockerMysqlServer private constructor(
 
     override fun call(
         nodes: List<PreInstallHooks>,
-        hooks: PreInstanceHooks,
+        hooks: PostInstanceHooks,
         reports: Reports
     ) {
         val server = serverRoom.serveTcp("mysql")
@@ -36,7 +36,7 @@ class DockerMysqlServer private constructor(
             node.postInstall.insert(DatabaseIpConfig(server.privateIp))
             node.postInstall.insert(MysqlConnector())
         }
-        hooks.postInstance.insert(FixJiraUriViaMysql(server.ssh, client))
+        hooks.insert(FixJiraUriViaMysql(server.ssh, client))
     }
 
     private fun setup(ssh: SshConnection, host: TcpNode): SshSqlClient {
