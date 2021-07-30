@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jira.sharedhome
 
 import com.atlassian.performance.tools.infrastructure.api.jira.JiraHomeSource
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
@@ -9,27 +10,25 @@ import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInsta
 import com.atlassian.performance.tools.infrastructure.api.jira.instance.PreInstanceHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.network.Networked
-import com.atlassian.performance.tools.infrastructure.api.network.SshServerRoom
-import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
+import com.atlassian.performance.tools.infrastructure.api.network.TcpServerRoom
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.infrastructure.jira.sharedhome.SharedHomeProperty
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class NfsSharedHome(
     private val jiraHomeSource: JiraHomeSource,
-    private val infrastructure: SshServerRoom,
+    private val infrastructure: TcpServerRoom,
     private val networked: Networked
 ) : PreInstanceHook {
     private val localHome = "/home/ubuntu/jira-shared-home"
 
     override fun call(nodes: List<PreInstallHooks>, hooks: PreInstanceHooks, reports: Reports) {
-        val server = infrastructure.serveSsh("shared-home")
-        server.newConnection().use { ssh ->
+        val tcp = infrastructure.serveTcp("shared-home")
+        tcp.ssh.newConnection().use { ssh ->
             download(ssh)
             export(ssh)
         }
-        val sharedHome = RemotePath(server.host, localHome)
-        nodes.forEach { it.postInstall.insert(NfsMount(sharedHome)) }
+        nodes.forEach { it.postInstall.insert(NfsMount(tcp, localHome)) }
     }
 
     private fun download(ssh: SshConnection) {
@@ -47,12 +46,13 @@ class NfsSharedHome(
     }
 
     private class NfsMount(
-        private val sharedHome: RemotePath
+        private val tcp: TcpNode,
+        private val sharedHome: String
     ) : PostInstallHook {
 
         override fun call(ssh: SshConnection, jira: InstalledJira, hooks: PostInstallHooks, reports: Reports) {
             Ubuntu().install(ssh, listOf("nfs-common"))
-            val mountSource = "${sharedHome.host.ipAddress}:${sharedHome.path}"
+            val mountSource = "${tcp.privateIp}:$sharedHome"
             val mountTarget = "mounted-shared-home"
             ssh.execute("mkdir -p $mountTarget")
             ssh.execute("sudo mount -o soft,intr,rsize=8192,wsize=8192 $mountSource $mountTarget")
