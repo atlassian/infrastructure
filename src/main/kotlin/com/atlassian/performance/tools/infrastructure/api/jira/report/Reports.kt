@@ -40,7 +40,6 @@ class Reports private constructor( // TODO turn into SPI to allow AWS CLI transp
         localDirectory.ensureDirectory()
         hostReports.groupBy { it.host }.map { (host, reports) ->
             host.ssh.newConnection().use { ssh ->
-                val remoteBase = RemotePath(ssh.getHost(), ssh.execute("pwd").output.trim())
                 reports
                     .flatMap { report ->
                         report.report.locate(ssh).map { path -> RemotePath(host.ssh.host, path) }
@@ -48,7 +47,6 @@ class Reports private constructor( // TODO turn into SPI to allow AWS CLI transp
                     .forEach { remotePath ->
                         localDirectory
                             .resolveSafely(host.name)
-                            .resolve(remoteBase.toLocalRelativePath())
                             .resolve(remotePath.toLocalRelativePath())
                             .normalize()
                             .let { remotePath.download(it) }
