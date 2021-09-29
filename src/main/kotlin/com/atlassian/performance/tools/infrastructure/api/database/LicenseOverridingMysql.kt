@@ -18,14 +18,14 @@ import java.io.BufferedWriter
  * @since 4.13.0
  */
 class LicenseOverridingMysql private constructor(
-    private val database: Database,
+    private val database: SshDatabase,
     private val licenseCollection: LicenseCollection
-) : Database {
+) : SshDatabase {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     @Deprecated(message = "Use the Builder and pass licenses as Files to reduce accidental leakage of the license")
     constructor(
-        database: Database,
+        database: SshDatabase,
         licenses: List<String>) : this(database, LicenseCollection(licenses.map<String, File> {
         createTempLicenseFile(it)
     }))
@@ -61,7 +61,7 @@ class LicenseOverridingMysql private constructor(
         val licenses: List<File>
     )
 
-    class Builder(private val database: Database) {
+    class Builder(private val database: SshDatabase) {
         private var licenseFiles: List<File> = emptyList()
 
         @Deprecated(message = "Pass licenses as Files to reduce accidental leakage of the license")

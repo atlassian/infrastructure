@@ -6,7 +6,7 @@ import java.net.URI
 /**
  * SSH-based database.
  */
-interface Database {
+interface SshDatabase {
 
     /**
      * @return Database data location if exists

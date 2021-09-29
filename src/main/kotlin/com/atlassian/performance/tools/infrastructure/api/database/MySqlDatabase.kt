@@ -16,7 +16,7 @@ import java.time.Instant
 class MySqlDatabase(
     private val source: DatasetPackage,
     private val maxConnections: Int
-) : Database {
+) : SshDatabase {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     private val image: DockerImage = DockerImage(
