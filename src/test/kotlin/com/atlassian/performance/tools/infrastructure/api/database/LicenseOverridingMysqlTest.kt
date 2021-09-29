@@ -162,7 +162,7 @@ class LicenseOverridingMysqlTest {
         val ssh: RememberingSshConnection
     )
 
-    private class RememberingDatabase : Database {
+    private class RememberingDatabase : SshDatabase {
 
         var setup = false
         var started = false
