@@ -23,7 +23,7 @@ configurations.all {
         eachDependency {
             when (requested.module.toString()) {
                 "com.google.guava:guava" -> useVersion("23.6-jre")
-                "org.apache.httpcomponents:httpclient" -> useVersion("4.5.5")
+                "org.apache.httpcomponents:httpclient" -> useVersion("4.5.13")
                 "org.apache.httpcomponents:httpcore" -> useVersion("4.4.9")
                 "org.codehaus.plexus:plexus-utils" -> useVersion("3.1.0")
                 "org.slf4j:slf4j-api" -> useVersion("1.8.0-alpha2")
@@ -51,7 +51,7 @@ dependencies {
     implementation("com.atlassian.performance.tools:jvm-tasks:[1.2.0, 2.0.0)")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlinVersion")
     implementation("com.google.guava:guava:23.6-jre")
-    implementation("org.apache.httpcomponents:httpclient:4.5.5")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
     implementation("org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:3.1.3")
     log4j(
         "api",
@@ -73,7 +73,7 @@ fun webdriver(): List<String> = listOf(
     "selenium-support",
     "selenium-chrome-driver"
 ).map { module ->
-    "org.seleniumhq.selenium:$module:3.11.0"
+    "org.seleniumhq.selenium:$module:3.141.59"
 }
 
 fun log4j(
