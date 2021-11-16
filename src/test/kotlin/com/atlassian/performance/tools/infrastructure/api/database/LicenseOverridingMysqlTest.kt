@@ -2,7 +2,6 @@ package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.mock.RememberingDatabase
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
-import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.io.File
@@ -19,7 +18,7 @@ class LicenseOverridingMysqlTest {
 
         testedDatabase.start(jira, ssh)
 
-        assertThat(underlyingDatabase.started)
+        assertThat(underlyingDatabase.isStarted)
             .`as`("underlying database started")
             .isTrue()
         assertSshCommands(ssh)
@@ -77,10 +76,7 @@ class LicenseOverridingMysqlTest {
         val underlyingDatabase = RememberingDatabase()
         @Suppress("DEPRECATION")
         return DatabaseStartTest(
-            testedDatabase = LicenseOverridingMysql(
-                database = underlyingDatabase,
-                licenses = licenses
-            ),
+            testedDatabase = underlyingDatabase.withLicenseString(licenses),
             underlyingDatabase = underlyingDatabase,
             ssh = RememberingSshConnection()
         )
@@ -106,10 +102,7 @@ class LicenseOverridingMysqlTest {
         val underlyingDatabase = RememberingDatabase()
         @Suppress("DEPRECATION")
         return DatabaseStartTest(
-            testedDatabase = LicenseOverridingMysql
-                .Builder(underlyingDatabase)
-                .licenseStrings(licenses)
-                .build(),
+            testedDatabase = underlyingDatabase.withLicenseString(licenses),
             underlyingDatabase = underlyingDatabase,
             ssh = RememberingSshConnection()
         )

@@ -10,7 +10,10 @@ import java.net.URI
 class JiraUserPasswordOverridingDatabaseTest {
 
     private val jira = URI("http://localhost/")
-    private val exampleEncodedPassword = "uQieO/1CGMUIXXftw3ynrsaYLShI+GTcPS4LdUGWbIusFvHPfUzD7CZvms6yMMvA8I7FViHVEqr6Mj4pCLKAFQ=="
+    private val samplePassword = JiraUserPassword(
+        plainText = "**plain text**",
+        encrypted = "**encrypted**"
+    )
 
     @Test
     fun shouldSetupUnderlyingDatabase() {
@@ -18,14 +21,14 @@ class JiraUserPasswordOverridingDatabaseTest {
         val database = JiraUserPasswordOverridingDatabase.Builder(
             databaseDelegate = underlyingDatabase,
             username = "admin",
-            encodedPassword = exampleEncodedPassword
+            userPassword = samplePassword
         ).build()
         val sshConnection = RememberingSshConnection()
 
         database.setup(sshConnection)
         database.start(jira, sshConnection)
 
-        assertThat(underlyingDatabase.setup)
+        assertThat(underlyingDatabase.isSetup)
             .`as`("underlying database setup")
             .isTrue()
     }
@@ -36,20 +39,21 @@ class JiraUserPasswordOverridingDatabaseTest {
         val database = JiraUserPasswordOverridingDatabase.Builder(
             databaseDelegate = underlyingDatabase,
             username = "admin",
-            encodedPassword = exampleEncodedPassword
+            userPassword = samplePassword
         ).build()
         val sshConnection = RememberingSshConnection()
 
         database.setup(sshConnection)
         database.start(jira, sshConnection)
 
-        assertThat(underlyingDatabase.started)
+        assertThat(underlyingDatabase.isStarted)
             .`as`("underlying database started")
             .isTrue()
     }
 
     @Test
     fun shouldExecuteUpdateOnCwdUserTable() {
+        // given
         val cwdUserTableName = "cwd_user"
         val underlyingDatabase = RememberingDatabase()
         val sqlClient = RememberingSshSqlClient()
@@ -57,16 +61,18 @@ class JiraUserPasswordOverridingDatabaseTest {
             databaseDelegate = underlyingDatabase,
             sqlClient = sqlClient,
             username = "admin",
-            encodedPassword = exampleEncodedPassword,
+            userPassword = samplePassword,
             cwdUserTableName = cwdUserTableName
         )
         val sshConnection = RememberingSshConnection()
 
+        // when
         database.setup(sshConnection)
         database.start(jira, sshConnection)
 
+        // then
         assertThat(sqlClient.getLog())
             .`as`("sql command executed")
-            .contains("UPDATE $cwdUserTableName SET credential='$exampleEncodedPassword' WHERE user_name='admin';")
+            .contains("UPDATE $cwdUserTableName SET credential='$samplePassword' WHERE user_name='admin';")
     }
 }

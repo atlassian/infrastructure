@@ -8,10 +8,7 @@ import java.net.URI
  */
 interface Database {
 
-    /**
-     * @return Database data location if exists
-     */
-    fun setup(ssh: SshConnection): String
+    fun setup(ssh: SshConnection): DatabaseSetup
 
     fun start(jira: URI, ssh: SshConnection)
 }
