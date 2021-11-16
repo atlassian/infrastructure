@@ -73,6 +73,6 @@ class JiraUserPasswordOverridingDatabaseTest {
         // then
         assertThat(sqlClient.getLog())
             .`as`("sql command executed")
-            .contains("UPDATE $cwdUserTableName SET credential='$samplePassword' WHERE user_name='admin';")
+            .contains("UPDATE $cwdUserTableName SET credential='${samplePassword.encrypted}' WHERE user_name='admin';")
     }
 }
