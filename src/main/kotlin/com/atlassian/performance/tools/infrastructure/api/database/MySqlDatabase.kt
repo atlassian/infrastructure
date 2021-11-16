@@ -17,7 +17,9 @@ class MySqlDatabase(
     private val source: DatasetPackage,
     private val maxConnections: Int
 ) : Database {
-    private val logger: Logger = LogManager.getLogger(this::class.java)
+    companion object {
+        private val logger: Logger = LogManager.getLogger(MySqlDatabase::class.java)
+    }
 
     private val image: DockerImage = DockerImage(
         name = "mysql:5.7.32",
@@ -35,14 +37,14 @@ class MySqlDatabase(
         maxConnections = 151
     )
 
-    override fun setup(ssh: SshConnection): String {
+    override fun setup(ssh: SshConnection): DatabaseSetup {
         val mysqlData = source.download(ssh)
         image.run(
             ssh = ssh,
             parameters = "-p 3306:3306 -v `realpath $mysqlData`:/var/lib/mysql",
             arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
-        return mysqlData
+        return DatabaseSetup(location = mysqlData)
     }
 
     override fun start(jira: URI, ssh: SshConnection) {

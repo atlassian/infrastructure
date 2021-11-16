@@ -7,8 +7,6 @@ import org.apache.logging.log4j.Logger
 import java.io.File
 import java.net.URI
 import java.nio.file.Files
-import java.io.FileWriter
-import java.io.BufferedWriter
 
 
 /**
@@ -21,18 +19,21 @@ class LicenseOverridingMysql private constructor(
     private val database: Database,
     private val licenseCollection: LicenseCollection
 ) : Database {
-    private val logger: Logger = LogManager.getLogger(this::class.java)
+    companion object {
+        private val logger: Logger = LogManager.getLogger(LicenseOverridingMysql::class.java)
+    }
 
     @Deprecated(message = "Use the Builder and pass licenses as Files to reduce accidental leakage of the license")
     constructor(
         database: Database,
-        licenses: List<String>) : this(database, LicenseCollection(licenses.map<String, File> {
+        licenses: List<String>
+    ) : this(database, LicenseCollection(licenses.map<String, File> {
         createTempLicenseFile(it)
     }))
 
     override fun setup(
         ssh: SshConnection
-    ): String = database.setup(ssh)
+    ): DatabaseSetup = database.setup(ssh)
 
     override fun start(
         jira: URI,
@@ -90,3 +91,5 @@ internal fun createTempLicenseFile(license: String): File {
     return licenseFile
 
 }
+
+fun Database.withLicenseString(licenses: List<String>) = LicenseOverridingMysql.Builder(this).licenseStrings(licenses).build()
