@@ -41,8 +41,27 @@ class JiraUserPasswordOverridingDatabase internal constructor(
         if (userPassword == null) {
             logger.info("Password not provided, skipping dataset update")
         } else {
-            sqlClient.runSql(ssh, "UPDATE $cwdUserTableName SET credential='${userPassword.encrypted}' WHERE user_name='$username';")
+            if (shouldUseEncryption(ssh)) {
+                logger.info("Updating credential with encrypted password")
+                sqlClient.runSql(ssh, "UPDATE $cwdUserTableName SET credential='${userPassword.encrypted}' WHERE user_name='$username';")
+            } else {
+                logger.info("Updating credential with plain text password")
+                sqlClient.runSql(ssh, "UPDATE $cwdUserTableName SET credential='${userPassword.plainText}' WHERE user_name='$username';")
+            }
             logger.info("Password for user '$username' updated to '${userPassword.plainText}'")
+        }
+    }
+
+    private fun shouldUseEncryption(ssh: SshConnection): Boolean {
+        val dbNamePrefix = if (cwdUserTableName.contains(".")) cwdUserTableName.substringBefore(".") + "." else ""
+        val sqlResult = sqlClient.runSql(ssh, "select attribute_value from ${dbNamePrefix}cwd_directory_attribute where attribute_name = 'user_encryption_method';").output
+        return when  {
+            sqlResult.contains("plaintext") -> false
+            sqlResult.contains("atlassian-security") -> true
+            else -> {
+                logger.warn("Unknown user_encryption_method. Assuming encrypted password should be used")
+                true
+            }
         }
     }
 
