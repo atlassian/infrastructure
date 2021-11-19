@@ -1,8 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
+import com.atlassian.performance.tools.infrastructure.mock.MockSshSqlClient
 import com.atlassian.performance.tools.infrastructure.mock.RememberingDatabase
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
-import com.atlassian.performance.tools.infrastructure.mock.RememberingSshSqlClient
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.net.URI
@@ -52,11 +53,11 @@ class JiraUserPasswordOverridingDatabaseTest {
     }
 
     @Test
-    fun shouldExecuteUpdateOnCwdUserTable() {
+    fun shouldExecuteUpdateOnCwdUserTableWithEncryptedPassword_whenUnknownUserEncryptionMethod() {
         // given
-        val cwdUserTableName = "cwd_user"
+        val cwdUserTableName = "jiradb.cwd_user"
         val underlyingDatabase = RememberingDatabase()
-        val sqlClient = RememberingSshSqlClient()
+        val sqlClient = MockSshSqlClient()
         val database = JiraUserPasswordOverridingDatabase(
             databaseDelegate = underlyingDatabase,
             sqlClient = sqlClient,
@@ -72,7 +73,84 @@ class JiraUserPasswordOverridingDatabaseTest {
 
         // then
         assertThat(sqlClient.getLog())
-            .`as`("sql command executed")
-            .contains("UPDATE $cwdUserTableName SET credential='${samplePassword.encrypted}' WHERE user_name='admin';")
+            .`as`("sql queries executed")
+            .containsExactly(
+                "select attribute_value from jiradb.cwd_directory_attribute where attribute_name = 'user_encryption_method';",
+                "UPDATE $cwdUserTableName SET credential='${samplePassword.encrypted}' WHERE user_name='admin';"
+            )
+    }
+
+    @Test
+    fun shouldExecuteUpdateOnCwdUserTableWithEncryptedPassword_whenAtlassianSecurityUserEncryptionMethod() {
+        // given
+        val cwdUserTableName = "cwd_user"
+        val underlyingDatabase = RememberingDatabase()
+        val sqlClient = MockSshSqlClient()
+        val database = JiraUserPasswordOverridingDatabase(
+            databaseDelegate = underlyingDatabase,
+            sqlClient = sqlClient,
+            username = "admin",
+            userPassword = samplePassword,
+            cwdUserTableName = cwdUserTableName
+        )
+        val sshConnection = RememberingSshConnection()
+        sqlClient.queueReturnedSqlCommandResult(
+            SshConnection.SshResult(
+                exitStatus = 0,
+                output = """attribute_value
+                            atlassian-security
+""".trimMargin(),
+                errorOutput = ""
+            )
+        )
+
+        // when
+        database.setup(sshConnection)
+        database.start(jira, sshConnection)
+
+        // then
+        assertThat(sqlClient.getLog())
+            .`as`("sql queries executed")
+            .containsExactly(
+                "select attribute_value from cwd_directory_attribute where attribute_name = 'user_encryption_method';",
+                "UPDATE $cwdUserTableName SET credential='${samplePassword.encrypted}' WHERE user_name='admin';"
+            )
+    }
+
+    @Test
+    fun shouldExecuteUpdateOnCwdUserTableWithEncryptedPassword_whenPlainTextSecurityUserEncryptionMethod() {
+        // given
+        val cwdUserTableName = "cwd_user"
+        val underlyingDatabase = RememberingDatabase()
+        val sqlClient = MockSshSqlClient()
+        val database = JiraUserPasswordOverridingDatabase(
+            databaseDelegate = underlyingDatabase,
+            sqlClient = sqlClient,
+            username = "admin",
+            userPassword = samplePassword,
+            cwdUserTableName = cwdUserTableName
+        )
+        val sshConnection = RememberingSshConnection()
+        sqlClient.queueReturnedSqlCommandResult(
+            SshConnection.SshResult(
+                exitStatus = 0,
+                output = """attribute_value
+                            plaintext
+""".trimMargin(),
+                errorOutput = ""
+            )
+        )
+
+        // when
+        database.setup(sshConnection)
+        database.start(jira, sshConnection)
+
+        // then
+        assertThat(sqlClient.getLog())
+            .`as`("sql queries executed")
+            .containsExactly(
+                "select attribute_value from cwd_directory_attribute where attribute_name = 'user_encryption_method';",
+                "UPDATE $cwdUserTableName SET credential='${samplePassword.plainText}' WHERE user_name='admin';"
+            )
     }
 }
