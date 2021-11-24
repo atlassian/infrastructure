@@ -31,9 +31,7 @@ class LicenseOverridingMysql private constructor(
         createTempLicenseFile(it)
     }))
 
-    override fun performSetup(
-        ssh: SshConnection
-    ): DatabaseSetup = database.performSetup(ssh)
+    override fun setup(ssh: SshConnection): String = database.setup(ssh)
 
     override fun start(
         jira: URI,

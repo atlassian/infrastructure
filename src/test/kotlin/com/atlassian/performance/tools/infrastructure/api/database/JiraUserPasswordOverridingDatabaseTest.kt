@@ -26,7 +26,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         ).build()
         val sshConnection = RememberingSshConnection()
 
-        database.performSetup(sshConnection)
+        database.setup(sshConnection)
         database.start(jira, sshConnection)
 
         assertThat(underlyingDatabase.isSetup)
@@ -44,7 +44,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         ).build()
         val sshConnection = RememberingSshConnection()
 
-        database.performSetup(sshConnection)
+        database.setup(sshConnection)
         database.start(jira, sshConnection)
 
         assertThat(underlyingDatabase.isStarted)
@@ -68,7 +68,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         val sshConnection = RememberingSshConnection()
 
         // when
-        database.performSetup(sshConnection)
+        database.setup(sshConnection)
         database.start(jira, sshConnection)
 
         // then
@@ -105,7 +105,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         )
 
         // when
-        database.performSetup(sshConnection)
+        database.setup(sshConnection)
         database.start(jira, sshConnection)
 
         // then
@@ -142,7 +142,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         )
 
         // when
-        database.performSetup(sshConnection)
+        database.setup(sshConnection)
         database.start(jira, sshConnection)
 
         // then
