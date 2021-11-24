@@ -7,7 +7,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.URI
 
-data class JiraUserPassword(
+class JiraUserPassword(
     val plainText: String,
     val encrypted: String
 )
@@ -22,40 +22,34 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     private val databaseDelegate: Database,
     private val sqlClient: SshSqlClient,
     private val username: String,
-    private val userPassword: JiraUserPassword?,
-    private val cwdUserTableName: String
+    private val userPassword: JiraUserPassword,
+    private val jiraDatabaseSchemaName: String
 ) : Database {
-    companion object {
+    private companion object {
         private val logger: Logger = LogManager.getLogger(JiraUserPasswordOverridingDatabase::class.java)
     }
 
-    override fun setup(
-        ssh: SshConnection
-    ) = databaseDelegate.setup(ssh)
+    override fun setup(ssh: SshConnection): String = databaseDelegate.setup(ssh)
 
     override fun start(
         jira: URI,
         ssh: SshConnection
     ) {
         databaseDelegate.start(jira, ssh)
-        if (userPassword == null) {
-            logger.info("Password not provided, skipping dataset update")
+        if (shouldUseEncryption(ssh)) {
+            logger.info("Updating credential with encrypted password")
+            sqlClient.runSql(ssh, "UPDATE ${jiraDatabaseSchemaName}.cwd_user SET credential='${userPassword.encrypted}' WHERE user_name='$username';")
         } else {
-            if (shouldUseEncryption(ssh)) {
-                logger.info("Updating credential with encrypted password")
-                sqlClient.runSql(ssh, "UPDATE $cwdUserTableName SET credential='${userPassword.encrypted}' WHERE user_name='$username';")
-            } else {
-                logger.info("Updating credential with plain text password")
-                sqlClient.runSql(ssh, "UPDATE $cwdUserTableName SET credential='${userPassword.plainText}' WHERE user_name='$username';")
-            }
-            logger.info("Password for user '$username' updated to '${userPassword.plainText}'")
+            logger.info("Updating credential with plain text password")
+            sqlClient.runSql(ssh, "UPDATE ${jiraDatabaseSchemaName}.cwd_user SET credential='${userPassword.plainText}' WHERE user_name='$username';")
         }
+        logger.info("Password for user '$username' updated to '${userPassword.plainText}'")
     }
 
     private fun shouldUseEncryption(ssh: SshConnection): Boolean {
-        val dbNamePrefix = if (cwdUserTableName.contains(".")) cwdUserTableName.substringBefore(".") + "." else ""
-        val sqlResult = sqlClient.runSql(ssh, "select attribute_value from ${dbNamePrefix}cwd_directory_attribute where attribute_name = 'user_encryption_method';").output
-        return when  {
+        val sqlResult =
+            sqlClient.runSql(ssh, "select attribute_value from ${jiraDatabaseSchemaName}.cwd_directory_attribute where attribute_name = 'user_encryption_method';").output
+        return when {
             sqlResult.contains("plaintext") -> false
             sqlResult.contains("atlassian-security") -> true
             else -> {
@@ -68,29 +62,29 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     class Builder(
         private var databaseDelegate: Database,
         private var username: String,
-        private var userPassword: JiraUserPassword?
+        private var userPassword: JiraUserPassword
     ) {
         private var sqlClient: SshSqlClient = SshMysqlClient()
-        private var cwdUserTableName: String = "jiradb.cwd_user"
+        private var jiraDatabaseSchemaName: String = "jiradb"
 
         fun databaseDelegate(databaseDelegate: Database) = apply { this.databaseDelegate = databaseDelegate }
         fun username(username: String) = apply { this.username = username }
-        fun userPassword(userPassword: JiraUserPassword?) = apply { this.userPassword = userPassword }
+        fun userPassword(userPassword: JiraUserPassword) = apply { this.userPassword = userPassword }
         fun sqlClient(sqlClient: SshSqlClient) = apply { this.sqlClient = sqlClient }
-        fun cwdUserTableName(cwdUserTableName: String) = apply { this.cwdUserTableName = cwdUserTableName }
+        fun jiraDatabaseSchemaName(jiraDatabaseSchemaName: String) = apply { this.jiraDatabaseSchemaName = jiraDatabaseSchemaName }
 
         fun build() = JiraUserPasswordOverridingDatabase(
             databaseDelegate = databaseDelegate,
             sqlClient = sqlClient,
             username = username,
             userPassword = userPassword,
-            cwdUserTableName = cwdUserTableName
+            jiraDatabaseSchemaName = jiraDatabaseSchemaName
         )
     }
 
 }
 
-fun Database.withAdminPassword(adminPassword: JiraUserPassword?) = JiraUserPasswordOverridingDatabase.Builder(
+fun Database.withAdminPassword(adminPassword: JiraUserPassword) = JiraUserPasswordOverridingDatabase.Builder(
     databaseDelegate = this,
     username = "admin",
     userPassword = adminPassword

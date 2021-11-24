@@ -11,6 +11,8 @@ class LicenseOverridingMysqlTest {
 
     private val jira = URI("http://localhost/")
 
+    private fun Database.withLicenseString(licenses: List<String>) = LicenseOverridingMysql.Builder(this).licenseStrings(licenses).build()
+
     @Test
     fun shouldOverrideOneLicense() {
         val licenseStrings = listOf("the only license")
