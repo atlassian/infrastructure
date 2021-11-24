@@ -8,7 +8,10 @@ import java.net.URI
  */
 interface Database {
 
-    fun setup(ssh: SshConnection): DatabaseSetup
+    @Deprecated(message = "Use setupAndGetLocation instead", replaceWith = ReplaceWith("performSetup(ssh)"))
+    fun setup(ssh: SshConnection) = performSetup(ssh).databaseDataLocation
+
+    fun performSetup(ssh: SshConnection): DatabaseSetup
 
     fun start(jira: URI, ssh: SshConnection)
 }

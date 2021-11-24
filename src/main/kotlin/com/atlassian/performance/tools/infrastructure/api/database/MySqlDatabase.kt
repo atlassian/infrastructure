@@ -37,14 +37,14 @@ class MySqlDatabase(
         maxConnections = 151
     )
 
-    override fun setup(ssh: SshConnection): DatabaseSetup {
+    override fun performSetup(ssh: SshConnection): DatabaseSetup {
         val mysqlData = source.download(ssh)
         image.run(
             ssh = ssh,
             parameters = "-p 3306:3306 -v `realpath $mysqlData`:/var/lib/mysql",
             arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
-        return DatabaseSetup(location = mysqlData)
+        return DatabaseSetup(databaseDataLocation = mysqlData)
     }
 
     override fun start(jira: URI, ssh: SshConnection) {

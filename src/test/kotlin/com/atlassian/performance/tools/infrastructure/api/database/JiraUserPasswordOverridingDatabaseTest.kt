@@ -26,7 +26,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         ).build()
         val sshConnection = RememberingSshConnection()
 
-        database.setup(sshConnection)
+        database.performSetup(sshConnection)
         database.start(jira, sshConnection)
 
         assertThat(underlyingDatabase.isSetup)
@@ -44,7 +44,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         ).build()
         val sshConnection = RememberingSshConnection()
 
-        database.setup(sshConnection)
+        database.performSetup(sshConnection)
         database.start(jira, sshConnection)
 
         assertThat(underlyingDatabase.isStarted)
@@ -53,7 +53,7 @@ class JiraUserPasswordOverridingDatabaseTest {
     }
 
     @Test
-    fun shouldExecuteUpdateOnCwdUserTableWithEncryptedPassword_whenUnknownUserEncryptionMethod() {
+    fun shouldUpdateEncryptedPasswordByDefault() {
         // given
         val cwdUserTableName = "jiradb.cwd_user"
         val underlyingDatabase = RememberingDatabase()
@@ -68,7 +68,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         val sshConnection = RememberingSshConnection()
 
         // when
-        database.setup(sshConnection)
+        database.performSetup(sshConnection)
         database.start(jira, sshConnection)
 
         // then
@@ -81,7 +81,7 @@ class JiraUserPasswordOverridingDatabaseTest {
     }
 
     @Test
-    fun shouldExecuteUpdateOnCwdUserTableWithEncryptedPassword_whenAtlassianSecurityUserEncryptionMethod() {
+    fun shouldUpdateEncryptedPassword() {
         // given
         val cwdUserTableName = "cwd_user"
         val underlyingDatabase = RememberingDatabase()
@@ -105,7 +105,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         )
 
         // when
-        database.setup(sshConnection)
+        database.performSetup(sshConnection)
         database.start(jira, sshConnection)
 
         // then
@@ -118,7 +118,7 @@ class JiraUserPasswordOverridingDatabaseTest {
     }
 
     @Test
-    fun shouldExecuteUpdateOnCwdUserTableWithEncryptedPassword_whenPlainTextSecurityUserEncryptionMethod() {
+    fun shouldUpdatePlaintextPassword() {
         // given
         val cwdUserTableName = "cwd_user"
         val underlyingDatabase = RememberingDatabase()
@@ -142,7 +142,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         )
 
         // when
-        database.setup(sshConnection)
+        database.performSetup(sshConnection)
         database.start(jira, sshConnection)
 
         // then

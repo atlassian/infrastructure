@@ -31,9 +31,9 @@ class LicenseOverridingMysql private constructor(
         createTempLicenseFile(it)
     }))
 
-    override fun setup(
+    override fun performSetup(
         ssh: SshConnection
-    ): DatabaseSetup = database.setup(ssh)
+    ): DatabaseSetup = database.performSetup(ssh)
 
     override fun start(
         jira: URI,
@@ -92,4 +92,7 @@ internal fun createTempLicenseFile(license: String): File {
 
 }
 
+@Deprecated(message = "Pass licenses as Files to reduce accidental leakage of the license")
 fun Database.withLicenseString(licenses: List<String>) = LicenseOverridingMysql.Builder(this).licenseStrings(licenses).build()
+
+fun Database.withLicenseFiles(licenses: List<File>) = LicenseOverridingMysql.Builder(this).licenseFiles(licenses).build()
