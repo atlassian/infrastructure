@@ -55,7 +55,6 @@ class JiraUserPasswordOverridingDatabaseTest {
     @Test
     fun shouldUpdateEncryptedPasswordByDefault() {
         // given
-        val cwdUserTableName = "jiradb.cwd_user"
         val underlyingDatabase = RememberingDatabase()
         val sqlClient = MockSshSqlClient()
         val database = JiraUserPasswordOverridingDatabase(
@@ -63,7 +62,7 @@ class JiraUserPasswordOverridingDatabaseTest {
             sqlClient = sqlClient,
             username = "admin",
             userPassword = samplePassword,
-            cwdUserTableName = cwdUserTableName
+            jiraDatabaseSchemaName = "jira"
         )
         val sshConnection = RememberingSshConnection()
 
@@ -75,15 +74,14 @@ class JiraUserPasswordOverridingDatabaseTest {
         assertThat(sqlClient.getLog())
             .`as`("sql queries executed")
             .containsExactly(
-                "select attribute_value from jiradb.cwd_directory_attribute where attribute_name = 'user_encryption_method';",
-                "UPDATE $cwdUserTableName SET credential='${samplePassword.encrypted}' WHERE user_name='admin';"
+                "select attribute_value from jira.cwd_directory_attribute where attribute_name = 'user_encryption_method';",
+                "UPDATE jira.cwd_user SET credential='${samplePassword.encrypted}' WHERE user_name='admin';"
             )
     }
 
     @Test
     fun shouldUpdateEncryptedPassword() {
         // given
-        val cwdUserTableName = "cwd_user"
         val underlyingDatabase = RememberingDatabase()
         val sqlClient = MockSshSqlClient()
         val database = JiraUserPasswordOverridingDatabase(
@@ -91,7 +89,7 @@ class JiraUserPasswordOverridingDatabaseTest {
             sqlClient = sqlClient,
             username = "admin",
             userPassword = samplePassword,
-            cwdUserTableName = cwdUserTableName
+            jiraDatabaseSchemaName = "jiradb"
         )
         val sshConnection = RememberingSshConnection()
         sqlClient.queueReturnedSqlCommandResult(
@@ -112,15 +110,14 @@ class JiraUserPasswordOverridingDatabaseTest {
         assertThat(sqlClient.getLog())
             .`as`("sql queries executed")
             .containsExactly(
-                "select attribute_value from cwd_directory_attribute where attribute_name = 'user_encryption_method';",
-                "UPDATE $cwdUserTableName SET credential='${samplePassword.encrypted}' WHERE user_name='admin';"
+                "select attribute_value from jiradb.cwd_directory_attribute where attribute_name = 'user_encryption_method';",
+                "UPDATE jiradb.cwd_user SET credential='${samplePassword.encrypted}' WHERE user_name='admin';"
             )
     }
 
     @Test
     fun shouldUpdatePlaintextPassword() {
         // given
-        val cwdUserTableName = "cwd_user"
         val underlyingDatabase = RememberingDatabase()
         val sqlClient = MockSshSqlClient()
         val database = JiraUserPasswordOverridingDatabase(
@@ -128,7 +125,7 @@ class JiraUserPasswordOverridingDatabaseTest {
             sqlClient = sqlClient,
             username = "admin",
             userPassword = samplePassword,
-            cwdUserTableName = cwdUserTableName
+            jiraDatabaseSchemaName = "jira"
         )
         val sshConnection = RememberingSshConnection()
         sqlClient.queueReturnedSqlCommandResult(
@@ -149,8 +146,8 @@ class JiraUserPasswordOverridingDatabaseTest {
         assertThat(sqlClient.getLog())
             .`as`("sql queries executed")
             .containsExactly(
-                "select attribute_value from cwd_directory_attribute where attribute_name = 'user_encryption_method';",
-                "UPDATE $cwdUserTableName SET credential='${samplePassword.plainText}' WHERE user_name='admin';"
+                "select attribute_value from jira.cwd_directory_attribute where attribute_name = 'user_encryption_method';",
+                "UPDATE jira.cwd_user SET credential='${samplePassword.plainText}' WHERE user_name='admin';"
             )
     }
 }

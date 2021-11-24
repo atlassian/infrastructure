@@ -19,7 +19,7 @@ class LicenseOverridingMysql private constructor(
     private val database: Database,
     private val licenseCollection: LicenseCollection
 ) : Database {
-    companion object {
+    private companion object {
         private val logger: Logger = LogManager.getLogger(LicenseOverridingMysql::class.java)
     }
 
@@ -89,8 +89,3 @@ internal fun createTempLicenseFile(license: String): File {
     return licenseFile
 
 }
-
-@Deprecated(message = "Pass licenses as Files to reduce accidental leakage of the license")
-fun Database.withLicenseString(licenses: List<String>) = LicenseOverridingMysql.Builder(this).licenseStrings(licenses).build()
-
-fun Database.withLicenseFiles(licenses: List<File>) = LicenseOverridingMysql.Builder(this).licenseFiles(licenses).build()
