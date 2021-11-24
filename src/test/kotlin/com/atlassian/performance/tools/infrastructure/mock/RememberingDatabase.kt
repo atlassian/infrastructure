@@ -10,9 +10,9 @@ class RememberingDatabase : Database {
     var isSetup = false
     var isStarted = false
 
-    override fun setup(ssh: SshConnection): DatabaseSetup {
+    override fun performSetup(ssh: SshConnection): DatabaseSetup {
         isSetup = true
-        return DatabaseSetup(location = ".")
+        return DatabaseSetup(databaseDataLocation = ".")
     }
 
     override fun start(jira: URI, ssh: SshConnection) {
