@@ -35,13 +35,13 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     ) {
         databaseDelegate.start(jira, ssh)
         if (shouldUseEncryption(ssh)) {
-            logger.info("Updating credential with encrypted password")
+            logger.debug("Updating credential with encrypted password")
             sqlClient.runSql(ssh, "UPDATE ${jiraDatabaseSchemaName}.cwd_user SET credential='${userPassword.encrypted}' WHERE user_name='$username';")
         } else {
-            logger.info("Updating credential with plain text password")
+            logger.debug("Updating credential with plain text password")
             sqlClient.runSql(ssh, "UPDATE ${jiraDatabaseSchemaName}.cwd_user SET credential='${userPassword.plainText}' WHERE user_name='$username';")
         }
-        logger.info("Password for user '$username' updated to '${userPassword.plainText}'")
+        logger.debug("Password for user '$username' updated to '${userPassword.plainText}'")
     }
 
     private fun shouldUseEncryption(ssh: SshConnection): Boolean {
