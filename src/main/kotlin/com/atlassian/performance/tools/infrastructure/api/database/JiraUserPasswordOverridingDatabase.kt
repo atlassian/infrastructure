@@ -61,11 +61,11 @@ class JiraUserPasswordOverridingDatabase internal constructor(
 
     class Builder(
         private var databaseDelegate: Database,
-        private var username: String,
         private var userPassword: JiraUserPassword
     ) {
         private var sqlClient: SshSqlClient = SshMysqlClient()
         private var jiraDatabaseSchemaName: String = "jiradb"
+        private var username: String = "admin"
 
         fun databaseDelegate(databaseDelegate: Database) = apply { this.databaseDelegate = databaseDelegate }
         fun username(username: String) = apply { this.username = username }
@@ -86,6 +86,5 @@ class JiraUserPasswordOverridingDatabase internal constructor(
 
 fun Database.withAdminPassword(adminPassword: JiraUserPassword) = JiraUserPasswordOverridingDatabase.Builder(
     databaseDelegate = this,
-    username = "admin",
     userPassword = adminPassword
 ).build()
