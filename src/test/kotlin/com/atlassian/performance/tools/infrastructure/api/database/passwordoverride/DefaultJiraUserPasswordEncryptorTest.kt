@@ -28,7 +28,7 @@ class DefaultJiraUserPasswordEncryptorTest {
     }
 
     @Test
-    fun shouldCQueryEncryptionMethod() {
+    fun shouldQueryEncryptionMethod() {
         // when
         jiraUserPasswordEncryptor.getEncryptedPassword(sshConnection)
         // then
