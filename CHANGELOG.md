@@ -28,6 +28,8 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Added
 - `JiraUserPasswordOverridingDatabase` to support providing custom admin password during database setup [JPERF-729]
 
+[JPERF-729]: https://ecosystem.atlassian.net/browse/JPERF-729
+
 ### Deprecated
 - `Database.setup(ssh: SshConnection): String` in favor of `Database.performSetup(ssh: SshConnection): DatabaseSetup`
 
