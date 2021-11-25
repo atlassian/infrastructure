@@ -21,7 +21,6 @@ class JiraUserPasswordOverridingDatabaseTest {
         val underlyingDatabase = RememberingDatabase()
         val database = JiraUserPasswordOverridingDatabase.Builder(
             databaseDelegate = underlyingDatabase,
-            username = "admin",
             userPassword = samplePassword
         ).build()
         val sshConnection = RememberingSshConnection()
@@ -39,7 +38,6 @@ class JiraUserPasswordOverridingDatabaseTest {
         val underlyingDatabase = RememberingDatabase()
         val database = JiraUserPasswordOverridingDatabase.Builder(
             databaseDelegate = underlyingDatabase,
-            username = "admin",
             userPassword = samplePassword
         ).build()
         val sshConnection = RememberingSshConnection()
