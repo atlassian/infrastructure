@@ -19,7 +19,7 @@ class LicenseOverridingMysql private constructor(
     private val database: Database,
     private val licenseCollection: LicenseCollection
 ) : Database {
-    private val logger: Logger = LogManager.getLogger(LicenseOverridingMysql::class.java)
+    private val logger: Logger = LogManager.getLogger(this::class.java)
 
     @Deprecated(message = "Use the Builder and pass licenses as Files to reduce accidental leakage of the license")
     constructor(

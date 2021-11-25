@@ -25,7 +25,7 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     private val userPassword: JiraUserPassword,
     private val jiraDatabaseSchemaName: String
 ) : Database {
-    private val logger: Logger = LogManager.getLogger(JiraUserPasswordOverridingDatabase::class.java)
+    private val logger: Logger = LogManager.getLogger(this::class.java)
 
     override fun setup(ssh: SshConnection): String = databaseDelegate.setup(ssh)
 
