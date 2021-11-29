@@ -7,48 +7,22 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-class DefaultJiraUserPasswordEncryptorTest {
-    private val plainTextPassword = "plain text password"
-    private val encryptedPassword = "***** ***"
-
+class DefaultJiraUserPasswordEncryptionTypeServiceTest {
     private lateinit var sqlClient: MockSshSqlClient
     private lateinit var sshConnection: RememberingSshConnection
-    private lateinit var jiraUserPasswordEncryptor: JiraUserPasswordEncryptor
+    private lateinit var tested: JiraUserPasswordEncryptionTypeService
 
     @Before
     fun setup() {
         sqlClient = MockSshSqlClient()
         sshConnection = RememberingSshConnection()
-        jiraUserPasswordEncryptor = DefaultJiraUserPasswordEncryptor(
-            passwordEncryptFunction = { _ -> encryptedPassword },
-            userPasswordPlainText = plainTextPassword,
-            sqlClient = sqlClient,
+        tested = DefaultJiraUserPasswordEncryptionTypeService(
             jiraDatabaseSchemaName = "jiradb"
         )
     }
 
     @Test
     fun shouldQueryEncryptionMethod() {
-        // when
-        jiraUserPasswordEncryptor.getEncryptedPassword(sshConnection)
-        // then
-        assertThat(sqlClient.getLog())
-            .`as`("sql queries executed")
-            .containsExactly(
-                "select attribute_value from jiradb.cwd_directory_attribute where attribute_name = 'user_encryption_method';"
-            )
-    }
-
-    @Test
-    fun shouldReturnEncryptedPasswordByDefault() {
-        // when
-        val encryptedPassword = jiraUserPasswordEncryptor.getEncryptedPassword(sshConnection)
-        // then
-        assertThat(encryptedPassword).isEqualTo(encryptedPassword)
-    }
-
-    @Test
-    fun shouldUpdateEncryptedPassword() {
         // given
         sqlClient.queueReturnedSqlCommandResult(
             SshConnection.SshResult(
@@ -60,13 +34,49 @@ class DefaultJiraUserPasswordEncryptorTest {
             )
         )
         // when
-        val encryptedPassword = jiraUserPasswordEncryptor.getEncryptedPassword(sshConnection)
+        tested.getEncryptionType(sshConnection, sqlClient)
         // then
-        assertThat(encryptedPassword).isEqualTo(encryptedPassword)
+        assertThat(sqlClient.getLog())
+            .`as`("sql queries executed")
+            .containsExactly(
+                "select attribute_value from jiradb.cwd_directory_attribute where attribute_name = 'user_encryption_method';"
+            )
     }
 
     @Test
-    fun shouldUpdatePlaintextPassword() {
+    fun shouldThrowExceptionWhenUnknownEncryption() {
+        // when
+        var exception: RuntimeException? = null
+        try {
+            tested.getEncryptionType(sshConnection, sqlClient)
+        } catch (e: RuntimeException) {
+           exception = e
+        }
+        // then
+        assertThat(exception).isNotNull()
+        assertThat(exception!!.message).isEqualTo("Unknown jira user password encryption type")
+    }
+
+    @Test
+    fun shouldReturnEncrypted() {
+        // given
+        sqlClient.queueReturnedSqlCommandResult(
+            SshConnection.SshResult(
+                exitStatus = 0,
+                output = """attribute_value
+                            atlassian-security
+""".trimMargin(),
+                errorOutput = ""
+            )
+        )
+        // when
+        val encryptionType = tested.getEncryptionType(sshConnection, sqlClient)
+        // then
+        assertThat(encryptionType).isEqualTo(JiraUserPasswordEncryptionType.ENCRYPTED)
+    }
+
+    @Test
+    fun shouldReturnPlainText() {
         // given
         sqlClient.queueReturnedSqlCommandResult(
             SshConnection.SshResult(
@@ -78,9 +88,9 @@ class DefaultJiraUserPasswordEncryptorTest {
             )
         )
         // when
-        val encryptedPassword = jiraUserPasswordEncryptor.getEncryptedPassword(sshConnection)
+        val encryptionType = tested.getEncryptionType(sshConnection, sqlClient)
         // then
-        assertThat(encryptedPassword).isEqualTo(plainTextPassword)
+        assertThat(encryptionType).isEqualTo(JiraUserPasswordEncryptionType.PLAIN_TEXT)
     }
 
 }

@@ -2,42 +2,56 @@ package com.atlassian.performance.tools.infrastructure.api.database.passwordover
 
 import com.atlassian.performance.tools.infrastructure.database.SshSqlClient
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 
-interface JiraUserPasswordEncryptor {
-    fun getEncryptedPassword(ssh: SshConnection): String
+enum class JiraUserPasswordEncryptionType {
+    PLAIN_TEXT, ENCRYPTED
 }
 
-internal class DefaultJiraUserPasswordEncryptor(
-    private val passwordEncryptFunction: (String) -> String,
-    private val userPasswordPlainText: String,
-    private val sqlClient: SshSqlClient,
+interface JiraUserPasswordEncryptor {
+    fun getEncryptedPassword(plainTextPassword: String): String
+}
+
+interface JiraUserPasswordEncryptorProvider {
+    fun get(jiraUserPasswordEncryptionType: JiraUserPasswordEncryptionType): JiraUserPasswordEncryptor
+}
+
+
+interface JiraUserPasswordEncryptionTypeService {
+    fun getEncryptionType(ssh: SshConnection, sqlClient: SshSqlClient): JiraUserPasswordEncryptionType
+}
+
+class DefaultJiraUserPasswordEncryptionTypeService(
     private val jiraDatabaseSchemaName: String
-): JiraUserPasswordEncryptor {
-    private val logger: Logger = LogManager.getLogger(this::class.java)
+) : JiraUserPasswordEncryptionTypeService {
 
-    override fun getEncryptedPassword(ssh: SshConnection): String {
-        return if (shouldUseEncryption(ssh)) {
-            logger.debug("Using credential with encrypted password")
-            passwordEncryptFunction(userPasswordPlainText)
-        } else {
-            logger.debug("Using credential with plain text password")
-            userPasswordPlainText
-        }
-    }
-
-    private fun shouldUseEncryption(ssh: SshConnection): Boolean {
+    override fun getEncryptionType(ssh: SshConnection, sqlClient: SshSqlClient): JiraUserPasswordEncryptionType {
         val sqlResult =
             sqlClient.runSql(ssh, "select attribute_value from ${jiraDatabaseSchemaName}.cwd_directory_attribute where attribute_name = 'user_encryption_method';").output
         return when {
-            sqlResult.contains("plaintext") -> false
-            sqlResult.contains("atlassian-security") -> true
-            else -> {
-                logger.warn("Unknown user_encryption_method. Assuming encrypted password should be used")
-                true
-            }
+            sqlResult.contains("plaintext") -> JiraUserPasswordEncryptionType.PLAIN_TEXT
+            sqlResult.contains("atlassian-security") -> JiraUserPasswordEncryptionType.ENCRYPTED
+            else -> throw RuntimeException("Unknown jira user password encryption type")
         }
     }
+}
+
+class EncryptedJiraUserPasswordEncryptor(
+    private val passwordEncryptFunction: (String) -> String
+) : JiraUserPasswordEncryptor {
+    override fun getEncryptedPassword(plainTextPassword: String) = passwordEncryptFunction(plainTextPassword)
+}
+
+class PlainTextJiraUserPasswordEncryptor : JiraUserPasswordEncryptor {
+    override fun getEncryptedPassword(plainTextPassword: String) = plainTextPassword
+}
+
+
+class DefaultJiraUserPasswordEncryptorProvider(passwordEncryptFunction: (String) -> String) : JiraUserPasswordEncryptorProvider {
+    private val encryptors = mapOf(
+        JiraUserPasswordEncryptionType.PLAIN_TEXT to PlainTextJiraUserPasswordEncryptor(),
+        JiraUserPasswordEncryptionType.ENCRYPTED to EncryptedJiraUserPasswordEncryptor(passwordEncryptFunction)
+    )
+
+    override fun get(jiraUserPasswordEncryptionType: JiraUserPasswordEncryptionType) = encryptors[jiraUserPasswordEncryptionType]!!
 
 }
