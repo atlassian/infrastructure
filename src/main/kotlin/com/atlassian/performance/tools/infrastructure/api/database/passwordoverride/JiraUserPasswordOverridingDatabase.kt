@@ -1,7 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.api.database.passwordoverride.DefaultJiraUserPasswordEncryptor
-import com.atlassian.performance.tools.infrastructure.api.database.passwordoverride.JiraUserPasswordEncryptor
+import com.atlassian.performance.tools.infrastructure.api.database.passwordoverride.*
 import com.atlassian.performance.tools.infrastructure.database.SshMysqlClient
 import com.atlassian.performance.tools.infrastructure.database.SshSqlClient
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -9,20 +8,14 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.URI
 
-/**
- * Based on https://confluence.atlassian.com/jira/retrieving-the-jira-administrator-192836.html
- *
- * To encode the password use [com.atlassian.crowd.password.encoder.AtlassianSecurityPasswordEncoder](https://docs.atlassian.com/atlassian-crowd/4.2.2/com/atlassian/crowd/password/encoder/AtlassianSecurityPasswordEncoder.html)
- * from the [com.atlassian.crowd.crowd-password-encoders](https://mvnrepository.com/artifact/com.atlassian.crowd/crowd-password-encoders/4.2.2).
- */
-
 class JiraUserPasswordOverridingDatabase internal constructor(
     private val databaseDelegate: Database,
     private val sqlClient: SshSqlClient,
     private val username: String,
     private val jiraDatabaseSchemaName: String,
     private val userPasswordPlainText: String,
-    private val jiraUserPasswordEncryptor: JiraUserPasswordEncryptor
+    private val userPasswordEncryptionTypeService: JiraUserPasswordEncryptionTypeService,
+    private val userPasswordEncryptorProvider: JiraUserPasswordEncryptorProvider
 ) : Database {
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
@@ -33,7 +26,9 @@ class JiraUserPasswordOverridingDatabase internal constructor(
         ssh: SshConnection
     ) {
         databaseDelegate.start(jira, ssh)
-        val password = jiraUserPasswordEncryptor.getEncryptedPassword(ssh)
+        val userPasswordEncryptionType = userPasswordEncryptionTypeService.getEncryptionType(ssh, sqlClient)
+        val userPasswordEncryptor = userPasswordEncryptorProvider.get(userPasswordEncryptionType)
+        val password = userPasswordEncryptor.getEncryptedPassword(userPasswordPlainText)
         sqlClient.runSql(ssh, "UPDATE ${jiraDatabaseSchemaName}.cwd_user SET credential='$password' WHERE user_name='$username';")
         logger.debug("Password for user '$username' updated to '${userPasswordPlainText}'")
     }
@@ -42,7 +37,8 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     class Builder(
         private var databaseDelegate: Database,
         private var userPasswordPlainText: String,
-        private var jiraUserPasswordEncryptor: JiraUserPasswordEncryptor
+        private var userPasswordEncryptionTypeService: JiraUserPasswordEncryptionTypeService,
+        private var userPasswordEncryptorProvider: JiraUserPasswordEncryptorProvider
     ) {
         private var sqlClient: SshSqlClient = SshMysqlClient()
         private var jiraDatabaseSchemaName: String = "jiradb"
@@ -53,7 +49,11 @@ class JiraUserPasswordOverridingDatabase internal constructor(
         fun userPasswordPlainText(userPassword: String) = apply { this.userPasswordPlainText = userPassword }
         fun sqlClient(sqlClient: SshSqlClient) = apply { this.sqlClient = sqlClient }
         fun jiraDatabaseSchemaName(jiraDatabaseSchemaName: String) = apply { this.jiraDatabaseSchemaName = jiraDatabaseSchemaName }
-        fun jiraUserPasswordEncryptor(jiraUserPasswordEncryptor: JiraUserPasswordEncryptor) = apply { this.jiraUserPasswordEncryptor = jiraUserPasswordEncryptor }
+        fun userPasswordEncryptionTypeService(userPasswordEncryptionTypeService: JiraUserPasswordEncryptionTypeService) =
+            apply { this.userPasswordEncryptionTypeService = userPasswordEncryptionTypeService }
+
+        fun userPasswordEncryptorProvider(userPasswordEncryptorProvider: JiraUserPasswordEncryptorProvider) =
+            apply { this.userPasswordEncryptorProvider = userPasswordEncryptorProvider }
 
         fun build() = JiraUserPasswordOverridingDatabase(
             databaseDelegate = databaseDelegate,
@@ -61,25 +61,33 @@ class JiraUserPasswordOverridingDatabase internal constructor(
             username = username,
             userPasswordPlainText = userPasswordPlainText,
             jiraDatabaseSchemaName = jiraDatabaseSchemaName,
-            jiraUserPasswordEncryptor = jiraUserPasswordEncryptor
+            userPasswordEncryptionTypeService = userPasswordEncryptionTypeService,
+            userPasswordEncryptorProvider = userPasswordEncryptorProvider
         )
     }
 
 }
 
+/**
+ * @param passwordEncryptFunction Based on [retrieving-the-jira-administrator](https://confluence.atlassian.com/jira/retrieving-the-jira-administrator-192836.html)
+ * to encode the password in Jira format use [com.atlassian.crowd.password.encoder.AtlassianSecurityPasswordEncoder](https://docs.atlassian.com/atlassian-crowd/4.2.2/com/atlassian/crowd/password/encoder/AtlassianSecurityPasswordEncoder.html)
+ * from the [com.atlassian.crowd.crowd-password-encoders](https://mvnrepository.com/artifact/com.atlassian.crowd/crowd-password-encoders/4.2.2).
+ *
+ */
 fun Database.withAdminPassword(adminPasswordPlainText: String, passwordEncryptFunction: (String) -> String): JiraUserPasswordOverridingDatabase {
     val jiraDatabaseSchemaName = "jiradb"
     val sqlClient = SshMysqlClient()
-    return JiraUserPasswordOverridingDatabase.Builder(
-        databaseDelegate = this,
-        userPasswordPlainText = adminPasswordPlainText,
-        jiraUserPasswordEncryptor = DefaultJiraUserPasswordEncryptor(
-            passwordEncryptFunction = passwordEncryptFunction,
+    return JiraUserPasswordOverridingDatabase
+        .Builder(
+            databaseDelegate = this,
             userPasswordPlainText = adminPasswordPlainText,
-            sqlClient = sqlClient,
-            jiraDatabaseSchemaName = jiraDatabaseSchemaName
+            userPasswordEncryptionTypeService = DefaultJiraUserPasswordEncryptionTypeService(
+                jiraDatabaseSchemaName = jiraDatabaseSchemaName
+            ),
+            userPasswordEncryptorProvider = DefaultJiraUserPasswordEncryptorProvider(
+                passwordEncryptFunction = passwordEncryptFunction
+            )
         )
-    )
         .jiraDatabaseSchemaName(jiraDatabaseSchemaName)
         .sqlClient(sqlClient)
         .build()
