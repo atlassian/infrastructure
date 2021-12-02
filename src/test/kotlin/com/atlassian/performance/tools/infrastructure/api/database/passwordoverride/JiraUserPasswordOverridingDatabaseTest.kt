@@ -1,7 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.database.passwordoverride
 
 import com.atlassian.performance.tools.infrastructure.api.database.Database
-import com.atlassian.performance.tools.infrastructure.api.database.JiraUserPasswordOverridingDatabase
 import com.atlassian.performance.tools.infrastructure.database.SshSqlClient
 import com.atlassian.performance.tools.infrastructure.mock.MockSshSqlClient
 import com.atlassian.performance.tools.infrastructure.mock.RememberingDatabase

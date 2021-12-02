@@ -1,6 +1,6 @@
-package com.atlassian.performance.tools.infrastructure.api.database
+package com.atlassian.performance.tools.infrastructure.api.database.passwordoverride
 
-import com.atlassian.performance.tools.infrastructure.api.database.passwordoverride.*
+import com.atlassian.performance.tools.infrastructure.api.database.Database
 import com.atlassian.performance.tools.infrastructure.database.SshMysqlClient
 import com.atlassian.performance.tools.infrastructure.database.SshSqlClient
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -74,20 +74,19 @@ class JiraUserPasswordOverridingDatabase internal constructor(
  * from the [com.atlassian.crowd.crowd-password-encoders](https://mvnrepository.com/artifact/com.atlassian.crowd/crowd-password-encoders/4.2.2).
  *
  */
-fun Database.withAdminPassword(adminPasswordPlainText: String, passwordEncryptFunction: (String) -> String): JiraUserPasswordOverridingDatabase {
+fun Database.withAdminPassword(adminPasswordPlainText: String, passwordEncryptFunction: (String) -> String): Database {
     val jiraDatabaseSchemaName = "jiradb"
     val sqlClient = SshMysqlClient()
-    return JiraUserPasswordOverridingDatabase
-        .Builder(
-            databaseDelegate = this,
-            userPasswordPlainText = adminPasswordPlainText,
-            userPasswordEncryptionTypeService = DefaultJiraUserPasswordEncryptionTypeService(
-                jiraDatabaseSchemaName = jiraDatabaseSchemaName
-            ),
-            userPasswordEncryptorProvider = DefaultJiraUserPasswordEncryptorProvider(
-                passwordEncryptFunction = passwordEncryptFunction
-            )
+    return JiraUserPasswordOverridingDatabase.Builder(
+        databaseDelegate = this,
+        userPasswordPlainText = adminPasswordPlainText,
+        userPasswordEncryptionTypeService = DefaultJiraUserPasswordEncryptionTypeService(
+            jiraDatabaseSchemaName = jiraDatabaseSchemaName
+        ),
+        userPasswordEncryptorProvider = DefaultJiraUserPasswordEncryptorProvider(
+            passwordEncryptFunction = passwordEncryptFunction
         )
+    )
         .jiraDatabaseSchemaName(jiraDatabaseSchemaName)
         .sqlClient(sqlClient)
         .build()
