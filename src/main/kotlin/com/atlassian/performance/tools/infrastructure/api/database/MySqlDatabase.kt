@@ -17,9 +17,8 @@ class MySqlDatabase(
     private val source: DatasetPackage,
     private val maxConnections: Int
 ) : Database {
-    companion object {
-        private val logger: Logger = LogManager.getLogger(MySqlDatabase::class.java)
-    }
+
+    private val logger: Logger = LogManager.getLogger(this::class.java)
 
     private val image: DockerImage = DockerImage(
         name = "mysql:5.7.32",
