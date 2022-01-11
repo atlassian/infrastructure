@@ -7,7 +7,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 
-class DefaultJiraUserPasswordEncryptionTypeServiceTest {
+class CrowdEncryptedPasswordProviderTest {
     private lateinit var sqlClient: MockSshSqlClient
     private lateinit var sshConnection: RememberingSshConnection
     private lateinit var tested: JiraUserEncryptedPasswordProvider
