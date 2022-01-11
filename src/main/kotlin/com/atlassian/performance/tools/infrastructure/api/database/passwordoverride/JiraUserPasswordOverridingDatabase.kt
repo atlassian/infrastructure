@@ -33,8 +33,8 @@ class JiraUserPasswordOverridingDatabase private constructor(
 
     class Builder(
         private var databaseDelegate: Database,
-        private var userPasswordPlainText: String,
-        private var userPasswordEncrypted: String
+        private var plainTextPassword: String,
+        private var passwordEncrypted: String
     ) {
         private var sqlClient: SshSqlClient = SshMysqlClient()
         private var schema: String = "jiradb"
@@ -43,7 +43,8 @@ class JiraUserPasswordOverridingDatabase private constructor(
 
         fun databaseDelegate(databaseDelegate: Database) = apply { this.databaseDelegate = databaseDelegate }
         fun username(username: String) = apply { this.username = username }
-        fun userPasswordPlainText(userPassword: String) = apply { this.userPasswordPlainText = userPassword }
+        fun plainTextPassword(userPasswordPlainText: String) = apply { this.plainTextPassword = userPasswordPlainText }
+        fun passwordEncrypted(userPasswordEncrypted: String) = apply { this.passwordEncrypted = userPasswordEncrypted }
         fun sqlClient(sqlClient: SshSqlClient) = apply { this.sqlClient = sqlClient }
         fun schema(jiraDatabaseSchemaName: String) = apply { this.schema = jiraDatabaseSchemaName }
         fun jiraUserEncryptedPasswordProvider(jiraUserEncryptedPasswordProvider: JiraUserEncryptedPasswordProvider) =
@@ -53,12 +54,12 @@ class JiraUserPasswordOverridingDatabase private constructor(
             databaseDelegate = databaseDelegate,
             sqlClient = sqlClient,
             username = username,
-            userPasswordPlainText = userPasswordPlainText,
+            userPasswordPlainText = plainTextPassword,
             schema = schema,
             jiraUserEncryptedPasswordProvider = jiraUserEncryptedPasswordProvider ?: CrowdEncryptedPasswordProvider(
                 jiraDatabaseSchemaName = schema,
-                passwordPlainText = userPasswordPlainText,
-                passwordEncryptedWithAtlassianSecurityPasswordEncoder = userPasswordEncrypted,
+                passwordPlainText = plainTextPassword,
+                passwordEncryptedWithAtlassianSecurityPasswordEncoder = passwordEncrypted,
                 sqlClient = sqlClient
             )
         )
@@ -75,7 +76,7 @@ class JiraUserPasswordOverridingDatabase private constructor(
 fun Database.overrideAdminPassword(adminPasswordPlainText: String, adminPasswordEncrypted: String): JiraUserPasswordOverridingDatabase.Builder {
     return JiraUserPasswordOverridingDatabase.Builder(
         databaseDelegate = this,
-        userPasswordPlainText = adminPasswordPlainText,
-        userPasswordEncrypted = adminPasswordEncrypted
+        plainTextPassword = adminPasswordPlainText,
+        passwordEncrypted = adminPasswordEncrypted
     )
 }
