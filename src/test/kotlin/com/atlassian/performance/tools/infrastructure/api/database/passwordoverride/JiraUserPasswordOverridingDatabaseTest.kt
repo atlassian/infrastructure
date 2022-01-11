@@ -13,7 +13,7 @@ import java.net.URI
 class JiraUserPasswordOverridingDatabaseTest {
 
     private val jira = URI("http://localhost/")
-    private val samplePassword = "plain text password"
+    private val samplePlainTextPassword = "plain text password"
     private val expectedEncryptedPassword = "*******"
 
     private lateinit var database: Database
@@ -26,16 +26,16 @@ class JiraUserPasswordOverridingDatabaseTest {
         underlyingDatabase = RememberingDatabase()
         sshConnection = RememberingSshConnection()
         sqlClient = MockSshSqlClient()
-        database = JiraUserPasswordOverridingDatabase
-            .Builder(
-                databaseDelegate = underlyingDatabase,
-                userPasswordPlainText = samplePassword,
-                jiraUserEncryptedPasswordProvider = object : JiraUserEncryptedPasswordProvider {
-                    override fun getEncryptedPassword(ssh: SshConnection) = expectedEncryptedPassword
-                }
+        database = underlyingDatabase
+            .overrideAdminPassword(
+                adminPasswordPlainText = samplePlainTextPassword,
+                adminPasswordEncrypted = expectedEncryptedPassword
             )
             .sqlClient(sqlClient)
-            .jiraDatabaseSchemaName("jira")
+            .schema("jira")
+            .jiraUserEncryptedPasswordProvider(object : JiraUserEncryptedPasswordProvider {
+                override fun getEncryptedPassword(ssh: SshConnection) = expectedEncryptedPassword
+            })
             .build()
     }
 
@@ -45,9 +45,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         database.setup(sshConnection)
         database.start(jira, sshConnection)
         // then
-        assertThat(underlyingDatabase.isSetup)
-            .`as`("underlying database setup")
-            .isTrue()
+        assertThat(underlyingDatabase.isSetup).`as`("underlying database setup").isTrue()
     }
 
     @Test
@@ -56,9 +54,7 @@ class JiraUserPasswordOverridingDatabaseTest {
         database.setup(sshConnection)
         database.start(jira, sshConnection)
         // then
-        assertThat(underlyingDatabase.isStarted)
-            .`as`("underlying database started")
-            .isTrue()
+        assertThat(underlyingDatabase.isStarted).`as`("underlying database started").isTrue()
     }
 
     @Test
@@ -67,10 +63,8 @@ class JiraUserPasswordOverridingDatabaseTest {
         database.setup(sshConnection)
         database.start(jira, sshConnection)
         // then
-        assertThat(sqlClient.getLog())
-            .`as`("sql queries executed")
-            .containsExactly(
-                "UPDATE jira.cwd_user SET credential='${expectedEncryptedPassword}' WHERE user_name='admin';"
-            )
+        assertThat(sqlClient.getLog()).`as`("sql queries executed").containsExactly(
+            "UPDATE jira.cwd_user SET credential='${expectedEncryptedPassword}' WHERE user_name='admin';"
+        )
     }
 }
