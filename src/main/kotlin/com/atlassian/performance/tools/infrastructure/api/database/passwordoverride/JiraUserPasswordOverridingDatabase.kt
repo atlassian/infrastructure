@@ -15,7 +15,6 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     private val username: String,
     private val jiraDatabaseSchemaName: String,
     private val userPasswordPlainText: String,
-    private val userPasswordEncryptionTypeService: JiraUserPasswordEncryptionTypeService,
     private val userPasswordEncryptorProvider: JiraUserPasswordEncryptorProvider
 ) : Database {
     private val logger: Logger = LogManager.getLogger(this::class.java)
@@ -27,8 +26,7 @@ class JiraUserPasswordOverridingDatabase internal constructor(
         ssh: SshConnection
     ) {
         databaseDelegate.start(jira, ssh)
-        val userPasswordEncryptionType = userPasswordEncryptionTypeService.getEncryptionType(ssh, sqlClient)
-        val userPasswordEncryptor = userPasswordEncryptorProvider.get(userPasswordEncryptionType)
+        val userPasswordEncryptor = userPasswordEncryptorProvider.getEncryptor(ssh, sqlClient)
         val password = userPasswordEncryptor.getEncryptedPassword(userPasswordPlainText)
         sqlClient.runSql(ssh, "UPDATE ${jiraDatabaseSchemaName}.cwd_user SET credential='$password' WHERE user_name='$username';")
         logger.debug("Password for user '$username' updated to '${userPasswordPlainText}'")
@@ -38,7 +36,6 @@ class JiraUserPasswordOverridingDatabase internal constructor(
     class Builder(
         private var databaseDelegate: Database,
         private var userPasswordPlainText: String,
-        private var userPasswordEncryptionTypeService: JiraUserPasswordEncryptionTypeService,
         private var userPasswordEncryptorProvider: JiraUserPasswordEncryptorProvider
     ) {
         private var sqlClient: SshSqlClient = SshMysqlClient()
@@ -50,9 +47,6 @@ class JiraUserPasswordOverridingDatabase internal constructor(
         fun userPasswordPlainText(userPassword: String) = apply { this.userPasswordPlainText = userPassword }
         fun sqlClient(sqlClient: SshSqlClient) = apply { this.sqlClient = sqlClient }
         fun jiraDatabaseSchemaName(jiraDatabaseSchemaName: String) = apply { this.jiraDatabaseSchemaName = jiraDatabaseSchemaName }
-        fun userPasswordEncryptionTypeService(userPasswordEncryptionTypeService: JiraUserPasswordEncryptionTypeService) =
-            apply { this.userPasswordEncryptionTypeService = userPasswordEncryptionTypeService }
-
         fun userPasswordEncryptorProvider(userPasswordEncryptorProvider: JiraUserPasswordEncryptorProvider) =
             apply { this.userPasswordEncryptorProvider = userPasswordEncryptorProvider }
 
@@ -62,7 +56,6 @@ class JiraUserPasswordOverridingDatabase internal constructor(
             username = username,
             userPasswordPlainText = userPasswordPlainText,
             jiraDatabaseSchemaName = jiraDatabaseSchemaName,
-            userPasswordEncryptionTypeService = userPasswordEncryptionTypeService,
             userPasswordEncryptorProvider = userPasswordEncryptorProvider
         )
     }
@@ -81,11 +74,10 @@ fun Database.withAdminPassword(adminPasswordPlainText: String, passwordEncryptFu
     return JiraUserPasswordOverridingDatabase.Builder(
         databaseDelegate = this,
         userPasswordPlainText = adminPasswordPlainText,
-        userPasswordEncryptionTypeService = DefaultJiraUserPasswordEncryptionTypeService(
-            jiraDatabaseSchemaName = jiraDatabaseSchemaName
-        ),
         userPasswordEncryptorProvider = DefaultJiraUserPasswordEncryptorProvider(
-            passwordEncryptFunction = passwordEncryptFunction
+            jiraDatabaseSchemaName = jiraDatabaseSchemaName,
+            plainTextPasswordEncryptor = PlainTextJiraUserPasswordEncryptor(),
+            encryptedPasswordEncryptor = EncryptedJiraUserPasswordEncryptor(passwordEncryptFunction)
         )
     )
         .jiraDatabaseSchemaName(jiraDatabaseSchemaName)
