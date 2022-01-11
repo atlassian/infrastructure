@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.database.passwordover
 
 import com.atlassian.performance.tools.infrastructure.database.SshSqlClient
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import java.util.function.Function
 
 enum class JiraUserPasswordEncryptionType {
     PLAIN_TEXT, ENCRYPTED
@@ -36,9 +37,9 @@ class DefaultJiraUserPasswordEncryptionTypeService(
 }
 
 class EncryptedJiraUserPasswordEncryptor(
-    private val passwordEncryptFunction: (String) -> String
+    private val passwordEncryptFunction: Function<String, String>
 ) : JiraUserPasswordEncryptor {
-    override fun getEncryptedPassword(plainTextPassword: String) = passwordEncryptFunction(plainTextPassword)
+    override fun getEncryptedPassword(plainTextPassword: String) = passwordEncryptFunction.apply(plainTextPassword)
 }
 
 class PlainTextJiraUserPasswordEncryptor : JiraUserPasswordEncryptor {
@@ -46,7 +47,7 @@ class PlainTextJiraUserPasswordEncryptor : JiraUserPasswordEncryptor {
 }
 
 
-class DefaultJiraUserPasswordEncryptorProvider(passwordEncryptFunction: (String) -> String) : JiraUserPasswordEncryptorProvider {
+class DefaultJiraUserPasswordEncryptorProvider(passwordEncryptFunction: Function<String, String>) : JiraUserPasswordEncryptorProvider {
     private val encryptors = mapOf(
         JiraUserPasswordEncryptionType.PLAIN_TEXT to PlainTextJiraUserPasswordEncryptor(),
         JiraUserPasswordEncryptionType.ENCRYPTED to EncryptedJiraUserPasswordEncryptor(passwordEncryptFunction)

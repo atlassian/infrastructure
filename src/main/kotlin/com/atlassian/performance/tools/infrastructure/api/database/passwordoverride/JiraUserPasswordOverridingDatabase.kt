@@ -7,6 +7,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.URI
+import java.util.function.Function
 
 class JiraUserPasswordOverridingDatabase internal constructor(
     private val databaseDelegate: Database,
@@ -74,7 +75,7 @@ class JiraUserPasswordOverridingDatabase internal constructor(
  * from the [com.atlassian.crowd.crowd-password-encoders](https://mvnrepository.com/artifact/com.atlassian.crowd/crowd-password-encoders/4.2.2).
  *
  */
-fun Database.withAdminPassword(adminPasswordPlainText: String, passwordEncryptFunction: (String) -> String): Database {
+fun Database.withAdminPassword(adminPasswordPlainText: String, passwordEncryptFunction: Function<String, String>): Database {
     val jiraDatabaseSchemaName = "jiradb"
     val sqlClient = SshMysqlClient()
     return JiraUserPasswordOverridingDatabase.Builder(
