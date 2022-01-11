@@ -10,7 +10,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
 import java.net.URI
-import java.util.function.Function
 
 class JiraUserPasswordOverridingDatabaseTest {
 
@@ -32,9 +31,12 @@ class JiraUserPasswordOverridingDatabaseTest {
             .Builder(
                 databaseDelegate = underlyingDatabase,
                 userPasswordPlainText = samplePassword,
-                userPasswordEncryptorProvider = DefaultJiraUserPasswordEncryptorProvider(passwordEncryptFunction = Function { expectedEncryptedPassword }),
-                userPasswordEncryptionTypeService = object : JiraUserPasswordEncryptionTypeService {
-                    override fun getEncryptionType(ssh: SshConnection, sqlClient: SshSqlClient) = JiraUserPasswordEncryptionType.ENCRYPTED
+                userPasswordEncryptorProvider = object : JiraUserPasswordEncryptorProvider {
+                    override fun getEncryptor(ssh: SshConnection, sqlClient: SshSqlClient): JiraUserPasswordEncryptor {
+                        return object : JiraUserPasswordEncryptor {
+                            override fun getEncryptedPassword(plainTextPassword: String) = expectedEncryptedPassword
+                        }
+                    }
                 }
             )
             .sqlClient(sqlClient)

@@ -6,18 +6,23 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Before
 import org.junit.Test
+import java.util.function.Function
 
 class DefaultJiraUserPasswordEncryptionTypeServiceTest {
     private lateinit var sqlClient: MockSshSqlClient
     private lateinit var sshConnection: RememberingSshConnection
-    private lateinit var tested: JiraUserPasswordEncryptionTypeService
+    private lateinit var tested: JiraUserPasswordEncryptorProvider
+    private val plainTextPasswordEncryptor: JiraUserPasswordEncryptor = PlainTextJiraUserPasswordEncryptor()
+    private val encryptedPasswordEncryptor: JiraUserPasswordEncryptor = EncryptedJiraUserPasswordEncryptor(Function { "" })
 
     @Before
     fun setup() {
         sqlClient = MockSshSqlClient()
         sshConnection = RememberingSshConnection()
-        tested = DefaultJiraUserPasswordEncryptionTypeService(
-            jiraDatabaseSchemaName = "jiradb"
+        tested = DefaultJiraUserPasswordEncryptorProvider(
+            jiraDatabaseSchemaName = "jiradb",
+            plainTextPasswordEncryptor = plainTextPasswordEncryptor,
+            encryptedPasswordEncryptor = encryptedPasswordEncryptor
         )
     }
 
@@ -34,7 +39,7 @@ class DefaultJiraUserPasswordEncryptionTypeServiceTest {
             )
         )
         // when
-        tested.getEncryptionType(sshConnection, sqlClient)
+        tested.getEncryptor(sshConnection, sqlClient)
         // then
         assertThat(sqlClient.getLog())
             .`as`("sql queries executed")
@@ -48,9 +53,9 @@ class DefaultJiraUserPasswordEncryptionTypeServiceTest {
         // when
         var exception: RuntimeException? = null
         try {
-            tested.getEncryptionType(sshConnection, sqlClient)
+            tested.getEncryptor(sshConnection, sqlClient)
         } catch (e: RuntimeException) {
-           exception = e
+            exception = e
         }
         // then
         assertThat(exception).isNotNull()
@@ -70,9 +75,9 @@ class DefaultJiraUserPasswordEncryptionTypeServiceTest {
             )
         )
         // when
-        val encryptionType = tested.getEncryptionType(sshConnection, sqlClient)
+        val passwordEncryptor = tested.getEncryptor(sshConnection, sqlClient)
         // then
-        assertThat(encryptionType).isEqualTo(JiraUserPasswordEncryptionType.ENCRYPTED)
+        assertThat(passwordEncryptor).isEqualTo(encryptedPasswordEncryptor)
     }
 
     @Test
@@ -88,9 +93,9 @@ class DefaultJiraUserPasswordEncryptionTypeServiceTest {
             )
         )
         // when
-        val encryptionType = tested.getEncryptionType(sshConnection, sqlClient)
+        val passwordEncryptor = tested.getEncryptor(sshConnection, sqlClient)
         // then
-        assertThat(encryptionType).isEqualTo(JiraUserPasswordEncryptionType.PLAIN_TEXT)
+        assertThat(passwordEncryptor).isEqualTo(plainTextPasswordEncryptor)
     }
 
 }
