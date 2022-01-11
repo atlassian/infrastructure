@@ -1,7 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.database.passwordoverride
 
 import com.atlassian.performance.tools.infrastructure.api.database.Database
-import com.atlassian.performance.tools.infrastructure.database.SshSqlClient
 import com.atlassian.performance.tools.infrastructure.mock.MockSshSqlClient
 import com.atlassian.performance.tools.infrastructure.mock.RememberingDatabase
 import com.atlassian.performance.tools.infrastructure.mock.RememberingSshConnection
@@ -31,12 +30,8 @@ class JiraUserPasswordOverridingDatabaseTest {
             .Builder(
                 databaseDelegate = underlyingDatabase,
                 userPasswordPlainText = samplePassword,
-                userPasswordEncryptorProvider = object : JiraUserPasswordEncryptorProvider {
-                    override fun getEncryptor(ssh: SshConnection, sqlClient: SshSqlClient): JiraUserPasswordEncryptor {
-                        return object : JiraUserPasswordEncryptor {
-                            override fun getEncryptedPassword(plainTextPassword: String) = expectedEncryptedPassword
-                        }
-                    }
+                jiraUserEncryptedPasswordProvider = object : JiraUserEncryptedPasswordProvider {
+                    override fun getEncryptedPassword(ssh: SshConnection) = expectedEncryptedPassword
                 }
             )
             .sqlClient(sqlClient)
