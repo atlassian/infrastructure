@@ -16,55 +16,69 @@ class JiraUserPasswordOverridingDatabaseTest {
     private val samplePlainTextPassword = "plain text password"
     private val expectedEncryptedPassword = "*******"
 
-    private lateinit var database: Database
-    private lateinit var underlyingDatabase: RememberingDatabase
-    private lateinit var sshConnection: RememberingSshConnection
-    private lateinit var sqlClient: MockSshSqlClient
+    data class TestContext(
+        val database: Database,
+        val underlyingDatabase: RememberingDatabase,
+        val sshConnection: RememberingSshConnection,
+        val sqlClient: MockSshSqlClient
+    )
 
-    @Before
-    fun setup() {
-        underlyingDatabase = RememberingDatabase()
-        sshConnection = RememberingSshConnection()
-        sqlClient = MockSshSqlClient()
-        database = underlyingDatabase
-            .overrideAdminPassword(
-                adminPasswordPlainText = samplePlainTextPassword,
-                adminPasswordEncrypted = expectedEncryptedPassword
-            )
-            .sqlClient(sqlClient)
-            .schema("jira")
-            .jiraUserEncryptedPasswordProvider(object : JiraUserEncryptedPasswordProvider {
-                override fun getEncryptedPassword(ssh: SshConnection) = expectedEncryptedPassword
-            })
-            .build()
+    fun setup(): TestContext {
+        val db = RememberingDatabase()
+        val sqlClient = MockSshSqlClient()
+        return TestContext(
+            underlyingDatabase = db,
+            sshConnection = RememberingSshConnection(),
+            sqlClient = sqlClient,
+            database = db
+                .overrideAdminPassword(
+                    adminPasswordPlainText = samplePlainTextPassword,
+                    adminPasswordEncrypted = expectedEncryptedPassword
+                )
+                .sqlClient(sqlClient)
+                .schema("jira")
+                .jiraUserEncryptedPasswordProvider(object : JiraUserEncryptedPasswordProvider {
+                    override fun getEncryptedPassword(ssh: SshConnection) = expectedEncryptedPassword
+                })
+                .build()
+        )
     }
 
     @Test
     fun shouldSetupUnderlyingDatabase() {
-        // when
-        database.setup(sshConnection)
-        database.start(jira, sshConnection)
-        // then
-        assertThat(underlyingDatabase.isSetup).`as`("underlying database setup").isTrue()
+        val testContext = setup()
+        with(testContext) {
+            // when
+            database.setup(sshConnection)
+            database.start(jira, sshConnection)
+            // then
+            assertThat(underlyingDatabase.isSetup).`as`("underlying database setup").isTrue()
+        }
     }
 
     @Test
     fun shouldStartUnderlyingDatabase() {
-        // when
-        database.setup(sshConnection)
-        database.start(jira, sshConnection)
-        // then
-        assertThat(underlyingDatabase.isStarted).`as`("underlying database started").isTrue()
+        val testContext = setup()
+        with(testContext) {
+            // when
+            database.setup(sshConnection)
+            database.start(jira, sshConnection)
+            // then
+            assertThat(underlyingDatabase.isStarted).`as`("underlying database started").isTrue()
+        }
     }
 
     @Test
     fun shouldUpdatePassword() {
-        // when
-        database.setup(sshConnection)
-        database.start(jira, sshConnection)
-        // then
-        assertThat(sqlClient.getLog()).`as`("sql queries executed").containsExactly(
-            "UPDATE jira.cwd_user SET credential='${expectedEncryptedPassword}' WHERE user_name='admin';"
-        )
+        val testContext = setup()
+        with(testContext) {
+            // when
+            database.setup(sshConnection)
+            database.start(jira, sshConnection)
+            // then
+            assertThat(sqlClient.getLog()).`as`("sql queries executed").containsExactly(
+                "UPDATE jira.cwd_user SET credential='${expectedEncryptedPassword}' WHERE user_name='admin';"
+            )
+        }
     }
 }
