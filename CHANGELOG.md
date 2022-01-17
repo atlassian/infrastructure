@@ -25,7 +25,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
 
-## [4.19.0]
+## [4.19.0] - 2022-01-17
 [4.19.0]: https://github.com/atlassian/infrastructure/compare/release-4.18.0...release-4.19.0
 ### Added
 - `JiraUserPasswordOverridingDatabase` to support providing custom admin password during database setup [JPERF-729]
