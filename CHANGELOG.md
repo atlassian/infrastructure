@@ -24,6 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
+### Security
+- Remove `jira-soke-tests-eu` AWS S3 bucket reference
+
+[JPERF-750]: https://ecosystem.atlassian.net/browse/JPERF-750
 
 ## [4.19.0] - 2022-01-17
 [4.19.0]: https://github.com/atlassian/infrastructure/compare/release-4.18.0...release-4.19.0
