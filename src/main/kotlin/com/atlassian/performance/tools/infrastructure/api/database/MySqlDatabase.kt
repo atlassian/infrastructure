@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerImage
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
@@ -20,10 +20,10 @@ class MySqlDatabase(
 
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    private val image: DockerImage = DockerImage(
-        name = "mysql:5.7.32",
-        pullTimeout = Duration.ofMinutes(5)
-    )
+    private val image: DockerImage = DockerImage.Builder("mysql:5.7.32")
+        .pullTimeout(Duration.ofMinutes(5))
+        .build()
+
     private val ubuntu = Ubuntu()
 
     /**

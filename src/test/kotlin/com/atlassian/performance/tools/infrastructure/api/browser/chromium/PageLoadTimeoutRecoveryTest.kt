@@ -1,10 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.browser.Browser
 import com.atlassian.performance.tools.infrastructure.browser.SshChromium
 import com.atlassian.performance.tools.infrastructure.mock.MockHttpServer
-import com.atlassian.performance.tools.infrastructure.toSsh
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import com.sun.net.httpserver.HttpExchange
 import org.assertj.core.api.Assertions
 import org.openqa.selenium.TimeoutException
@@ -20,8 +19,8 @@ internal class PageLoadTimeoutRecoveryTest {
         MockHttpServer().start().use { httpServer ->
             val fastResource = httpServer.register(FastResponse())
             val slowResource = httpServer.register(SlowResponse())
-            SshUbuntuContainer().start().use { sshUbuntu ->
-                val ssh = sshUbuntu.toSsh()
+            DockerInfrastructure().use { infra ->
+                val ssh = infra.serveTest()
                 ssh.forwardRemotePort(httpServer.getPort(), httpServer.getPort()).use {
                     val localChromedriverPort = findFreePort()
                     ssh.forwardLocalPort(localChromedriverPort, remoteChromedriverPort).use {
@@ -29,7 +28,7 @@ internal class PageLoadTimeoutRecoveryTest {
                             chromium.install(connection)
                         }
                         val chromedriverUri = URI("http://localhost:$localChromedriverPort")
-                        SshChromium(ssh.newConnection(), chromedriverUri).start().use { sshDriver ->
+                        SshChromium(ssh, chromedriverUri).start().use { sshDriver ->
                             val driver = sshDriver.getDriver()
                             setPageLoadTimeout(driver)
 
@@ -47,7 +46,7 @@ internal class PageLoadTimeoutRecoveryTest {
     }
 
     private fun findFreePort(): Int {
-        return ServerSocket(0).use { socket -> return socket.localPort }
+        return ServerSocket(0).use { socket -> socket.localPort }
     }
 
     private class FastResponse : MockHttpServer.RequestHandler {

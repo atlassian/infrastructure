@@ -43,6 +43,19 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Deprecated
 - `Database.setup(ssh: SshConnection): String` in favor of `Database.performSetup(ssh: SshConnection): DatabaseSetup`
 
+### Added
+Fix [JPERF-273]:
+- Allow multiple ways of installing Jira via `JiraInstallation` or starting it via `JiraStart`.
+- Represent the information required to use an already installed Jira via `InstalledJira` or `JiraStart` if started.
+- Represent a brand-new Jira instance via `EmptyJiraHome`.
+- Hook into Jira installation via `PreInstallHooks` and `PostInstallHooks`.
+- Hook into Jira start via `PreStartHooks` and `PostStartHooks`.
+- Let hooks insert new hooks.
+- Locate and download any logs, charts, profiles and other reports via `Report` (rather than hardcoding the paths).
+- Expose preset `NfsSharedHome` or `SambaSharedHome` for Data Center.
+
+[JPERF-273]: https://ecosystem.atlassian.net/browse/JPERF-273
+
 ## [4.18.0] - 2021-04-14
 [4.18.0]: https://github.com/atlassian/infrastructure/compare/release-4.17.5...release-4.18.0
 
@@ -146,6 +159,10 @@ This is an erroneous release. Don't use new APIs from this version, switch to `4
 
 ## [4.14.3] - 2019-11-27
 [4.14.3]: https://github.com/atlassian/infrastructure/compare/release-4.14.2...release-4.14.3
+
+### Added
+- Offer `Docker` and `DockerImage` for customization and injection. Unblock Docker to work with other Ubuntu versions.
+- Add `DockerMysqlServer`.
 
 ### Fixed
 - Quote VU CLI args. Fix [JPERF-569].

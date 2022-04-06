@@ -3,14 +3,20 @@ package com.atlassian.performance.tools.infrastructure.database
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.io.File
 
-internal class SshMysqlClient : SshSqlClient {
+internal class SshMysqlClient(
+    private val host: String,
+    private val port: Int,
+    private val user: String
+) : SshSqlClient {
+
+    internal constructor() : this("127.0.0.1", 3306, "root")
 
     override fun runSql(
         ssh: SshConnection,
         sql: String
     ): SshConnection.SshResult {
         val quotedSql = sql.quote('"')
-        return ssh.execute("mysql -h 127.0.0.1 -u root -e $quotedSql")
+        return ssh.execute("mysql -h $host -P $port -u $user -e $quotedSql")
     }
 
     override fun runSql(
@@ -19,7 +25,7 @@ internal class SshMysqlClient : SshSqlClient {
     ): SshConnection.SshResult {
         val remoteSqlFile = sql.name
         ssh.upload(sql, remoteSqlFile)
-        val result = ssh.execute("mysql -h 127.0.0.1 -u root < $remoteSqlFile")
+        val result = ssh.execute("mysql -h $host -P $port -u $user < $remoteSqlFile")
         ssh.execute("rm $remoteSqlFile")
         return result
     }
