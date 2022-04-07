@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.19.1...master
 
+### Fixed
+- Bump log4j dependency to 2.17.2
+
 ## [4.19.1] - 2022-04-04
 [4.19.1]: https://github.com/atlassian/infrastructure/compare/release-4.19.0...release-4.19.1
 ### Security
