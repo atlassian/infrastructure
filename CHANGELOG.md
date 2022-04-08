@@ -24,20 +24,27 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.19.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.19.2...master
+
+## [4.19.2] - 2022-04-07
+[4.19.2]: https://github.com/atlassian/infrastructure/compare/release-4.19.1...release-4.19.2
 
 ### Fixed
-- Bump log4j dependency to 2.17.2
+- Bump log4j dependency to 2.17.2 [JPERF-774]
+
+[JPERF-774]: https://ecosystem.atlassian.net/browse/JPERF-774
 
 ## [4.19.1] - 2022-04-04
 [4.19.1]: https://github.com/atlassian/infrastructure/compare/release-4.19.0...release-4.19.1
+
 ### Security
-- Remove `jira-soke-tests-eu` AWS S3 bucket reference
+- Remove `jira-soke-tests-eu` AWS S3 bucket reference [JPERF-750]
 
 [JPERF-750]: https://ecosystem.atlassian.net/browse/JPERF-750
 
 ## [4.19.0] - 2022-01-17
 [4.19.0]: https://github.com/atlassian/infrastructure/compare/release-4.18.0...release-4.19.0
+
 ### Added
 - `JiraUserPasswordOverridingDatabase` to support providing custom admin password during database setup [JPERF-729]
 
