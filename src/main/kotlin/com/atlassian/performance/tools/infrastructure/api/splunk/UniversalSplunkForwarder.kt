@@ -1,7 +1,7 @@
 package com.atlassian.performance.tools.infrastructure.api.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
-import com.atlassian.performance.tools.infrastructure.api.Sed
+import com.atlassian.performance.tools.infrastructure.splunk.Log4jJsonifier
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 
@@ -33,12 +33,7 @@ class UniversalSplunkForwarder(
     }
 
     override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String) {
-        Sed().replace(
-            connection = sshConnection,
-            expression = "NewLineIndentingFilteringPatternLayout",
-            output = "layout.JsonLayout",
-            file = log4jPropertiesPath
-        )
+        Log4jJsonifier().jsonifyLog4j1(sshConnection, log4jPropertiesPath)
     }
 
     override fun getRequiredPorts(): List<Int> {
