@@ -1,7 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
-import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
@@ -15,16 +14,19 @@ class AtlassianSplunkForwarder(
         val logstashImage = DockerImage("docker.elastic.co/logstash/logstash-oss:6.2.4", Duration.ofMinutes(5))
         val logstashConfFilePath = "~/logstash.conf"
 
-        sshConnection.execute("""cat > $logstashConfFilePath <<'EOF'
+        sshConnection.execute(
+            """cat > $logstashConfFilePath <<'EOF'
         |${LogStashConfigBuilder(additionalEventFields, kinesisRoleArn).build()}
-        |EOF""".trimMargin())
+        |EOF""".trimMargin()
+        )
 
 
         val parameters = listOf(
             "--volume $logsPath:/usr/share/logstash/pipeline/",
             "--volume /var/lib/docker/containers:/host/containers:ro",
             "--volume /var/run/docker.sock:/var/run/docker.sock:ro",
-            "-v $logstashConfFilePath:/usr/share/logstash/config/logstash.conf")
+            "-v $logstashConfFilePath:/usr/share/logstash/config/logstash.conf"
+        )
 
         val arguments = "sh -c \"logstash-plugin install logstash-output-kinesis; " +
             "bin/logstash -f /usr/share/logstash/config/logstash.conf --config.reload.automatic; " +
@@ -34,12 +36,11 @@ class AtlassianSplunkForwarder(
     }
 
     override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String) {
-        Sed().replace(
-            connection = sshConnection,
-            expression = "NewLineIndentingFilteringPatternLayout",
-            output = "layout.JsonLayout",
-            file = log4jPropertiesPath
-        )
+        Log4jJsonifier().jsonifyLog4j1(sshConnection, log4jPropertiesPath)
+    }
+
+    override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String, log4j2ConfigPath: String) {
+        Log4jJsonifier().jsonifyLog4j1AndLog4j2(sshConnection, log4jPropertiesPath, log4j2ConfigPath)
     }
 
     override fun getRequiredPorts(): List<Int> {
@@ -47,7 +48,10 @@ class AtlassianSplunkForwarder(
     }
 }
 
-internal class LogStashConfigBuilder(private val additionalEventFields: Map<String, String>, private val kinesisRoleArn: String) {
+internal class LogStashConfigBuilder(
+    private val additionalEventFields: Map<String, String>,
+    private val kinesisRoleArn: String
+) {
     private fun input(): String {
         return """input {
         |   file {

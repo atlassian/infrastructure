@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.19.3...master
 
+### Added
+- Added `jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String, log4j2ConfigPath: String)` to `SplunkForwarder` to enable jsonifying log4j2 configurations. [JPERF-838]
+
 ## [4.19.3] - 2022-06-23
 [4.19.3]: https://github.com/atlassian/infrastructure/compare/release-4.19.2...release-4.19.3
 

@@ -33,6 +33,10 @@ configurations.all {
                 "org.jetbrains:annotations" -> useVersion("15.0")
                 "com.google.code.findbugs:jsr305" -> useVersion("3.0.2")
                 "org.apache.commons:commons-compress" -> useVersion("1.9")
+                "net.bytebuddy:byte-buddy" -> useVersion("1.12.14")
+                "org.seleniumhq.selenium:selenium-api" -> useVersion("3.11.0")
+                "org.seleniumhq.selenium:selenium-support" -> useVersion("3.11.0")
+                "org.seleniumhq.selenium:selenium-chrome-driver" -> useVersion("3.11.0")
             }
             when (requested.group) {
                 "org.jetbrains.kotlin" -> useVersion(kotlinVersion)
@@ -63,6 +67,7 @@ dependencies {
 
     webdriver().forEach { testCompile(it) }
     testCompile("junit:junit:4.12")
+    testCompile("org.mockito:mockito-core:[3.0.0, 4.8.0]")
     testCompile("com.atlassian.performance.tools:jira-software-actions:[1.0.0,2.0.0)")
     testCompile("org.hamcrest:hamcrest-library:1.3")
     testCompile("org.assertj:assertj-core:3.11.1")
@@ -72,6 +77,7 @@ dependencies {
 }
 
 fun webdriver(): List<String> = listOf(
+    "selenium-api",
     "selenium-support",
     "selenium-chrome-driver"
 ).map { module ->

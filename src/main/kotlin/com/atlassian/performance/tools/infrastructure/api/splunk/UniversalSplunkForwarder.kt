@@ -1,7 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.splunk
 
 import com.atlassian.performance.tools.infrastructure.DockerImage
-import com.atlassian.performance.tools.infrastructure.api.Sed
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 
@@ -27,18 +26,18 @@ class UniversalSplunkForwarder(
             "--volume $logsPath:/var/log/jiralogs/",
             "--volume /var/lib/docker/containers:/host/containers:ro",
             "--volume /var/log:/docker/log:ro",
-            "--volume /var/run/docker.sock:/var/run/docker.sock:ro")
+            "--volume /var/run/docker.sock:/var/run/docker.sock:ro"
+        )
 
         splunkForwarderImage.run(sshConnection, parameters.joinToString(" "))
     }
 
     override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String) {
-        Sed().replace(
-            connection = sshConnection,
-            expression = "NewLineIndentingFilteringPatternLayout",
-            output = "layout.JsonLayout",
-            file = log4jPropertiesPath
-        )
+        Log4jJsonifier().jsonifyLog4j1(sshConnection, log4jPropertiesPath)
+    }
+
+    override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String, log4j2ConfigPath: String) {
+        Log4jJsonifier().jsonifyLog4j1AndLog4j2(sshConnection, log4jPropertiesPath, log4j2ConfigPath)
     }
 
     override fun getRequiredPorts(): List<Int> {
