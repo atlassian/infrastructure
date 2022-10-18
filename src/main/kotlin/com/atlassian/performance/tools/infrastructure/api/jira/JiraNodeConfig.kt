@@ -9,6 +9,7 @@ import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.DisabledRemote
 import com.atlassian.performance.tools.infrastructure.api.jvm.jmx.RemoteJmx
 import com.atlassian.performance.tools.infrastructure.api.profiler.Profiler
 import com.atlassian.performance.tools.infrastructure.api.splunk.DisabledSplunkForwarder
+import com.atlassian.performance.tools.infrastructure.api.splunk.Log4j2SplunkForwarder
 import com.atlassian.performance.tools.infrastructure.api.splunk.SplunkForwarder
 import com.atlassian.performance.tools.infrastructure.profiler.DisabledProfiler
 import java.net.URI
@@ -143,7 +144,7 @@ class JiraNodeConfig private constructor(
             debug = debug,
             remoteJmx = remoteJmx,
             jvmArgs = jvmArgs,
-            splunkForwarder = splunkForwarder,
+            splunkForwarder = Log4j2SplunkForwarder("log4j2.xml", splunkForwarder),
             collectdConfigs = collectdConfigs,
             launchTimeouts = launchTimeouts,
             jdk = if (versionedJdk != null) versionedJdk as JavaDevelopmentKit else jdk,
