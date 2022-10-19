@@ -27,7 +27,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.19.3...master
 
 ### Added
-- Enable Jsonifying log4j2 configurations in `SplunkForwarder`. Resolve [JPERF-838].
+- Support log4j2 via `Log4j2SplunkForwarder`. Resolve [JPERF-838].
+- Use `Log4j2SplunkForwarder` by default in `JiraNodeConfig.Builder`.
+
+[JPERF-838]: https://ecosystem.atlassian.net/browse/JPERF-838
 
 ## [4.19.3] - 2022-06-23
 [4.19.3]: https://github.com/atlassian/infrastructure/compare/release-4.19.2...release-4.19.3
