@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.19.3...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.20.0...master
+
+## [4.20.0] - 2022-10-19
+[4.20.0]: https://github.com/atlassian/infrastructure/compare/release-4.19.3...release-4.20.0
 
 ### Added
 - Support log4j2 via `Log4j2SplunkForwarder`. Resolve [JPERF-838].
