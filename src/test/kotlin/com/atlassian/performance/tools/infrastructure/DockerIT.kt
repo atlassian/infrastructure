@@ -36,4 +36,18 @@ class DockerIT {
                 }
             }
     }
+
+    @Test
+    fun shouldInstallIdempotently() {
+        SshUbuntuContainer.Builder()
+            .enableDocker()
+            .build()
+            .start()
+            .use { ubuntu ->
+                ubuntu.toSsh().newConnection().use { connection ->
+                    Docker().install(connection)
+                    Docker().install(connection)
+                }
+            }
+    }
 }
