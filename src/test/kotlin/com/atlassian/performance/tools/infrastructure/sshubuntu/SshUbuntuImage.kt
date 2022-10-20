@@ -85,7 +85,7 @@ class SshUbuntuImage(
         val ports = networkSettings.ports
         val sshPort = ports
             .bindings[ExposedPort.tcp(22)]!!
-            .single()
+            .single { it.hostIp == "0.0.0.0" }
             .hostPortSpec
             .toInt()
         val sshHost = SshHost(
