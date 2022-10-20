@@ -36,6 +36,14 @@ class DockerIT {
             DockerImage("hello-world").run(ssh)
         }
     }
+
+    @Test
+    fun shouldInstallIdempotently() {
+        runSoloSsh { ssh ->
+            Docker().install(ssh)
+            Docker().install(ssh)
+        }
+    }
 }
 
 private fun <T> ExecutorService.submitLabelled(
