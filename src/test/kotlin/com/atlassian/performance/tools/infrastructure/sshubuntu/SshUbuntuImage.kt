@@ -47,6 +47,7 @@ class SshUbuntuImage(
                 HostConfig()
                     .withPublishAllPorts(true)
                     .withBinds(Bind(dockerDaemonSocket, Volume(dockerDaemonSocket)))
+                    .withPrivileged(true)
             )
             .withExposedPorts(
                 portsToExpose.map { ExposedPort.tcp(it) }
