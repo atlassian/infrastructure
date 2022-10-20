@@ -27,7 +27,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.20.0...master
 
 ### Added
-- Support multiple Ubuntu versions at once: 18.04, 20.04 and 22.04.
+- Support multiple Ubuntu versions at once: 16.04, 18.04, 20.04 and 22.04.
   Cover `MySqlDatabase`, `UniversalSplunkForwarder` and `AtlassianSplunkForwarder`. Fix [JPERF-449].
 
 [JPERF-449]: https://ecosystem.atlassian.net/browse/JPERF-449
