@@ -22,9 +22,13 @@ internal class Docker {
     }
 
     private fun allowAptToUseHttps(ssh: SshConnection) {
+        val extraPackages = when (ubuntu.getDistributionCodename(ssh)) {
+            "xenial" -> setOf("apt-transport-https")
+            else -> emptySet()
+        }
         ubuntu.install(
             ssh = ssh,
-            packages = listOf("ca-certificates", "curl", "gnupg", "lsb-release"),
+            packages = listOf("ca-certificates", "curl", "gnupg", "lsb-release") + extraPackages,
             timeout = Duration.ofMinutes(2)
         )
     }
@@ -49,9 +53,13 @@ internal class Docker {
     }
 
     private fun installDockerEngine(ssh: SshConnection) {
+        val missingPackages = when (ubuntu.getDistributionCodename(ssh)) {
+            "xenial" -> setOf("docker-compose-plugin")
+            else -> emptySet()
+        }
         ubuntu.install(
             ssh = ssh,
-            packages = listOf("docker-ce", "docker-ce-cli", "containerd.io"),
+            packages = listOf("docker-ce", "docker-ce-cli", "containerd.io") - missingPackages,
             timeout = Duration.ofMinutes(5)
         )
     }

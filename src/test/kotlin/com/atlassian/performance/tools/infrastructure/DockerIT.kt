@@ -14,7 +14,7 @@ class DockerIT {
     @Test
     fun shouldRunOnVariousUbuntuVersions() {
         AbruptExecutorService(newCachedThreadPool()).use { pool ->
-            listOf("18.04", "20.04", "22.04")
+            listOf("16.04", "18.04", "20.04", "22.04")
                 .map { ubuntuVersion ->
                     pool.submitLabelled("test $ubuntuVersion") {
                         testDockerRun(ubuntuVersion)

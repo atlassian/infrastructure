@@ -5,7 +5,7 @@ import com.atlassian.performance.tools.infrastructure.splunk.Log4jJsonifier
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 /**
- * Runs on Ubuntu 18.04, 20.04 and 22.04.
+ * Runs on Ubuntu 16.04, 18.04, 20.04 and 22.04.
  */
 class UniversalSplunkForwarder(
     private val splunkServerIp: String,
