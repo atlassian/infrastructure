@@ -35,14 +35,15 @@ class SshUbuntuImage(
     fun <T> runInUbuntu(
         lambda: (SshUbuntuContainer) -> T
     ): T {
+        val tag = "ubuntu$ubuntuVersion"
         docker
-            .pullImageCmd("rastasheep/ubuntu-sshd")
-            .withTag(ubuntuVersion)
+            .pullImageCmd("takeyamajp/ubuntu-sshd")
+            .withTag(tag)
             .exec(PullImageResultCallback())
             .awaitCompletion()
         val dockerDaemonSocket = "/var/run/docker.sock"
         return docker
-            .createContainerCmd("rastasheep/ubuntu-sshd:$ubuntuVersion")
+            .createContainerCmd("takeyamajp/ubuntu-sshd:$tag")
             .withHostConfig(
                 HostConfig()
                     .withPublishAllPorts(true)
