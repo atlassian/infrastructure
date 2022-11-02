@@ -22,7 +22,7 @@ class UbuntuIT {
     @Before
     fun before() {
         executor = Executors.newCachedThreadPool()
-        sshUbuntu = SshUbuntuContainer().start()
+        sshUbuntu = SshUbuntuContainer.Builder().build().start()
     }
 
     @After

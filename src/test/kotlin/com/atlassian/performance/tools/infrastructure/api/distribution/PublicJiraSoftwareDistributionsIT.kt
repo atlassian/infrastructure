@@ -9,7 +9,7 @@ class PublicJiraSoftwareDistributionsIT {
 
     @Test
     fun shouldDownloadJiraSoftware() {
-        SshUbuntuContainer().start().use { ssh ->
+        SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
                 val jiraDistribution: ProductDistribution = PublicJiraSoftwareDistribution("7.2.0")
                 val targetFolder = "test"

@@ -12,7 +12,7 @@ class ChromeIT {
 
     @Test
     fun shouldInstallChromeBrowser() {
-        SshUbuntuContainer().start().use { ssh ->
+        SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
                 val wasInstalledBefore = isChromeInstalled(connection)
 

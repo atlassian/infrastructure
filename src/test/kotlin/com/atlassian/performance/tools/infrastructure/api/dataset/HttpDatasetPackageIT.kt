@@ -21,7 +21,7 @@ class HttpDatasetPackageIT {
             downloadTimeout = Duration.ofMinutes(1)
         )
 
-        val filesInDataset = SshUbuntuContainer().start().use { sshUbuntu ->
+        val filesInDataset = SshUbuntuContainer.Builder().build().start().use { sshUbuntu ->
             val ssh = sshUbuntu.toSsh()
             return@use RandomFilesGenerator(ssh).start().use {
                 ssh.newConnection().use { connection ->

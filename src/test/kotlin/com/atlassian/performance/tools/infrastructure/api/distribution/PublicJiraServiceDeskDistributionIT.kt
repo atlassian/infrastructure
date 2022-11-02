@@ -9,7 +9,7 @@ class PublicJiraServiceDeskDistributionIT {
 
     @Test
     fun shouldDownloadJiraServiceDesk() {
-        SshUbuntuContainer().start().use { ssh ->
+        SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
                 val serviceDeskDistribution: ProductDistribution = PublicJiraServiceDeskDistribution("4.0.1")
                 val targetFolder = "test"

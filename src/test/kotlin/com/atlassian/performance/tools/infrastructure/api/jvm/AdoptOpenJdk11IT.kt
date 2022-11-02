@@ -8,7 +8,7 @@ class AdoptOpenJdk11IT {
 
     @Test
     fun shouldSupportJstat() {
-        SshUbuntuContainer().start().use { ssh ->
+        SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
                 JstatSupport(AdoptOpenJDK11()).shouldSupportJstat(connection)
             }

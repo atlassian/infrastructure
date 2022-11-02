@@ -2,8 +2,8 @@ package com.atlassian.performance.tools.infrastructure.jira.install
 
 import com.atlassian.performance.tools.infrastructure.api.distribution.PublicJiraSoftwareDistribution
 import com.atlassian.performance.tools.infrastructure.api.jira.EmptyJiraHome
-import com.atlassian.performance.tools.infrastructure.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
+import com.atlassian.performance.tools.infrastructure.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
@@ -40,9 +40,9 @@ class JiraLaunchScriptIT {
 
     private fun <T> testOnServer(test: (TcpServer) -> T) {
         val privatePort = 8080
-        val container = SshUbuntuContainer(Consumer {
-            it.addExposedPort(privatePort)
-        })
+        val container = SshUbuntuContainer.Builder()
+            .customization(Consumer { it.addExposedPort(privatePort) })
+            .build()
         container.start().use { sshUbuntu ->
             val server = TcpServer(
                 "localhost",
