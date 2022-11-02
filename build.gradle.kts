@@ -62,12 +62,12 @@ dependencies {
     ).forEach { implementation(it) }
 
     webdriver().forEach { testCompile(it) }
-    testCompile("junit:junit:4.12")
+    testCompile("junit:junit:4.13.2")
     testCompile("com.atlassian.performance.tools:jira-software-actions:[1.0.0,2.0.0)")
     testCompile("org.hamcrest:hamcrest-library:1.3")
     testCompile("org.assertj:assertj-core:3.11.1")
-    testCompile("com.atlassian.performance.tools:ssh-ubuntu:0.2.0")
-    testCompile("org.rnorth.duct-tape:duct-tape:1.0.7")
+    testCompile("com.atlassian.performance.tools:ssh-ubuntu:0.3.0")
+    testCompile("org.rnorth.duct-tape:duct-tape:1.0.8")
     testCompile("org.threeten:threeten-extra:1.5.0")
 }
 
@@ -75,7 +75,7 @@ fun webdriver(): List<String> = listOf(
     "selenium-support",
     "selenium-chrome-driver"
 ).map { module ->
-    "org.seleniumhq.selenium:$module:3.11.0"
+    "org.seleniumhq.selenium:$module:3.141.59"
 }
 
 fun log4j(

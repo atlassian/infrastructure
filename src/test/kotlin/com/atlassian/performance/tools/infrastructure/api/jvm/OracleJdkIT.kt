@@ -8,7 +8,7 @@ class OracleJdkIT {
 
     @Test
     fun shouldSupportJstatAndThreadDumps() {
-        SshUbuntuContainer().start().use { ssh ->
+        SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
                 val jdk = OracleJDK()
                 JstatSupport(jdk).shouldSupportJstat(connection)

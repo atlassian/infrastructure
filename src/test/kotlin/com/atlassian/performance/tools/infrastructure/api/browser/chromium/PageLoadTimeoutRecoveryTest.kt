@@ -20,7 +20,7 @@ internal class PageLoadTimeoutRecoveryTest {
         MockHttpServer().start().use { httpServer ->
             val fastResource = httpServer.register(FastResponse())
             val slowResource = httpServer.register(SlowResponse())
-            SshUbuntuContainer().start().use { sshUbuntu ->
+            SshUbuntuContainer.Builder().build().start().use { sshUbuntu ->
                 val ssh = sshUbuntu.toSsh()
                 ssh.forwardRemotePort(httpServer.getPort(), httpServer.getPort()).use {
                     val localChromedriverPort = findFreePort()

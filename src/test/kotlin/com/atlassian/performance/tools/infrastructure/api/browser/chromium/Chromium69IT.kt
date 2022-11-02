@@ -14,7 +14,7 @@ class Chromium69IT {
 
     @Test
     fun shouldInstallBrowser() {
-        SshUbuntuContainer().start().use { sshUbuntu ->
+        SshUbuntuContainer.Builder().build().start().use { sshUbuntu ->
             sshUbuntu.toSsh().newConnection().use { connection ->
                 val installedBefore = isChromiumInstalled(connection)
 
