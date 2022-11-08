@@ -3,7 +3,7 @@ package com.atlassian.performance.tools.infrastructure.api.jvm
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import java.io.File
 import java.time.Duration
 
@@ -26,7 +26,6 @@ class JstatSupport(
     )
     private val jarName = "hello-world-after-1m-wait.jar"
     private val jar = "/com/atlassian/performance/tools/infrastructure/api/jvm/$jarName"
-    private val timestampLength = "2018-12-17T14:10:44+00:00 ".length
 
     fun shouldSupportJstat(connection: SshConnection) {
         connection.execute("apt-get install curl screen -y -qq", Duration.ofMinutes(2))
@@ -43,10 +42,9 @@ class JstatSupport(
         val jstatMonitoring = jdk.jstatMonitoring.start(connection, pid.toInt())
         waitForJstatToCollectSomeData()
         jstatMonitoring.stop(connection)
-        val jstatLog = connection.execute("cat ${jstatMonitoring.getResultPath()}").output
-        val jstatHeader = jstatLog.substring(timestampLength, jstatLog.indexOf('\n'))
+        val jstatLog = connection.execute("head -n 1 ${jstatMonitoring.getResultPath()}").output
 
-        Assertions.assertThat(jstatHeader).contains(this.expectedStats)
+        assertThat(jstatLog).contains(this.expectedStats)
     }
 
     private fun waitForJstatToCollectSomeData() {
