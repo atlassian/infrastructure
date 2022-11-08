@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.20.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...master
+
+## [4.21.0] - 2022-11-08
+[4.21.0]: https://github.com/atlassian/infrastructure/compare/release-4.20.0...release-4.21.0
 
 ### Added
 - Support multiple Ubuntu versions at once: 16.04, 18.04, 20.04 and 22.04.
