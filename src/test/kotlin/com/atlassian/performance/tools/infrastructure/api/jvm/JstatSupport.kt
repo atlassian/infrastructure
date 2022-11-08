@@ -1,8 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
+import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.jvmtasks.api.ExponentialBackoff
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import java.io.File
 import java.time.Duration
@@ -27,17 +30,24 @@ class JstatSupport(
     private val jarName = "hello-world-after-1m-wait.jar"
     private val jar = "/com/atlassian/performance/tools/infrastructure/api/jvm/$jarName"
 
-    fun shouldSupportJstat(connection: SshConnection) {
-        connection.execute("apt-get install curl screen -y -qq", Duration.ofMinutes(2))
+    fun shouldSupportJstat() {
+        SshUbuntuContainer.Builder().build().start().use { ubuntu ->
+            val ssh = ubuntu.toSsh()
+            ssh.newConnection().use { connection ->
+                shouldSupportJstat(ssh, connection)
+            }
+        }
+    }
+
+    private fun shouldSupportJstat(ssh: Ssh, connection: SshConnection) {
         connection.upload(File(this.javaClass.getResource(jar).toURI()), jarName)
         jdk.install(connection)
-        connection.startProcess(jdk.command("-classpath $jarName samples.HelloWorld"))
-        val pid = IdempotentAction(
-            description = "Wait for the Hello, World! process to start.",
-            action = { connection.execute("cat hello-world.pid").output }
-        ).retry(
+        ssh.runInBackground(jdk.command("-classpath $jarName samples.HelloWorld"))
+        val pid = IdempotentAction("Wait for the Hello, World! process to start.") {
+            connection.execute("cat hello-world.pid").output
+        }.retry(
             maxAttempts = 3,
-            backoff = ExponentialBackoff(baseBackoff = Duration.ofSeconds(1))
+            backoff = ExponentialBackoff(Duration.ofSeconds(1))
         )
         val jstatMonitoring = jdk.jstatMonitoring.start(connection, pid.toInt())
         waitForJstatToCollectSomeData()

@@ -8,6 +8,7 @@ import java.time.Duration
 
 class ThreadDumpTest {
     fun shouldGatherThreadDump(jdk: JavaDevelopmentKit, connection: SshConnection) {
+        jdk.install(connection)
         val destination = "thread-dumps"
         connection.execute("""echo "public class Test { public static void main(String[] args) { try { Thread.sleep(java.time.Duration.ofMinutes(1).toMillis()); } catch (InterruptedException e) { throw new RuntimeException(e); } }}" > Test.java """.trimIndent())
         connection.execute("${jdk.use()}; javac Test.java")
