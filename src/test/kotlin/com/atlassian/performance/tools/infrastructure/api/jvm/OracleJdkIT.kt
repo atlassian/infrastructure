@@ -5,9 +5,12 @@ import org.junit.Test
 class OracleJdkIT {
 
     @Test
-    fun shouldSupportJstatAndThreadDumps() {
-        val jdk = OracleJDK()
-        JstatSupport(jdk).shouldSupportJstat()
-        ThreadDumpTest(jdk).shouldGatherThreadDump()
+    fun shouldSupportJstat() {
+        JstatSupport(OracleJDK()).shouldSupportJstat()
+    }
+
+    @Test
+    fun shouldGatherThreadDump() {
+        ThreadDumpTest(OracleJDK()).shouldGatherThreadDump()
     }
 }
