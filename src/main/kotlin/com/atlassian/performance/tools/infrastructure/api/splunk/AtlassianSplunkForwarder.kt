@@ -6,7 +6,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
 /**
- * Runs on Ubuntu 16.04, 18.04, 20.04 and 22.04.
+ * Since 4.21.0, it's compatible with Ubuntu 16.04, 18.04, 20.04 and 22.04.
  */
 class AtlassianSplunkForwarder(
     private val additionalEventFields: Map<String, String>,
