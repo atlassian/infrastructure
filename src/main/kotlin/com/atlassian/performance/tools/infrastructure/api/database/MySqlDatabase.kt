@@ -39,9 +39,12 @@ class MySqlDatabase(
 
     override fun setup(ssh: SshConnection): String {
         val mysqlDataLocation = source.download(ssh)
+        val bindPorts = "-p 3306:3306"
+        val mountDataset = "-v `realpath $mysqlDataLocation`:/var/lib/mysql"
+        val ignorePassword = "--env MYSQL_ALLOW_EMPTY_PASSWORD=yep"
         image.run(
             ssh = ssh,
-            parameters = "-p 3306:3306 -v `realpath $mysqlDataLocation`:/var/lib/mysql",
+            parameters = "$bindPorts $mountDataset $ignorePassword",
             arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
         return mysqlDataLocation
