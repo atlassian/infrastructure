@@ -45,7 +45,7 @@ class MySqlDatabase(
         image.run(
             ssh = ssh,
             parameters = "$bindPorts $mountDataset $ignorePassword",
-            arguments = "--skip-grant-tables --max_connections=$maxConnections"
+            arguments = "--max_connections=$maxConnections"
         )
         return mysqlDataLocation
     }
