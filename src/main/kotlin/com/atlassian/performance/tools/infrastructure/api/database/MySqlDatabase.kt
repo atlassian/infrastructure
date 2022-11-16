@@ -22,7 +22,7 @@ class MySqlDatabase(
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
     private val image: DockerImage = DockerImage(
-        name = "mysql:5.7.32",
+        name = "mysql/mysql-server:5.7.32",
         pullTimeout = Duration.ofMinutes(5)
     )
     private val ubuntu = Ubuntu()
@@ -42,12 +42,24 @@ class MySqlDatabase(
         val bindPorts = "-p 3306:3306"
         val mountDataset = "-v `realpath $mysqlDataLocation`:/var/lib/mysql"
         val ignorePassword = "--env MYSQL_ALLOW_EMPTY_PASSWORD=yep"
-        image.run(
+        val container = image.run(
             ssh = ssh,
             parameters = "$bindPorts $mountDataset $ignorePassword",
             arguments = "--max_connections=$maxConnections"
         )
+        upgrade(ssh, container)
         return mysqlDataLocation
+    }
+
+    /**
+     * See [MySQL in Docker docs](https://dev.mysql.com/doc/refman/5.7/en/docker-mysql-getting-started.html).
+     */
+    private fun upgrade(ssh: SshConnection, container: String) {
+        // annoyingly, the script exits with 2 when it's already upgraded, hence `safeExecute`
+        val upgrade = ssh.safeExecute("sudo docker exec $container mysql_upgrade -uroot")
+        if (upgrade.isSuccessful()) {
+            ssh.execute("sudo docker restart $container")
+        }
     }
 
     override fun start(jira: URI, ssh: SshConnection) {
