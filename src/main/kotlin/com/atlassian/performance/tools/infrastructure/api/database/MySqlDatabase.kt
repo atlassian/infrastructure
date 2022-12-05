@@ -45,7 +45,7 @@ class MySqlDatabase(
         val container = image.run(
             ssh = ssh,
             parameters = "$bindPorts $mountDataset $ignorePassword",
-            arguments = "--max_connections=$maxConnections"
+            arguments = "--skip-grant-tables --max_connections=$maxConnections"
         )
         upgrade(ssh, container)
         return mysqlDataLocation
