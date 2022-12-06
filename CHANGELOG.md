@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...master
 
+### Added
+- Extract `TarGzDistribution` for reuse with other `tar.gz` sources.
+
 ### Fixed
 - Point to the proper installation directory for `ProductDistribution` Release Candidates. Fix [JPERF-896].
 
