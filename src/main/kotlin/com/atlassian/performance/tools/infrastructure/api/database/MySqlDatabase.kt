@@ -26,6 +26,7 @@ class MySqlDatabase(
         pullTimeout = Duration.ofMinutes(5)
     )
     private val ubuntu = Ubuntu()
+    private lateinit var container: String
 
     /**
      * Uses MySQL defaults.
@@ -42,19 +43,20 @@ class MySqlDatabase(
         val bindPorts = "-p 3306:3306"
         val mountDataset = "-v `realpath $mysqlDataLocation`:/var/lib/mysql"
         val ignorePassword = "--env MYSQL_ALLOW_EMPTY_PASSWORD=yep"
-        val container = image.run(
+        val connectFromAnywhere = "--env MYSQL_ROOT_HOST=%"
+        container = image.run(
             ssh = ssh,
             parameters = "$bindPorts $mountDataset $ignorePassword",
-            arguments = "--skip-grant-tables --max_connections=$maxConnections"
+            arguments = "--max_connections=$maxConnections"
         )
-        upgrade(ssh, container)
+        upgrade(ssh)
         return mysqlDataLocation
     }
 
     /**
      * See [MySQL in Docker docs](https://dev.mysql.com/doc/refman/5.7/en/docker-mysql-getting-started.html).
      */
-    private fun upgrade(ssh: SshConnection, container: String) {
+    private fun upgrade(ssh: SshConnection) {
         // annoyingly, the script exits with 2 when it's already upgraded, hence `safeExecute`
         val upgrade = ssh.safeExecute("sudo docker exec $container mysql_upgrade -uroot")
         if (upgrade.isSuccessful()) {
@@ -64,13 +66,12 @@ class MySqlDatabase(
 
     override fun start(jira: URI, ssh: SshConnection) {
         waitForMysql(ssh)
-        ssh.execute("""mysql -h 127.0.0.1  -u root -e "UPDATE jiradb.propertystring SET propertyvalue = '$jira' WHERE id IN (select id from jiradb.propertyentry where property_key like '%baseurl%');" """)
+        ssh.execute("""sudo docker exec $container mysql -u root -e "UPDATE jiradb.propertystring SET propertyvalue = '$jira' WHERE id IN (select id from jiradb.propertyentry where property_key like '%baseurl%');" """)
     }
 
     private fun waitForMysql(ssh: SshConnection) {
-        ubuntu.install(ssh, listOf("mysql-client"))
         val mysqlStart = Instant.now()
-        while (!ssh.safeExecute("mysql -h 127.0.0.1 -u root -e 'select 1;'").isSuccessful()) {
+        while (!ssh.safeExecute("sudo docker exec $container mysql  -u root -e 'select 1;'").isSuccessful()) {
             if (Instant.now() > mysqlStart + Duration.ofMinutes(15)) {
                 throw RuntimeException("MySql didn't start in time")
             }
