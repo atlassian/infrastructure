@@ -9,10 +9,9 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
  */
 class PublicJiraServiceDeskDistribution(private val version: String) : ProductDistribution {
     override fun install(ssh: SshConnection, destination: String): String {
-        PublicAtlassianProduct(
+        return PublicAtlassianProduct(
             archiveName = "atlassian-servicedesk-$version.tar.gz",
             destination = destination
         ).install(ssh)
-        return "$destination/atlassian-jira-servicedesk-$version-standalone"
     }
 }

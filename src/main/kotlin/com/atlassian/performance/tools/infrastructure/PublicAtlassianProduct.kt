@@ -8,9 +8,11 @@ internal class PublicAtlassianProduct(
     private val archiveName: String,
     private val destination: String
 ) {
-    internal fun install(sshConnection: SshConnection) {
+    internal fun install(sshConnection: SshConnection): String {
         download(sshConnection)
         unpack(sshConnection)
+        val directoryName = discoverDirectoryName(sshConnection)
+        return "$destination/$directoryName"
     }
 
     private fun download(sshConnection: SshConnection) {
@@ -22,4 +24,13 @@ internal class PublicAtlassianProduct(
     private fun unpack(sshConnection: SshConnection) {
         sshConnection.execute("tar -xzf $destination/$archiveName --directory $destination", Duration.ofMinutes(1))
     }
+
+    private fun discoverDirectoryName(sshConnection: SshConnection): String = sshConnection
+        .execute(
+            "tar -tf $destination/$archiveName --directory $destination | head -n 1",
+            timeout = Duration.ofMinutes(1)
+        )
+        .output
+        .split("/")
+        .first()
 }

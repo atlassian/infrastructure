@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...master
 
+### Fixed
+- Point to the proper installation directory for `ProductDistribution` Release Candidates. Fix [JPERF-896].
+
+[JPERF-896]: https://ecosystem.atlassian.net/browse/JPERF-896
+
 ## [4.21.0] - 2022-11-08
 [4.21.0]: https://github.com/atlassian/infrastructure/compare/release-4.20.0...release-4.21.0
 
