@@ -31,6 +31,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Point to the proper installation directory for `ProductDistribution` Release Candidates. Fix [JPERF-896].
+- Silence SSH logs when failing to extract a non-existent tar.gz.
 
 [JPERF-896]: https://ecosystem.atlassian.net/browse/JPERF-896
 
