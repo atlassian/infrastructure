@@ -14,14 +14,11 @@ class PublicJiraSoftwareDistributionsIT {
     fun shouldDownloadJiraSoftware() {
         SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
-                val jiraDistribution: ProductDistribution = PublicJiraSoftwareDistribution("7.2.0")
-                val targetFolder = "test"
-                connection.execute("mkdir $targetFolder")
+                val distro = PublicJiraSoftwareDistribution("7.2.0")
 
-                val remoteDirectory = jiraDistribution
-                    .install(connection, targetFolder)
+                val installation = distro.install(connection, "destination")
 
-                val directories = connection.execute("ls $remoteDirectory").output
+                val directories = connection.execute("ls $installation").output
                 assertThat(directories).contains("atlassian-jira")
             }
         }
@@ -31,15 +28,10 @@ class PublicJiraSoftwareDistributionsIT {
     fun shouldInstallReleaseCandidate() {
         SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
-                // given
-                val jiraDistribution = PublicJiraSoftwareDistribution("9.0.0-RC01")
-                val targetFolder = "test"
-                connection.execute("mkdir $targetFolder")
+                val distro = PublicJiraSoftwareDistribution("9.0.0-RC01")
 
-                // when
-                val installation = jiraDistribution.install(connection, targetFolder)
+                val installation = distro.install(connection, "destination")
 
-                // then
                 val dummyConfig = JiraNodeConfig.Builder().build()
                 val dummyGc = JiraGcLog(installation)
                 val dummyIp = "1.2.3.4"

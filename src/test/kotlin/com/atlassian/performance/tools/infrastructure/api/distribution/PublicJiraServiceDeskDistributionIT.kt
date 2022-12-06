@@ -11,14 +11,11 @@ class PublicJiraServiceDeskDistributionIT {
     fun shouldDownloadJiraServiceDesk() {
         SshUbuntuContainer.Builder().build().start().use { ssh ->
             ssh.toSsh().newConnection().use { connection ->
-                val serviceDeskDistribution: ProductDistribution = PublicJiraServiceDeskDistribution("4.0.1")
-                val targetFolder = "test"
-                connection.execute("mkdir $targetFolder")
+                val distro = PublicJiraServiceDeskDistribution("4.0.1")
 
-                val remoteDirectory = serviceDeskDistribution
-                    .install(connection, targetFolder)
+                val installation = distro.install(connection, "destination")
 
-                val directories = connection.execute("ls $remoteDirectory").output
+                val directories = connection.execute("ls $installation").output
                 assertThat(directories).contains("atlassian-jira")
             }
         }
