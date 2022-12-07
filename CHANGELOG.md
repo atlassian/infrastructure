@@ -24,7 +24,13 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.1...master
+
+## [4.22.1] - 2022-12-07
+[4.22.1]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...release-4.22.1
+
+## 4.22.0
+The 4.22.0 release was accidentally skipped. The new APIs and fixes are available in 4.22.1.
 
 ### Added
 - Extract `TarGzDistribution` for reuse with other `tar.gz` sources.
