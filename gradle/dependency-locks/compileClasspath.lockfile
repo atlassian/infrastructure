@@ -3,7 +3,7 @@
 # This file is expected to be part of source control.
 com.atlassian.performance.tools:concurrency:1.1.2
 com.atlassian.performance.tools:io:1.2.0
-com.atlassian.performance.tools:jira-actions:3.17.3
+com.atlassian.performance.tools:jira-actions:3.18.0
 com.atlassian.performance.tools:jvm-tasks:1.2.3
 com.atlassian.performance.tools:ssh:2.4.3
 com.atlassian.performance.tools:virtual-users:3.13.2
