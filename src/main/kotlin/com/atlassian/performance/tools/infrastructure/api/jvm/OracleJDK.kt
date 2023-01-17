@@ -38,7 +38,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
         for (attempt in attempts) {
             try {
                 connection.execute(
-                    cmd = "curl -s -L -O -H 'Cookie: oraclelicense=accept-securebackup-cookie' -k $jdkUrl",
+                    cmd = "curl --silent --location --remote-name --cookie 'oraclelicense=a' $jdkUrl",
                     timeout = Duration.ofSeconds(120)
                 )
                 break

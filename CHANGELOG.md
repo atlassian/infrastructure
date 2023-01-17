@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.1...master
 
+### Fixed
+- Update `curl` command used for downloading Oracle JDK. Unblocks [JPERF-917].
+
 ## [4.22.1] - 2022-12-07
 [4.22.1]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...release-4.22.1
 
