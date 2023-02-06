@@ -43,20 +43,19 @@ class Ubuntu {
         timeout: Duration
     ) {
         val joinedPackages = packages.joinToString(separator = " ")
-        val lock = LOCKS.computeIfAbsent(ssh.getHost().ipAddress) { Object() }
-        synchronized(lock) {
-            try {
-                updatePackageIndex(ssh)
-                ssh.execute(
+        try {
+            updatePackageIndex(ssh)
+            ssh.lockApt {
+                it.execute(
                     cmd = "sudo DEBIAN_FRONTEND=noninteractive apt-get install -qq $joinedPackages",
                     timeout = timeout,
                     stdout = Level.TRACE,
                     stderr = Level.TRACE
                 )
-            } catch (e: Exception) {
-                cleanInterruptedApt(ssh)
-                throw Exception("Failed an attempt to install $packages", e)
             }
+        } catch (e: Exception) {
+            cleanInterruptedApt(ssh)
+            throw Exception("Failed an attempt to install $packages", e)
         }
     }
 
@@ -64,11 +63,13 @@ class Ubuntu {
      * Cleans up after a potentially interrupted `apt-get` command.
      */
     private fun cleanInterruptedApt(ssh: SshConnection) {
-        val pid = ssh.safeExecute("pidof apt-get").output.trim().toIntOrNull()
-        if (pid != null) {
-            ssh.safeExecute("kill -9 $pid")
-            ssh.execute("sudo rm -rf /var/lib/apt/lists/*")
-            ssh.execute("sudo rm -rf /var/lib/dpkg/updates/*")
+        ssh.lockApt {
+            val pid = ssh.safeExecute("pidof apt-get").output.trim().toIntOrNull()
+            if (pid != null) {
+                it.safeExecute("kill -9 $pid")
+                it.execute("sudo rm -rf /var/lib/apt/lists/*")
+                it.execute("sudo rm -rf /var/lib/dpkg/updates/*")
+            }
         }
     }
 
@@ -76,7 +77,6 @@ class Ubuntu {
         connection: SshConnection
     ): List<OsMetric> {
         install(connection, listOf("sysstat"))
-
         return listOf(
             Vmstat(),
             Iostat()
@@ -84,25 +84,50 @@ class Ubuntu {
     }
 
     private fun updatePackageIndex(ssh: SshConnection) {
-        ssh.execute("sudo apt-get update -qq", Duration.ofMinutes(3))
+        ssh.lockApt {
+            it.execute("sudo apt-get update -qq", Duration.ofMinutes(3))
+        }
     }
 
-    fun addKey(ssh: SshConnection, keyId: String) {
-        ssh.execute("sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $keyId 2>&1 | grep -v 'stdout is not a terminal'")
+    fun addKey(
+        ssh: SshConnection,
+        keyId: String
+    ) {
+        ssh.lockApt {
+            it.execute("sudo apt-key adv --keyserver keyserver.ubuntu.com --recv-keys $keyId 2>&1 | grep -v 'stdout is not a terminal'")
+        }
     }
 
     @Deprecated("Use the version with declared file name instead", ReplaceWith("addRepository()"))
-    fun addRepository(ssh: SshConnection, repository: String) {
+    fun addRepository(
+        ssh: SshConnection,
+        repository: String
+    ) {
         install(ssh, listOf("software-properties-common"))
-        ssh.execute("sudo add-apt-repository '$repository'")
+        ssh.lockApt {
+            it.execute("sudo add-apt-repository '$repository'")
+        }
     }
 
-    fun addRepository(ssh: SshConnection, repository: String, sourceFileName: String) {
-        ssh.execute("echo '$repository' | sudo tee /etc/apt/sources.list.d/${sourceFileName}.list")
+    fun addRepository(
+        ssh: SshConnection,
+        repository: String,
+        sourceFileName: String
+    ) {
+        ssh.lockApt {
+            it.execute("echo '$repository' | sudo tee /etc/apt/sources.list.d/${sourceFileName}.list")
+        }
         updatePackageIndex(ssh)
     }
 
     fun getDistributionCodename(ssh: SshConnection): String {
         return ssh.execute(". /etc/lsb-release ; echo \$DISTRIB_CODENAME").output.trimEnd('\n')
+    }
+
+    private fun SshConnection.lockApt(lambda: (SshConnection) -> Unit) {
+        val lock = LOCKS.computeIfAbsent(getHost().ipAddress) { Object() }
+        synchronized(lock) {
+            lambda(this)
+        }
     }
 }
