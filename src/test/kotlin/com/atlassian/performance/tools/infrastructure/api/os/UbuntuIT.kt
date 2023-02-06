@@ -15,6 +15,7 @@ import java.util.concurrent.CountDownLatch
 import java.util.concurrent.ExecutorCompletionService
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 class UbuntuIT {
     private lateinit var executor: ExecutorService
@@ -114,7 +115,7 @@ class UbuntuIT {
         readyToUseUbuntu.countDown()
 
         repeat(tasks.size) {
-            completion.take()
+            completion.poll(5, TimeUnit.MINUTES).get()
         }
     }
 }

@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.2...master
 
+### Fixed
+- Fix `Ubuntu` concurrent usage which previously occasionally failed with apt-get locks. Fix [JPERF-971].
+
+[JPERF-971]: https://ecosystem.atlassian.net/browse/JPERF-971
+
 ## [4.22.2] - 2023-01-23
 [4.22.2]: https://github.com/atlassian/infrastructure/compare/release-4.22.1...release-4.22.2
 
