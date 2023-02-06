@@ -10,10 +10,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.time.Duration
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.*
 
 class UbuntuIT {
     private lateinit var executor: ExecutorService
@@ -81,26 +78,39 @@ class UbuntuIT {
 
     @Test
     fun shouldBeThreadSafe() {
-        val lock = Object()
-        val concurrency = 5
-        val latch = CountDownLatch(concurrency)
+        val completion = ExecutorCompletionService<Unit>(executor)
+        val readyToUseUbuntu = CountDownLatch(1)
+        val ssh = sshUbuntu.toSsh()
 
-        (1..concurrency)
-            .map {
-                executor.submit { installLftp(lock, latch) }
-            }.map { it.get(5, TimeUnit.MINUTES) }
-
-    }
-
-    private fun installLftp(lock: Any, latch: CountDownLatch) {
-        val ssh = synchronized(lock) {
-            sshUbuntu.toSsh()
+        val installations = List(5) {
+            Callable {
+                ssh.newConnection().use { connection ->
+                    readyToUseUbuntu.await()
+                    Ubuntu().install(connection, listOf("lftp"))
+                }
+            }
         }
-        ssh.newConnection().use { connection ->
-            latch.countDown()
-            latch.await()
-            Ubuntu().install(connection, listOf("lftp"))
+        val repoAdditions = List(3) {
+            Callable {
+                ssh.newConnection().use { connection ->
+                    readyToUseUbuntu.await()
+                    Ubuntu().addKey(connection, "78BD65473CB3BD13")
+                    Ubuntu().addRepository(
+                        connection,
+                        "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main",
+                        "google-chrome"
+                    )
+                }
+            }
+        }
+
+        val tasks = (installations + repoAdditions).map { task ->
+            completion.submit(task)
+        }
+        readyToUseUbuntu.countDown()
+
+        repeat(tasks.size) {
+            completion.poll(5, TimeUnit.MINUTES).get()
         }
     }
-
 }
