@@ -125,7 +125,9 @@ class Ubuntu {
     }
 
     private fun SshConnection.lockApt(lambda: (SshConnection) -> Unit) {
-        val lock = LOCKS.computeIfAbsent(getHost().ipAddress) { Object() }
+        val host = getHost()
+        val lockId = host.ipAddress + host.port
+        val lock = LOCKS.computeIfAbsent(lockId) { Object() }
         synchronized(lock) {
             lambda(this)
         }

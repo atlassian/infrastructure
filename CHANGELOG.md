@@ -28,6 +28,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Fix `Ubuntu` concurrent usage which previously occasionally failed with apt-get locks. Fix [JPERF-971].
+- Lock `Ubuntu` apt access per IP *and* port of the host. Allow fine-granularity of locks when working with Docker.
 
 [JPERF-971]: https://ecosystem.atlassian.net/browse/JPERF-971
 
