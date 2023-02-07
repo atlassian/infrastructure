@@ -24,8 +24,9 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.2...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.3...master
 
+## [4.22.3] - 2023-02-07
 ### Fixed
 - Fix `Ubuntu` concurrent usage which previously occasionally failed with apt-get locks. Fix [JPERF-971].
 - Lock `Ubuntu` apt access per IP *and* port of the host. Allow fine-granularity of locks when working with Docker.
