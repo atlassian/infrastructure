@@ -45,5 +45,7 @@ jobs:
         atlassian_private_username: ${{ steps.publish-token.outputs.artifactoryUsername }}
         atlassian_private_password: ${{ steps.publish-token.outputs.artifactoryApiKey }}
       run: |
-        ./gradlew release -Prelease.customUsername=${{ secrets.REPOSITORY_ACCESS_TOKEN }}
+        ./gradlew release \
+            -Prelease.customUsername=${{ github.actor }} \
+            -Prelease.customPassword=${{ github.token }}
         ./gradlew publish
