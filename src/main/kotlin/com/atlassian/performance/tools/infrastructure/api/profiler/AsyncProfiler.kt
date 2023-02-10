@@ -23,7 +23,7 @@ class AsyncProfiler : Profiler {
         pid: Int
     ): RemoteMonitoringProcess {
         val script = "./$release/profiler.sh"
-        ssh.execute("$script -b 20000000 start $pid")
+        ssh.execute("$script start $pid")
         return ProfilerProcess(script, pid)
     }
 
