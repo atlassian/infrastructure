@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.3...master
 
+### Fixed
+- Bump `AsyncProfiler` to v2.9. Fix [JPERF-969] flakiness.
+
+[JPERF-969]: https://ecosystem.atlassian.net/browse/JPERF-969
+
 ## [4.22.3] - 2023-02-07
 [4.22.3]: https://github.com/atlassian/infrastructure/compare/release-4.22.2...release-4.22.3
 

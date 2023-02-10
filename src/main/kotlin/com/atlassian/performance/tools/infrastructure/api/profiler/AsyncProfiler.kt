@@ -7,10 +7,13 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
  *  Asynchronous profiler. See https://github.com/jvm-profiling-tools/async-profiler#basic-usage
  */
 class AsyncProfiler : Profiler {
+
+    private val release = "async-profiler-2.9-linux-x64"
+
     override fun install(ssh: SshConnection) {
-        ssh.execute("wget -q https://github.com/jvm-profiling-tools/async-profiler/releases/download/v1.4/async-profiler-1.4-linux-x64.tar.gz")
-        ssh.execute("mkdir async-profiler")
-        ssh.execute("tar -xzf async-profiler-1.4-linux-x64.tar.gz -C async-profiler")
+        val tarGz = "$release.tar.gz"
+        ssh.execute("wget -q https://github.com/jvm-profiling-tools/async-profiler/releases/download/v2.9/$tarGz")
+        ssh.execute("tar --extract --gzip --file $tarGz")
         ssh.execute("sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'")
         ssh.execute("sudo sh -c 'echo 0 > /proc/sys/kernel/kptr_restrict'")
     }
@@ -19,15 +22,19 @@ class AsyncProfiler : Profiler {
         ssh: SshConnection,
         pid: Int
     ): RemoteMonitoringProcess {
-        ssh.execute("./async-profiler/profiler.sh -b 20000000 start $pid")
-        return ProfilerProcess(pid)
+        val script = "./$release/profiler.sh"
+        ssh.execute("$script -b 20000000 start $pid")
+        return ProfilerProcess(script, pid)
     }
 
-    private class ProfilerProcess(private val pid: Int) : RemoteMonitoringProcess {
+    private class ProfilerProcess(
+        private val script: String,
+        private val pid: Int
+    ) : RemoteMonitoringProcess {
         private val flameGraphFile = "flamegraph.svg"
 
         override fun stop(ssh: SshConnection) {
-            ssh.execute("./async-profiler/profiler.sh stop $pid -o svg > $flameGraphFile")
+            ssh.execute("$script stop $pid -o svg > $flameGraphFile")
         }
 
         override fun getResultPath(): String {
