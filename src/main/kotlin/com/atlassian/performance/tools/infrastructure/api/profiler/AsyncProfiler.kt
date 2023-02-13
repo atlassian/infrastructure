@@ -39,7 +39,7 @@ class AsyncProfiler : Profiler {
         private val flameGraphFile = "flamegraph.svg"
 
         override fun stop(ssh: SshConnection) {
-            ssh.execute("$script stop $pid -o svg > $flameGraphFile")
+            ssh.execute("$script stop $pid -o flamegraph > $flameGraphFile")
         }
 
         override fun getResultPath(): String {
