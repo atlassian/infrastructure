@@ -1,7 +1,10 @@
 package com.atlassian.performance.tools.infrastructure.api.profiler
 
 import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitoringProcess
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import java.time.Duration.ofSeconds
 
 /**
  *  Asynchronous profiler. See https://github.com/jvm-profiling-tools/async-profiler#basic-usage
@@ -23,7 +26,9 @@ class AsyncProfiler : Profiler {
         pid: Int
     ): RemoteMonitoringProcess {
         val script = "./$release/profiler.sh"
-        ssh.execute("$script start $pid")
+        IdempotentAction("start async-profiler") {
+            ssh.execute("$script start $pid")
+        }.retry(2, StaticBackoff(ofSeconds(5)))
         return ProfilerProcess(script, pid)
     }
 
