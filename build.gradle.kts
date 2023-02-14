@@ -97,10 +97,6 @@ tasks.getByName("test", Test::class).apply {
 }
 
 val testIntegration = task<Test>("testIntegration") {
-    testLogging {
-        events = setOf(TestLogEvent.PASSED, TestLogEvent.SKIPPED, TestLogEvent.FAILED)
-        exceptionFormat = TestExceptionFormat.FULL
-    }
     filter {
         include("**/*IT.class")
     }
