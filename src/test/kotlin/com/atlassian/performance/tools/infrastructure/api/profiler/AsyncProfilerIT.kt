@@ -10,6 +10,8 @@ import com.atlassian.performance.tools.infrastructure.jira.install.TcpServer
 import com.atlassian.performance.tools.infrastructure.jira.start.JiraLaunchScript
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
+import com.github.dockerjava.api.model.Bind
+import com.github.dockerjava.api.model.Volume
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.nio.file.Files.createTempFile
@@ -56,6 +58,8 @@ class AsyncProfilerIT {
             .customization(Consumer {
                 it.addExposedPort(privatePort)
                 it.setPrivilegedMode(true)
+                val dockerDaemonSocket = "/var/run/docker.sock"
+                it.setBinds(listOf(Bind(dockerDaemonSocket, Volume(dockerDaemonSocket))))
             })
             .build()
         container.start().use { sshUbuntu ->
