@@ -15,6 +15,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+    - name: Check lftp download
+      run:  lftp -c 'set net:timeout 15; set net:max-retries 50; pget -n 32 -c "https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-7.13.0.tar.gz" -o ./atlassian-jira-software-7.13.0.tar.gz'
+    - name: Check wget download
+      run:  wget "https://product-downloads.atlassian.com/software/jira/downloads/atlassian-jira-software-7.13.0.tar.gz"
     - name: Checkout
       uses: actions/checkout@v2
       with:
