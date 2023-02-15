@@ -29,6 +29,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ### Fixed
 - Bump `AsyncProfiler` to v2.9.
 - Retry starting the `AsyncProfiler`. Fix [JPERF-969] flakiness.
+- Prefer IPv4 in `HttpResource`. It fixes running tests on Github CI. Fix [JPERF-969].
 
 [JPERF-969]: https://ecosystem.atlassian.net/browse/JPERF-969
 
@@ -46,6 +47,8 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Update `curl` command used for downloading Oracle JDK. Unblocks [JPERF-917].
+
+[JPERF-917]: https://ecosystem.atlassian.net/browse/JPERF-917
 
 ## [4.22.1] - 2022-12-07
 [4.22.1]: https://github.com/atlassian/infrastructure/compare/release-4.21.0...release-4.22.1
