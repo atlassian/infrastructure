@@ -14,9 +14,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    container:
-      image: openjdk:8-jdk
     steps:
+    - name: Inspect Docker stuff
+      run: |
+        docker network ls
+        docker network inspect bridge
+        docker run --name kebab hello-world
+        docker inspect kebab
     - name: Checkout
       uses: actions/checkout@v2
       with:
