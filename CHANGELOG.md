@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.3...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.4...master
+
+## [4.22.4] - 2023-02-15
+[4.22.4]: https://github.com/atlassian/infrastructure/compare/release-4.22.3...release-4.22.4
 
 ### Fixed
 - Bump `AsyncProfiler` to v2.9.
