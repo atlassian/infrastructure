@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.4...master
 
+### Fixed
+- Fix fresh dataset compatibility by adding MySQL arguments from Jira documentation. Unblock [JPERF-996].
+
+[JPERF-996]: https://ecosystem.atlassian.net/browse/JPERF-996
+
 ## [4.22.4] - 2023-02-15
 [4.22.4]: https://github.com/atlassian/infrastructure/compare/release-4.22.3...release-4.22.4
 

@@ -28,6 +28,23 @@ class MySqlDatabase(
     private val ubuntu = Ubuntu()
 
     /**
+     * Arguments based on [jira docs](https://confluence.atlassian.com/adminjiraserver/connecting-jira-applications-to-mysql-5-7-966063305.html).
+     *
+     * We skip setting `--sql-mode` even though the docs says:
+     * "Ensure the sql_mode parameter does not specify NO_AUTO_VALUE_ON_ZERO".
+     * It's unclear what value should be set and the based on [mysql docs](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html)
+     * the defaults are good.
+     */
+    private val jiraDocsBasedArgs = listOf(
+        "--default-storage-engine=INNODB",
+        "--character-set-server=utf8mb4",
+        "--innodb-default-row-format=DYNAMIC",
+        "--innodb-large-prefix=ON",
+        "--innodb-file-format=Barracuda",
+        "--innodb-log-file-size=2G"
+    ).joinToString(" ")
+
+    /**
      * Uses MySQL defaults.
      */
     constructor(
@@ -42,7 +59,7 @@ class MySqlDatabase(
         image.run(
             ssh = ssh,
             parameters = "-p 3306:3306 -v `realpath $mysqlDataLocation`:/var/lib/mysql",
-            arguments = "--skip-grant-tables --max_connections=$maxConnections"
+            arguments = "$jiraDocsBasedArgs --skip-grant-tables --max_connections=$maxConnections"
         )
         return mysqlDataLocation
     }
