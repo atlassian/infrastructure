@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.4...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.5...master
+
+## [4.22.5] - 2023-02-22
+[4.22.5]: https://github.com/atlassian/infrastructure/compare/release-4.22.4...release-4.22.5
 
 ### Fixed
 - Fix fresh dataset compatibility by adding MySQL arguments from Jira documentation. Unblock [JPERF-996].
