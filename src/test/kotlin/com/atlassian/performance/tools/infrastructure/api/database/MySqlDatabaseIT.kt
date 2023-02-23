@@ -2,15 +2,8 @@ package com.atlassian.performance.tools.infrastructure.api.database
 
 import com.atlassian.performance.tools.infrastructure.api.dataset.HttpDatasetPackage
 import com.atlassian.performance.tools.infrastructure.toSsh
-import com.atlassian.performance.tools.ssh.api.Ssh
-import com.atlassian.performance.tools.ssh.api.SshHost
-import com.atlassian.performance.tools.ssh.api.auth.PasswordAuthentication
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
-import com.github.dockerjava.api.model.Bind
-import com.github.dockerjava.api.model.Volume
-import com.google.common.collect.Lists
 import org.junit.Test
-import org.testcontainers.containers.GenericContainer
 import java.net.URI
 import java.time.Duration
 import java.util.function.Consumer
