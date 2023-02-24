@@ -20,22 +20,20 @@ class AtlassianSplunkForwarder(
         |${LogStashConfigBuilder(additionalEventFields, kinesisRoleArn).build()}
         |EOF""".trimMargin())
 
-
-        val parameters = listOf(
-            "--volume $logsPath:/usr/share/logstash/pipeline/",
-            "--volume /var/lib/docker/containers:/host/containers:ro",
-            "--volume /var/run/docker.sock:/var/run/docker.sock:ro",
-            "-v $logstashConfFilePath:/usr/share/logstash/config/logstash.conf")
-
-        val arguments = "sh -c \"logstash-plugin install logstash-output-kinesis; " +
-            "bin/logstash -f /usr/share/logstash/config/logstash.conf --config.reload.automatic; " +
-            "/usr/local/bin/docker-entrypoint\""
-
         DockerContainer.Builder()
             .imageName("docker.elastic.co/logstash/logstash-oss:6.2.4")
             .pullTimeout(Duration.ofMinutes(5))
-            .parameters(parameters.joinToString(" "))
-            .arguments(arguments)
+            .parameters(
+                "--volume $logsPath:/usr/share/logstash/pipeline/",
+                "--volume /var/lib/docker/containers:/host/containers:ro",
+                "--volume /var/run/docker.sock:/var/run/docker.sock:ro",
+                "-v $logstashConfFilePath:/usr/share/logstash/config/logstash.conf"
+            )
+            .arguments(
+                "sh -c \"logstash-plugin install logstash-output-kinesis;",
+                "bin/logstash -f /usr/share/logstash/config/logstash.conf --config.reload.automatic;",
+                "/usr/local/bin/docker-entrypoint\""
+            )
             .build()
             .run(sshConnection)
     }

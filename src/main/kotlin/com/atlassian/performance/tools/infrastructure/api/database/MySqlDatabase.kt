@@ -31,14 +31,14 @@ class MySqlDatabase(
      * It's unclear what value should be set and the based on [mysql docs](https://dev.mysql.com/doc/refman/5.7/en/sql-mode.html)
      * the defaults are good.
      */
-    private val jiraDocsBasedArgs = listOf(
+    private val jiraDocsBasedArgs = arrayOf(
         "--default-storage-engine=INNODB",
         "--character-set-server=utf8mb4",
         "--innodb-default-row-format=DYNAMIC",
         "--innodb-large-prefix=ON",
         "--innodb-file-format=Barracuda",
         "--innodb-log-file-size=2G"
-    ).joinToString(" ")
+    )
 
     /**
      * Uses MySQL defaults.
@@ -55,8 +55,15 @@ class MySqlDatabase(
         DockerContainer.Builder()
             .imageName("mysql:5.7.32")
             .pullTimeout(Duration.ofMinutes(5))
-            .parameters("-p 3306:3306 -v `realpath $mysqlDataLocation`:/var/lib/mysql")
-            .arguments("$jiraDocsBasedArgs --skip-grant-tables --max_connections=$maxConnections")
+            .parameters(
+                "-p 3306:3306",
+                "-v `realpath $mysqlDataLocation`:/var/lib/mysql"
+            )
+            .arguments(
+                *jiraDocsBasedArgs,
+                "--skip-grant-tables",
+                "--max_connections=$maxConnections"
+            )
             .build()
             .run(ssh)
         return mysqlDataLocation

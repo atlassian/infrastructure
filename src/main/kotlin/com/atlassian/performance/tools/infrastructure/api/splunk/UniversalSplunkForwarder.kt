@@ -15,22 +15,22 @@ class UniversalSplunkForwarder(
 ) : SplunkForwarder {
 
     override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
-        val parameters = listOf(
-            "--hostname $name",
-            "-p $managementPort:$managementPort",
-            "-p $httpEventCollectorPort:$httpEventCollectorPort",
-            "-p $indexingReceiverPort:$indexingReceiverPort",
-            "--env SPLUNK_FORWARD_SERVER='$splunkServerIp:$indexingReceiverPort'",
-            "--env SPLUNK_ADD='monitor /var/log/jiralogs/'",
-            "--env SPLUNK_START_ARGS='--accept-license'",
-            "--env SPLUNK_USER=root",
-            "--volume $logsPath:/var/log/jiralogs/",
-            "--volume /var/lib/docker/containers:/host/containers:ro",
-            "--volume /var/log:/docker/log:ro",
-            "--volume /var/run/docker.sock:/var/run/docker.sock:ro")
         DockerContainer.Builder()
             .imageName("splunk/universalforwarder:6.5.3-monitor")
-            .parameters(parameters.joinToString(" "))
+            .parameters(
+                "--hostname $name",
+                "-p $managementPort:$managementPort",
+                "-p $httpEventCollectorPort:$httpEventCollectorPort",
+                "-p $indexingReceiverPort:$indexingReceiverPort",
+                "--env SPLUNK_FORWARD_SERVER='$splunkServerIp:$indexingReceiverPort'",
+                "--env SPLUNK_ADD='monitor /var/log/jiralogs/'",
+                "--env SPLUNK_START_ARGS='--accept-license'",
+                "--env SPLUNK_USER=root",
+                "--volume $logsPath:/var/log/jiralogs/",
+                "--volume /var/lib/docker/containers:/host/containers:ro",
+                "--volume /var/log:/docker/log:ro",
+                "--volume /var/run/docker.sock:/var/run/docker.sock:ro"
+            )
             .build()
             .run(sshConnection)
     }
