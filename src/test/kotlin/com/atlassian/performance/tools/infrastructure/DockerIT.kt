@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure
 
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.junit.Test
 
@@ -32,7 +33,10 @@ class DockerIT {
             .start()
             .use { ubuntu ->
                 ubuntu.toSsh().newConnection().use { connection ->
-                    DockerImage("hello-world").run(connection)
+                    DockerContainer.Builder()
+                        .imageName("hello-world")
+                        .build()
+                        .run(connection)
                 }
             }
     }

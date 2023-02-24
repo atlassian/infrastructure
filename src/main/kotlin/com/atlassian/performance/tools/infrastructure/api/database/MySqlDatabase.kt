@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.database
 
-import com.atlassian.performance.tools.infrastructure.DockerImage
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.infrastructure.api.dataset.DatasetPackage
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
@@ -21,10 +21,6 @@ class MySqlDatabase(
 
     private val logger: Logger = LogManager.getLogger(this::class.java)
 
-    private val image: DockerImage = DockerImage(
-        name = "mysql:5.7.32",
-        pullTimeout = Duration.ofMinutes(5)
-    )
     private val ubuntu = Ubuntu()
 
     /**
@@ -56,11 +52,13 @@ class MySqlDatabase(
 
     override fun setup(ssh: SshConnection): String {
         val mysqlDataLocation = source.download(ssh)
-        image.run(
-            ssh = ssh,
-            parameters = "-p 3306:3306 -v `realpath $mysqlDataLocation`:/var/lib/mysql",
-            arguments = "$jiraDocsBasedArgs --skip-grant-tables --max_connections=$maxConnections"
-        )
+        DockerContainer.Builder()
+            .imageName("mysql:5.7.32")
+            .pullTimeout(Duration.ofMinutes(5))
+            .parameters("-p 3306:3306 -v `realpath $mysqlDataLocation`:/var/lib/mysql")
+            .arguments("$jiraDocsBasedArgs --skip-grant-tables --max_connections=$maxConnections")
+            .build()
+            .run(ssh)
         return mysqlDataLocation
     }
 

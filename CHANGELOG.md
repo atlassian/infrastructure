@@ -44,6 +44,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 [JPERF-969]: https://ecosystem.atlassian.net/browse/JPERF-969
 
+### Added
+- Expose `DockerContainer`.
+
 ## [4.22.3] - 2023-02-07
 [4.22.3]: https://github.com/atlassian/infrastructure/compare/release-4.22.2...release-4.22.3
 
