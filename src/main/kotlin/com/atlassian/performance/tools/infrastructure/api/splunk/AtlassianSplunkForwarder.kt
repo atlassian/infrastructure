@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.splunk
 
-import com.atlassian.performance.tools.infrastructure.DockerImage
+import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.infrastructure.splunk.Log4jJsonifier
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
@@ -14,7 +14,6 @@ class AtlassianSplunkForwarder(
 ) : SplunkForwarder {
 
     override fun run(sshConnection: SshConnection, name: String, logsPath: String) {
-        val logstashImage = DockerImage("docker.elastic.co/logstash/logstash-oss:6.2.4", Duration.ofMinutes(5))
         val logstashConfFilePath = "~/logstash.conf"
 
         sshConnection.execute("""cat > $logstashConfFilePath <<'EOF'
@@ -32,7 +31,13 @@ class AtlassianSplunkForwarder(
             "bin/logstash -f /usr/share/logstash/config/logstash.conf --config.reload.automatic; " +
             "/usr/local/bin/docker-entrypoint\""
 
-        logstashImage.run(sshConnection, parameters.joinToString(" "), arguments)
+        DockerContainer.Builder()
+            .imageName("docker.elastic.co/logstash/logstash-oss:6.2.4")
+            .pullTimeout(Duration.ofMinutes(5))
+            .parameters(parameters.joinToString(" "))
+            .arguments(arguments)
+            .build()
+            .run(sshConnection)
     }
 
     override fun jsonifyLog4j(sshConnection: SshConnection, log4jPropertiesPath: String) {
