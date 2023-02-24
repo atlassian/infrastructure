@@ -42,7 +42,9 @@ class DockerContainer private constructor(
         fun pullTimeout(pullTimeout: Duration) = apply { this.pullTimeout = pullTimeout }
         fun containerName(containerName: String) = apply { this.containerName = containerName }
         fun parameters(parameters: String) = apply { this.parameters = parameters }
+        fun parameters(vararg parameters: String) = apply { this.parameters = parameters.joinToString(" ") }
         fun arguments(arguments: String) = apply { this.arguments = arguments }
+        fun arguments(vararg arguments: String) = apply { this.arguments = arguments.joinToString(" ") }
 
         fun build(): DockerContainer = DockerContainer(
             runtime,
