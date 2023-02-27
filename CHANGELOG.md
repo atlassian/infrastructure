@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.5...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.23.0...master
+
+## [4.23.0] - 2023-02-27
+[4.23.0]: https://github.com/atlassian/infrastructure/compare/release-4.22.5...release-4.23.0
 
 ### Added
 - Expose `DockerContainer`.
