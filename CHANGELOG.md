@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.22.5...master
 
+### Added
+- Expose `DockerContainer`.
+
 ## [4.22.5] - 2023-02-22
 [4.22.5]: https://github.com/atlassian/infrastructure/compare/release-4.22.4...release-4.22.5
 
@@ -43,9 +46,6 @@ Dropping a requirement of a major version of a dependency is a new contract.
 - Prefer IPv4 in `HttpResource`. It fixes running tests on Github CI. Fix [JPERF-969].
 
 [JPERF-969]: https://ecosystem.atlassian.net/browse/JPERF-969
-
-### Added
-- Expose `DockerContainer`.
 
 ## [4.22.3] - 2023-02-07
 [4.22.3]: https://github.com/atlassian/infrastructure/compare/release-4.22.2...release-4.22.3
