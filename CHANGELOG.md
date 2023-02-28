@@ -26,6 +26,14 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.23.0...master
 
+### Added
+- Allow minimal Jira setup using new `MinimalMysqlDatabase` and `MinimalMysqlJiraHome` APIs.
+- Copy `MySqlDatabase` as `MysqlDatabase` to maintain consistent naming.
+- Introduce `MysqlDatabase.Builder`.
+
+### Deprecated
+- `MySqlDatabase` in favour of `MysqlDatabase`.
+
 ## [4.23.0] - 2023-02-27
 [4.23.0]: https://github.com/atlassian/infrastructure/compare/release-4.22.5...release-4.23.0
 
