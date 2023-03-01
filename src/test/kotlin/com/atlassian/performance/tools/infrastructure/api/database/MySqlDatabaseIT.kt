@@ -8,7 +8,10 @@ import java.net.URI
 import java.time.Duration
 import java.util.function.Consumer
 
-class MysqlDatabaseIT {
+/**
+ * Note: We decided to use `Mysql` casing in this repository. Please don't repeat `MySql`.
+ */
+class MySqlDatabaseIT {
     @Test
     fun shouldStartMysql() {
         val databaseSource = HttpDatasetPackage(
