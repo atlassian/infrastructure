@@ -5,6 +5,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.Installed
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
 import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
+import com.atlassian.performance.tools.infrastructure.api.jira.report.StaticReport
 import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DatabaseIpConfig(
@@ -17,11 +18,13 @@ class DatabaseIpConfig(
         hooks: PostInstallHooks,
         reports: Reports
     ) {
+        val dbConfigXml = jira.home.resolve("dbconfig.xml").path
+        reports.add(StaticReport(dbConfigXml), jira)
         Sed().replace(
             connection = ssh,
             expression = "(<url>.*(@(//)?|//))" + "([^:/]+)" + "(.*</url>)",
             output = """\1$databaseIp\5""",
-            file = "${jira.home.path}/dbconfig.xml"
+            file = dbConfigXml
         )
     }
 }
