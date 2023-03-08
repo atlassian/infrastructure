@@ -37,7 +37,7 @@ class AsyncProfiler : Profiler {
         private val script: String,
         private val pid: Int
     ) : RemoteMonitoringProcess {
-        private val flameGraphFile = "flamegraph.svg"
+        private val flameGraphFile = "flamegraph.html"
 
         override fun stop(ssh: SshConnection) {
             ssh.execute("$script stop $pid -o flamegraph > $flameGraphFile", timeout = ofSeconds(50))
