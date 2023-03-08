@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.23.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.24.0...master
+
+## [4.24.0] - 2023-03-01
+[4.24.0]: https://github.com/atlassian/infrastructure/compare/release-4.23.0...release-4.24.0
 
 ### Added
 - Allow minimal Jira setup using new `MinimalMysqlDatabase` and `MinimalMysqlJiraHome` APIs.
