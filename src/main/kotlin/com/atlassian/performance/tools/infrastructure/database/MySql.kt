@@ -40,9 +40,10 @@ internal object Mysql {
         dataDir: String,
         extraParameters: Array<String>,
         extraArguments: Array<String>,
-        host: TcpNode? = null
+        host: TcpNode? = null,
+        mysqlVersion: String = "5.7.32"
     ) = DockerContainer.Builder()
-        .imageName("mysql:5.7.32")
+        .imageName("mysql:$mysqlVersion")
         .pullTimeout(Duration.ofMinutes(5))
         .parameters(
             host?.port?.let { "-p $it:$it" } ?: "-p 3306:3306",

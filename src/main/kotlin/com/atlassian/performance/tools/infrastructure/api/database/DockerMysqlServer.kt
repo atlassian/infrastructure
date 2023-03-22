@@ -16,6 +16,7 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DockerMysqlServer private constructor(
     private val serverRoom: TcpServerRoom,
+    private var mysqlVersion: String,
     private val source: DatasetPackage,
     private val maxConnections: Int
 ) : PreInstanceHook {
@@ -38,6 +39,7 @@ class DockerMysqlServer private constructor(
         val mysqlDataLocation = source.download(ssh)
         val containerName = Mysql.container(
             dataDir = mysqlDataLocation,
+            mysqlVersion = mysqlVersion,
             extraParameters = emptyArray(),
             extraArguments = arrayOf(
                 "--skip-grant-tables", // Recovery mode, as some datasets give no permissions to their root DB user
@@ -56,14 +58,17 @@ class DockerMysqlServer private constructor(
         private var source: DatasetPackage
     ) {
 
+        private var mysqlVersion: String = "5.7.32"
         private var maxConnections: Int = 151
 
         fun serverRoom(serverRoom: TcpServerRoom) = apply { this.serverRoom = serverRoom }
+        fun mysqlVersion(mysqlVersion: String) = apply { this.mysqlVersion = mysqlVersion }
         fun source(source: DatasetPackage) = apply { this.source = source }
         fun maxConnections(maxConnections: Int) = apply { this.maxConnections = maxConnections }
 
         fun build(): DockerMysqlServer = DockerMysqlServer(
             serverRoom,
+            mysqlVersion,
             source,
             maxConnections
         )
