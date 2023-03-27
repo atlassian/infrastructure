@@ -42,4 +42,33 @@ class Datasets {
             postStartHooks.insert(dataUpgrade)
         }
     }
+
+    object SmallJiraEightDataset {
+        private val s3Bucket = URI("https://s3-eu-central-1.amazonaws.com/")
+            .resolve("jpt-custom-datasets-storage-a008820-datasetbucket-1nrja8d1upind/")
+            .resolve("dataset-a533e558-e5c5-46e7-9398-5aeda84d793a/")
+
+        private val mysql = HttpDatasetPackage(
+            uri = s3Bucket.resolve("database.tar.bz2"),
+            downloadTimeout = Duration.ofMinutes(6)
+        )
+
+        val jiraHome = HttpDatasetPackage(
+            uri = s3Bucket.resolve("jirahome.tar.bz2"),
+            downloadTimeout = Duration.ofMinutes(6)
+        )
+
+        fun hookMysql(preInstanceHooks: PreInstanceHooks, serverRoom: TcpServerRoom) {
+            val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql).build()
+            preInstanceHooks.insert(mysqlServer)
+        }
+
+        fun hookDataUpgrade(postStartHooks: PostStartHooks) {
+            val timeouts = JiraLaunchTimeouts.Builder()
+                .initTimeout(Duration.ofMinutes(4))
+                .build()
+            val dataUpgrade = RestUpgrade(timeouts, "admin", "admin")
+            postStartHooks.insert(dataUpgrade)
+        }
+    }
 }

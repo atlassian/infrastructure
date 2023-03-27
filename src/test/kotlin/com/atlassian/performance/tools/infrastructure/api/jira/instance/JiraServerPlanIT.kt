@@ -35,13 +35,13 @@ class JiraServerPlanIT {
     fun shouldStartJiraWithHooks() {
         // given
         val hooks = PreInstallHooks.default()
-            .also { Datasets.JiraSevenDataset.hookMysql(it.postStart) }
+            .also { Datasets.SmallJiraEightDataset.hookDataUpgrade(it.postStart) }
         val nodePlan = JiraNodePlan.Builder(infrastructure)
             .hooks(hooks)
             .installation(
                 ParallelInstallation(
-                    jiraHomeSource = JiraHomePackage(Datasets.JiraSevenDataset.jiraHome),
-                    productDistribution = PublicJiraSoftwareDistribution("7.13.0"),
+                    jiraHomeSource = JiraHomePackage(Datasets.SmallJiraEightDataset.jiraHome),
+                    productDistribution = PublicJiraSoftwareDistribution("9.0.0"),
                     jdk = AdoptOpenJDK()
                 )
             )
@@ -49,7 +49,7 @@ class JiraServerPlanIT {
             .hooks(hooks)
             .build()
         val instanceHooks = PreInstanceHooks.default()
-            .also { Datasets.JiraSevenDataset.hookMysql(it, infrastructure) }
+            .also { Datasets.SmallJiraEightDataset.hookMysql(it, infrastructure) }
         val jiraServerPlan = JiraServerPlan.Builder(infrastructure)
             .plan(nodePlan)
             .hooks(instanceHooks)
