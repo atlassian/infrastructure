@@ -26,6 +26,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.24.0...master
 
+### Fixed
+- Stop forcing JSON Jira logs. Using `JiraNodeConfig.Builder.splunkForwarder` should no longer mess with Jira logs,
+  when `DisabledSplunkForwarder` (the default) is used.
+
 ## [4.24.0] - 2023-03-01
 [4.24.0]: https://github.com/atlassian/infrastructure/compare/release-4.23.0...release-4.24.0
 
