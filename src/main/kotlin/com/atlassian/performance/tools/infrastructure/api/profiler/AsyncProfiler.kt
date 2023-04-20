@@ -4,6 +4,7 @@ import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitori
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import java.time.Duration
 import java.time.Duration.ofSeconds
 
 /**
@@ -39,7 +40,7 @@ class AsyncProfiler : Profiler {
         private val flameGraphFile = "flamegraph.svg"
 
         override fun stop(ssh: SshConnection) {
-            ssh.execute("$script stop $pid -o flamegraph > $flameGraphFile")
+            ssh.execute("$script stop $pid -o flamegraph > $flameGraphFile", timeout = ofSeconds(50))
         }
 
         override fun getResultPath(): String {
