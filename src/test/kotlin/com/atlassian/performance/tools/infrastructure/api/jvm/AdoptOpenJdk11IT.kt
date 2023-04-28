@@ -8,4 +8,9 @@ class AdoptOpenJdk11IT {
     fun shouldSupportJstat() {
         JstatSupport(AdoptOpenJDK11()).shouldSupportJstat()
     }
+
+    @Test
+    fun shouldHaveJavaHomeSet() {
+        JdkSupport(AdoptOpenJDK11()).shouldHaveJavaHomeSet("/jdk-11.0.1+13")
+    }
 }
