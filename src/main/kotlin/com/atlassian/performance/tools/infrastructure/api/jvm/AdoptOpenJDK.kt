@@ -10,8 +10,9 @@ class AdoptOpenJDK : VersionedJavaDevelopmentKit {
     private val jdkVersion = "8u172-b11"
     private val jdkArchive = "OpenJDK8_x64_Linux_jdk$jdkVersion.tar.gz"
     private val jdkUrl = URI("https://github.com/AdoptOpenJDK/openjdk8-releases/releases/download/jdk$jdkVersion/$jdkArchive")
-    private val jreBin = "~/jdk$jdkVersion/jre/bin/"
-    private val jdkBin = "~/jdk$jdkVersion/bin/"
+    private val path = "~/jdk$jdkVersion"
+    private val jreBin = "$path/jre/bin/"
+    private val jdkBin = "$path/bin/"
     override val jstatMonitoring: Jstat = Jstat(jdkBin)
 
     override fun getMajorVersion() = 8
@@ -19,11 +20,12 @@ class AdoptOpenJDK : VersionedJavaDevelopmentKit {
     override fun install(connection: SshConnection) {
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
-        connection.execute("echo '${use()}' >> ~/.bashrc")
+        connection.execute("echo '${use()}' >> ~/.profile")
     }
 
-    override fun use(): String =
-        "export PATH=${'$'}PATH:$jreBin:$jdkBin && export JAVA_HOME=~/jdk$jdkVersion"
+    override fun use(): String {
+        return "export PATH=${'$'}PATH:$jreBin:$jdkBin; export JAVA_HOME=$path"
+    }
 
     override fun command(options: String) = "${jdkBin}java $options"
 
