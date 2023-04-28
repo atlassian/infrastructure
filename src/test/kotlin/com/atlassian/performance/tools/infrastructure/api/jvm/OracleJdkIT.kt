@@ -13,4 +13,9 @@ class OracleJdkIT {
     fun shouldGatherThreadDump() {
         ThreadDumpTest(OracleJDK()).shouldGatherThreadDump()
     }
+
+    @Test
+    fun shouldHaveJavaHomeSet() {
+        JdkSupport(OpenJDK()).shouldHaveJavaHomeSet("/jdk1.8.0_131")
+    }
 }
