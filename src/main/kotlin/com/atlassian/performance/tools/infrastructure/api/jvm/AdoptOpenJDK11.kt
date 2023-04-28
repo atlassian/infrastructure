@@ -9,6 +9,7 @@ import java.time.Duration
 class AdoptOpenJDK11 : VersionedJavaDevelopmentKit {
     private val jdkVersion = "-11.0.1+13"
     private val jdkArchive = "OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz"
+
     /**
      * Download URL
      * https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1+13/OpenJDK11U-jdk_x64_linux_hotspot_11.0.1_13.tar.gz
@@ -16,8 +17,9 @@ class AdoptOpenJDK11 : VersionedJavaDevelopmentKit {
      * https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk-11.0.1+13/OpenJDK11U-jdk_x64_linux_openj9_jdk-11.0.1_13_openj9-0.11.0_11.0.1_13.tar.gz
      */
     private val jdkUrl = URI("https://github.com/AdoptOpenJDK/openjdk11-binaries/releases/download/jdk$jdkVersion/$jdkArchive")
-    private val jreBin = "~/jdk$jdkVersion/jre/bin/"
-    private val jdkBin = "~/jdk$jdkVersion/bin/"
+    private val path = "~/jdk$jdkVersion"
+    private val jreBin = "$path/jre/bin/"
+    private val jdkBin = "$path/bin/"
     override val jstatMonitoring: Jstat = Jstat(jdkBin)
 
     override fun getMajorVersion() = 11
@@ -25,11 +27,11 @@ class AdoptOpenJDK11 : VersionedJavaDevelopmentKit {
     override fun install(connection: SshConnection) {
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
-        connection.execute("echo '${use()}' >> ~/.bashrc")
+        connection.execute("echo '${use()}' >> ~/.profile")
     }
 
     override fun use(): String =
-        "export PATH=${'$'}PATH:$jreBin:$jdkBin && export JAVA_HOME=~/jdk$jdkVersion"
+        "export PATH=${'$'}PATH:$jreBin:$jdkBin && export JAVA_HOME=$path"
 
     override fun command(options: String) = "${jdkBin}java $options"
 

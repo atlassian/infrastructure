@@ -16,6 +16,6 @@ class OracleJdkIT {
 
     @Test
     fun shouldHaveJavaHomeSet() {
-        JdkSupport(OpenJDK()).shouldHaveJavaHomeSet("/jdk1.8.0_131")
+        JdkSupport(OracleJDK()).shouldHaveJavaHomeSet("/jdk1.8.0_131")
     }
 }

@@ -6,13 +6,15 @@ import org.apache.logging.log4j.Logger
 import java.net.URI
 import java.time.Duration
 
+
 class OracleJDK : VersionedJavaDevelopmentKit {
     private val logger: Logger = LogManager.getLogger(this::class.java)
     private val jdkUpdate = 131
     private val jdkArchive = "jdk-8u$jdkUpdate-linux-x64.tar.gz"
     private val jdkUrl = URI.create("https://download.oracle.com/otn-pub/java/jdk/8u$jdkUpdate-b11/d54c1d3a095b4ff2b6607d096fa80163/$jdkArchive")
-    private val jdkBin = "~/jdk1.8.0_$jdkUpdate/jre/bin/"
-    private val bin = "~/jdk1.8.0_$jdkUpdate/bin/"
+    private val path = "~/jdk1.8.0_$jdkUpdate"
+    private val jreBin = "$path/jre/bin/"
+    private val bin = "$path/bin/"
     override val jstatMonitoring = Jstat(bin)
 
     @Deprecated(
@@ -26,12 +28,12 @@ class OracleJDK : VersionedJavaDevelopmentKit {
     override fun install(connection: SshConnection) {
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
-        connection.execute("echo '${use()}' >> ~/.bashrc")
+        connection.execute("echo '${use()}' >> ~/.profile")
     }
 
-    override fun use(): String = "export PATH=$jdkBin:$bin:${'$'}PATH"
+    override fun use(): String = "export PATH=$jreBin:$bin:${'$'}PATH; export JAVA_HOME=$path"
 
-    override fun command(options: String) = "${jdkBin}java $options"
+    override fun command(options: String) = "${jreBin}java $options"
 
     private fun download(connection: SshConnection) {
         val attempts = 0..3

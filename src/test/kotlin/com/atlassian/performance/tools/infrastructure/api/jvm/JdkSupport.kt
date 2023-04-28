@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jvm
 
 import com.atlassian.performance.tools.infrastructure.toSsh
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 
 class JdkSupport(
     private val jdk: VersionedJavaDevelopmentKit
@@ -14,7 +14,7 @@ class JdkSupport(
                 jdk.install(connection)
                 val javaHomeOutput = connection.execute("source ~/.profile; echo \$JAVA_HOME").output
 
-                Assertions.assertThat(javaHomeOutput).contains(expectedJavaPath)
+                assertThat(javaHomeOutput).contains(expectedJavaPath)
             }
         }
     }
