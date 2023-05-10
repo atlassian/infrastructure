@@ -1,7 +1,10 @@
 package com.atlassian.performance.tools.infrastructure
 
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
+import org.apache.logging.log4j.Level
 import java.time.Duration
 
 internal class Docker {
@@ -69,5 +72,16 @@ internal class Docker {
      */
     private fun startDockerIfNecessary(ssh: SshConnection) {
         ssh.execute("sudo service docker status || sudo service docker start")
+        IdempotentAction("Check if Docker is running") {
+            ssh.execute(
+                cmd = "sudo docker ps",
+                timeout = Duration.ofSeconds(10),
+                stdout = Level.DEBUG,
+                stderr = Level.DEBUG
+            )
+        }.retry(
+            maxAttempts = 10,
+            backoff = StaticBackoff(Duration.ofMillis(500))
+        )
     }
 }
