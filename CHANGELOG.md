@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.24.1...master
 
+### Fixed
+- Wait until Docker is started before pulling images. Fix [JPERF-1104].
+
+[JPERF-1104]: https://ecosystem.atlassian.net/browse/JPERF-1104
+
 ## [4.24.1] - 2023-05-10
 [4.24.1]: https://github.com/atlassian/infrastructure/compare/release-4.24.0...release-4.24.1
 
