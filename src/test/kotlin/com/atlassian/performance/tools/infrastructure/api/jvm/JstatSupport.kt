@@ -58,6 +58,6 @@ class JstatSupport(
     }
 
     private fun waitForJstatToCollectSomeData() {
-        Thread.sleep(4 * 1000)
+        Thread.sleep(8 * 1000)
     }
 }
