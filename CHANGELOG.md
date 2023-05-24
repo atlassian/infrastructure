@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.24.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.24.2...master
+
+## [4.24.2] - 2023-05-24
+[4.24.2]: https://github.com/atlassian/infrastructure/compare/release-4.24.1...release-4.24.2
 
 ### Fixed
 - Wait until Docker is started before pulling images. Fix [JPERF-1104].
