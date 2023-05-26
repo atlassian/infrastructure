@@ -23,6 +23,9 @@ Changing the license is breaking a contract.
 Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
+### Added
+- Add `ResetCaptcha.Builder`.
+
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.24.2...master
 
