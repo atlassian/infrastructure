@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger
 
 /**
  * Can temporarily silence a given [Profiler], which misbehaves and is difficult to fix.
+ *
+ * @since 4.26.0
  */
 class FailSafeProfiler(
     private val profiler: Profiler
