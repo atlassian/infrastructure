@@ -27,7 +27,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.25.0...master
 
 ### Added
-- Add `FailSafeProfiler`. Fix [JPERF-1117]
+- Add `FailSafeProfiler`. Work around [JPERF-1117].
 
 [JPERF-1117]: https://ecosystem.atlassian.net/browse/JPERF-1117
 

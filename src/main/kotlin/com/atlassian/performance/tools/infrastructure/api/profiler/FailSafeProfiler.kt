@@ -6,7 +6,7 @@ import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 
 /**
- * It can be used to wrap [AsyncProfiler] to avoid errors when the profiler fails to stop.
+ * Can temporarily silence a given [Profiler], which misbehaves and is difficult to fix.
  */
 class FailSafeProfiler(
     private val profiler: Profiler
