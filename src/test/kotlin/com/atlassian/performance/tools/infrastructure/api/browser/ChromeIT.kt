@@ -7,7 +7,6 @@ import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
 
-
 class ChromeIT {
 
     @Test
@@ -22,7 +21,7 @@ class ChromeIT {
 
                 Assert.assertThat(wasInstalledBefore, Matchers.`is`(false))
                 Assert.assertThat(isInstalledAfter, Matchers.`is`(true))
-                Assert.assertThat(isChromedriverInstalled(connection), Matchers.`is`(true))
+                Assert.assertThat(isChromeDriverInstalled(connection), Matchers.`is`(true))
             }
 
         }
@@ -35,9 +34,9 @@ class ChromeIT {
             .contains("installed")
     }
 
-    private fun isChromedriverInstalled(ssh: SshConnection): Boolean {
+    private fun isChromeDriverInstalled(ssh: SshConnection): Boolean {
         val result = ssh
-            .safeExecute("./chromedriver --version")
+            .safeExecute("chromedriver --version")
         return result.isSuccessful()
             .and(
                 result

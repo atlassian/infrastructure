@@ -55,6 +55,7 @@ dependencies {
     implementation("com.google.guava:guava:23.6-jre")
     implementation("org.apache.httpcomponents:httpclient:4.5.5")
     implementation("org.jboss.shrinkwrap.resolver:shrinkwrap-resolver-impl-maven:3.1.3")
+    implementation("javax.json:javax.json-api:1.1")
     log4j(
         "api",
         "core",

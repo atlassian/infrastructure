@@ -16,7 +16,7 @@ internal class SshChromium(
     private val chromedriverUri: URI
 ) : Browser {
     override fun start(): CloseableRemoteWebDriver {
-        val chromedriverProcess: DetachedProcess = ssh.startProcess("./chromedriver --whitelisted-ips")
+        val chromedriverProcess: DetachedProcess = ssh.startProcess("chromedriver --whitelisted-ips")
 
         val chromeOptions = ChromeOptions()
             .apply { addArguments("--headless") }
@@ -44,7 +44,7 @@ internal class SshChromium(
         ssh.safeExecute("ps aux")
             .output
             .split("\n")
-            .filter { it.contains("./chromedriver --whitelisted-ips") }
+            .filter { it.contains("chromedriver --whitelisted-ips") }
             .single { it.length < 100 }
     }
 }

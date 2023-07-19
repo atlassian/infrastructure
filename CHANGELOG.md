@@ -26,6 +26,11 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.26.0...master
 
+### Fixed
+- Adapt to new ChromeDriver release process. Fix [JPERF-1217].
+
+[JPERF-1217]: https://ecosystem.atlassian.net/browse/JPERF-1217
+
 ## [4.26.0] - 2023-06-21
 [4.26.0]: https://github.com/atlassian/infrastructure/compare/release-4.25.0...release-4.26.0
 
