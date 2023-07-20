@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.26.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.26.1...master
+
+## [4.26.1] - 2023-07-20
+[4.26.1]: https://github.com/atlassian/infrastructure/compare/release-4.26.0...release-4.26.1
 
 ### Fixed
 - Adapt to new ChromeDriver release process. Fix [JPERF-1217].
