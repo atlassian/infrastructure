@@ -126,9 +126,9 @@ class JiraDataCenterPlanIT {
             .map { reports.toPath().relativize(it.toPath()) }
             .toList()
         assertThat(fileTree.map { it.toString() }).contains(
-            "jira-node-1/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
-            "jira-node-1/root/~/jpt-jstat.log",
-            "jira-node-2/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out"
+            "jira-node-1/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
+            "jira-node-1/~/jpt-jstat.log",
+            "jira-node-2/atlassian-jira-software-7.13.0-standalone/logs/catalina.out"
         )
         assertThat(fileTree.filter { it.fileName.toString() == "atlassian-jira.log" })
             .`as`("Jira log from $fileTree")

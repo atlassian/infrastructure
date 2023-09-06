@@ -78,10 +78,10 @@ class JiraServerPlanIT {
             .map { reports.toPath().relativize(it.toPath()) }
             .toList()
         assertThat(fileTree.map { it.toString() }).contains(
-            "jira-node/root/atlassian-jira-software-7.13.0-standalone/logs/catalina.out",
-            "jira-node/root/~/jpt-jstat.log",
-            "jira-node/root/~/jpt-vmstat.log",
-            "jira-node/root/~/jpt-iostat.log"
+            "jira-node/atlassian-jira-software-$jiraServer-standalone/logs/catalina.out",
+            "jira-node/~/jpt-jstat.log",
+            "jira-node/~/jpt-vmstat.log",
+            "jira-node/~/jpt-iostat.log"
         )
         assertThat(fileTree.filter { it.fileName.toString().startsWith("access_log") })
             .`as`("access logs from $fileTree")
