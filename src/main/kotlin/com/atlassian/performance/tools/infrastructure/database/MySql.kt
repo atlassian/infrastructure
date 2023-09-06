@@ -31,6 +31,9 @@ internal object Mysql {
         "--innodb-log-file-size=2G"
     )
 
+    private val pollPeriod = Duration.ofMillis(500)
+    private val maxWait = Duration.ofMinutes(15)
+
     fun installClient(ssh: SshConnection): SshSqlClient {
         ubuntu.install(ssh, listOf("mysql-client"))
         return SshMysqlClient()
@@ -57,17 +60,18 @@ internal object Mysql {
         .build()
 
     fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient) {
-        val backoff = StaticBackoff(ofSeconds(10))
+        val backoff = StaticBackoff(pollPeriod)
         awaitDatabase(ssh, sqlClient, backoff)
     }
 
     fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient, containerName: String) {
-        val backoff = DeadContainerCheck(containerName, ssh, StaticBackoff(ofSeconds(10)))
+        val backoff = DeadContainerCheck(containerName, ssh, StaticBackoff(pollPeriod))
         awaitDatabase(ssh, sqlClient, backoff)
     }
 
     private fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient, backoff: Backoff) {
+        val maxAttempts = maxWait.toMillis() / pollPeriod.toMillis()
         IdempotentAction("wait for MySQL start") { sqlClient.runSql(ssh, "select 1;") }
-            .retry(90, backoff)
+            .retry(maxAttempts.toInt(), backoff)
     }
 }
