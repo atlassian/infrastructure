@@ -27,7 +27,11 @@ class Datasets {
         )
 
         fun hookMysql(preInstanceHooks: PreInstanceHooks, serverRoom: TcpServerRoom) {
-            val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql).build()
+            // encrypted with atlassian-password-encoder
+            val encryptedAdmin = "{PKCS5S2}dHH7Ws1DcJ1H4d9C8BN1Kh83ciEXVy025l9mIM8P3mlseybpKtI83531tOIyE/gb"
+            val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql)
+                .setPassword("admin", encryptedAdmin)
+                .build()
             preInstanceHooks.insert(mysqlServer)
         }
 

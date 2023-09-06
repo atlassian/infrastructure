@@ -16,9 +16,10 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 
 class DockerMysqlServer private constructor(
     private val serverRoom: TcpServerRoom,
-    private var mysqlVersion: String,
+    private val mysqlVersion: String,
     private val source: DatasetPackage,
-    private val maxConnections: Int
+    private val maxConnections: Int,
+    private val extraSqls: List<String>
 ) : PreInstanceHook {
 
     override fun call(
@@ -50,6 +51,7 @@ class DockerMysqlServer private constructor(
         Ubuntu().install(ssh, listOf("mysql-client"))
         val client = SshMysqlClient("127.0.0.1", server.port)
         Mysql.awaitDatabase(ssh, client, containerName)
+        extraSqls.forEach { client.runSql(ssh, it) }
         return client
     }
 
@@ -60,17 +62,22 @@ class DockerMysqlServer private constructor(
 
         private var mysqlVersion: String = "5.7.32"
         private var maxConnections: Int = 151
+        private var extraSqls: MutableList<String> = mutableListOf()
 
         fun serverRoom(serverRoom: TcpServerRoom) = apply { this.serverRoom = serverRoom }
         fun mysqlVersion(mysqlVersion: String) = apply { this.mysqlVersion = mysqlVersion }
         fun source(source: DatasetPackage) = apply { this.source = source }
         fun maxConnections(maxConnections: Int) = apply { this.maxConnections = maxConnections }
+        fun setPassword(user: String, password: String) = apply {
+            extraSqls.add("UPDATE jiradb.cwd_user SET credential='$password' WHERE user_name='$user';")
+        }
 
         fun build(): DockerMysqlServer = DockerMysqlServer(
             serverRoom,
             mysqlVersion,
             source,
-            maxConnections
+            maxConnections,
+            ArrayList(extraSqls)
         )
     }
 
