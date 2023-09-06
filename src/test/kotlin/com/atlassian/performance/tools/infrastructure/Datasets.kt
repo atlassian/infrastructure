@@ -29,7 +29,7 @@ class Datasets {
 
         fun hookMysql(preInstanceHooks: PreInstanceHooks, serverRoom: TcpServerRoom) {
             val mysqlServer = DockerMysqlServer.Builder(serverRoom, mysql)
-                .mysqlVersion("5.6.42")
+                .mysqlVersion("5.7.32")
                 .build()
             preInstanceHooks.insert(mysqlServer)
         }
