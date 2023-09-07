@@ -14,18 +14,21 @@ import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostSt
 import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PostStartHooks
 import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApacheProxyPlan
+import com.atlassian.performance.tools.io.api.resolveSafely
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.catchThrowable
+import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.*
 import org.assertj.core.api.SoftAssertions
-import org.assertj.core.api.SoftAssertions.*
+import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import java.nio.file.Files
-import java.time.Duration.ofMinutes
+import java.nio.file.Paths
+import java.time.Duration
+import java.time.Instant
 
-class JiraDataCenterPlanIT {
+class JiraPlanIT {
 
     private lateinit var infrastructure: DockerInfrastructure
     private val dataset = Datasets.SmallJiraEightDataset
@@ -90,12 +93,15 @@ class JiraDataCenterPlanIT {
 
 
     @Test
-    fun shouldProvideLogsToDiagnoseFailure() {
+    fun shouldProvideDataCenterLogsToDiagnoseFailure() {
         // given
         class FailingHook : PostStartHook {
             override fun call(ssh: SshConnection, jira: StartedJira, hooks: PostStartHooks, reports: Reports) {
                 val installed = jira.installed
-                ssh.execute("${installed.jdk.use()}; ${installed.installation.path}/bin/stop-jira.sh", ofMinutes(1))
+                ssh.execute(
+                    "${installed.jdk.use()}; ${installed.installation.path}/bin/stop-jira.sh",
+                    Duration.ofMinutes(1)
+                )
                 throw Exception("Failing deliberately after Jira started")
             }
         }
@@ -124,13 +130,13 @@ class JiraDataCenterPlanIT {
 
         val reports = dcPlan.report().downloadTo(Files.createTempDirectory("jira-dc-plan-"))
         // then
-        assertThat(thrown).hasMessageStartingWith("Failing deliberately")
-        assertThat(reports).isDirectory()
         val fileTree = reports
             .walkTopDown()
             .map { reports.toPath().relativize(it.toPath()) }
             .toList()
         assertSoftly {
+            it.assertThat(thrown).hasMessageStartingWith("Failing deliberately")
+            it.assertThat(reports).isDirectory()
             it.assertThat(fileTree.map { it.toString() }).contains(
                 "jira-node-1/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out",
                 "jira-node-1/~/jpt-jstat.log",
@@ -144,4 +150,85 @@ class JiraDataCenterPlanIT {
                 .isNotEmpty
         }
     }
+
+
+    @Test
+    fun shouldStartJiraServerWithHooks() {
+        // given
+        val hooks = PreInstallHooks.default()
+            .also { dataset.hookDataUpgrade(it.postStart) }
+        val nodePlan = JiraNodePlan.Builder(infrastructure)
+            .hooks(hooks)
+            .installation(
+                ParallelInstallation(
+                    jiraHomeSource = JiraHomePackage(dataset.jiraHome),
+                    productDistribution = jiraDistribution,
+                    jdk = AdoptOpenJDK()
+                )
+            )
+            .start(JiraLaunchScript())
+            .hooks(hooks)
+            .build()
+        val instanceHooks = PreInstanceHooks.default()
+            .also { dataset.hookMysql(it, infrastructure) }
+        val jiraServerPlan = JiraServerPlan.Builder(infrastructure)
+            .plan(nodePlan)
+            .hooks(instanceHooks)
+            .build()
+
+        // when
+        val jiraServer = try {
+            jiraServerPlan.materialize()
+        } catch (e: Exception) {
+            debug(jiraServerPlan, e)
+        }
+        val reports = jiraServerPlan.report().downloadTo(Files.createTempDirectory("jira-server-plan-"))
+
+        // then
+        val theNode = jiraServer.nodes.single()
+        val serverXml = theNode
+            .installed
+            .installation
+            .resolve("conf/server.xml")
+            .download(Files.createTempFile("downloaded-config", ".xml"))
+
+        assertSoftly {
+            it.assertThat(serverXml.readText()).contains("<Connector port=\"${theNode.installed.http.tcp.port}\"")
+            it.assertThat(theNode.pid).isPositive()
+            it.assertThat(reports).isDirectory()
+            val fileTree = reports
+                .walkTopDown()
+                .map { reports.toPath().relativize(it.toPath()) }
+                .toList()
+            it.assertThat(fileTree.map { it.toString() }).contains(
+                "jira-node/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out",
+                "jira-node/~/jpt-jstat.log",
+                "jira-node/~/jpt-vmstat.log",
+                "jira-node/~/jpt-iostat.log"
+            )
+            it.assertThat(fileTree.filter { it.fileName.toString().startsWith("access_log") })
+                .`as`("access logs from $fileTree")
+                .isNotEmpty
+            it.assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
+                .`as`("GC logs from $fileTree")
+                .isNotEmpty
+        }
+    }
+
+    private fun debug(
+        jiraServerPlan: JiraInstancePlan,
+        e: Exception
+    ): Nothing {
+        val debugging = Paths.get("build/test-artifacts/")
+            .resolveSafely(javaClass.simpleName)
+            .resolveSafely(Instant.now().toString())
+        try {
+            jiraServerPlan.report().downloadTo(debugging)
+        } catch (debuggingException: Exception) {
+            debuggingException.addSuppressed(e)
+            throw debuggingException
+        }
+        throw Exception("Jira Server plan failed to materialize, debugging info available in $debugging", e)
+    }
+
 }
