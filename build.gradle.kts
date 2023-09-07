@@ -110,7 +110,7 @@ val testIntegration = task<Test>("testIntegration") {
     filter {
         include("**/*IT.class")
     }
-    maxParallelForks = 5
+    maxParallelForks = 2
 }
 
 tasks["check"].dependsOn(testIntegration)
