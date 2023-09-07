@@ -88,13 +88,15 @@ internal class DockerInfrastructure(
         val ports = tcpPorts.map { ExposedPort.tcp(it) } +
             udpPorts.map { ExposedPort.udp(it) } +
             ExposedPort.tcp(22)
+        val imageName = "takeyamajp/ubuntu-sshd"
+        val imageTag = "ubuntu$ubuntuVersion"
         docker
-            .pullImageCmd("rastasheep/ubuntu-sshd")
-            .withTag(ubuntuVersion)
+            .pullImageCmd(imageName)
+            .withTag(imageTag)
             .exec(PullImageResultCallback())
             .awaitCompletion()
         val createdContainer = docker
-            .createContainerCmd("rastasheep/ubuntu-sshd:18.04")
+            .createContainerCmd("$imageName:$imageTag")
             .withHostConfig(
                 HostConfig()
                     .withPublishAllPorts(true)
