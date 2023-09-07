@@ -7,7 +7,6 @@ import org.apache.logging.log4j.Logger
 import java.net.URI
 import java.time.Duration
 
-
 class OracleJDK : VersionedJavaDevelopmentKit {
     private val logger: Logger = LogManager.getLogger(this::class.java)
     private val jdkUpdate = 131
@@ -30,6 +29,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
         connection.execute("echo '${use()}' >> ~/.profile")
+        JdkFonts().install(connection)
     }
 
     override fun use(): String = "export PATH=$jreBin:$bin:${'$'}PATH; export JAVA_HOME=$path"
