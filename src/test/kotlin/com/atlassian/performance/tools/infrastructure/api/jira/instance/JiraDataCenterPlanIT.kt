@@ -17,6 +17,8 @@ import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApachePro
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.assertj.core.api.Assertions.assertThat
 import org.assertj.core.api.Assertions.catchThrowable
+import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.SoftAssertions.*
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -128,16 +130,18 @@ class JiraDataCenterPlanIT {
             .walkTopDown()
             .map { reports.toPath().relativize(it.toPath()) }
             .toList()
-        assertThat(fileTree.map { it.toString() }).contains(
-            "jira-node-1/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out",
-            "jira-node-1/~/jpt-jstat.log",
-            "jira-node-2/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out"
-        )
-        assertThat(fileTree.filter { it.fileName.toString() == "atlassian-jira.log" })
-            .`as`("Jira log from $fileTree")
-            .isNotEmpty
-        assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
-            .`as`("GC logs from $fileTree")
-            .isNotEmpty
+        assertSoftly {
+            it.assertThat(fileTree.map { it.toString() }).contains(
+                "jira-node-1/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out",
+                "jira-node-1/~/jpt-jstat.log",
+                "jira-node-2/atlassian-jira-software-$jiraVersion-standalone/logs/catalina.out"
+            )
+            it.assertThat(fileTree.filter { it.fileName.toString() == "atlassian-jira.log" })
+                .`as`("Jira log from $fileTree")
+                .isNotEmpty
+            it.assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
+                .`as`("GC logs from $fileTree")
+                .isNotEmpty
+        }
     }
 }
