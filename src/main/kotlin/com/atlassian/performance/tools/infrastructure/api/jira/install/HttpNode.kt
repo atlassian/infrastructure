@@ -14,6 +14,6 @@ class HttpNode(
 
     private fun address(ip: String, userInfo: String = ""): URI {
         val scheme = if (supportsTls) "https" else "http"
-        return URI("$scheme://$userInfo$ip:${tcp.port}$basePath/")
+        return URI("$scheme://$userInfo$ip:${tcp.port}$basePath")
     }
 }
