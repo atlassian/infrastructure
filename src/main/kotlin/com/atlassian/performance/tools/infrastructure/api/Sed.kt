@@ -11,6 +11,6 @@ class Sed {
     ) {
         val escapedExpression = expression.replace("/", "\\/")
         val escapedOutput = output.replace("/", "\\/")
-        connection.execute("sed -i -r 's/$escapedExpression/$escapedOutput/g' $file")
+        connection.execute("sudo sed -i -r 's/$escapedExpression/$escapedOutput/g' $file")
     }
 }
