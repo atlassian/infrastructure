@@ -1,9 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
+import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.network.HttpServerRoom
-import java.net.URI
 
 class JiraServerPlan private constructor(
     private val plan: JiraNodePlan,
@@ -28,7 +28,7 @@ class JiraServerPlan private constructor(
     private class JiraServer(
         node: StartedJira
     ) : JiraInstance {
-        override val address: URI = node.installed.http.addressPublicly()
+        override val address: HttpNode = node.installed.http
         override val nodes: List<StartedJira> = listOf(node)
     }
 

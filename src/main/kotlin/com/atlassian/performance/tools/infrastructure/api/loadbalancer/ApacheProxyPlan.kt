@@ -20,7 +20,7 @@ class ApacheProxyPlan(
 
     private val configPath = "/etc/apache2/sites-enabled/000-default.conf"
 
-    override fun materialize(nodes: List<HttpNode>, hooks: List<PreStartHooks>): LoadBalancer {
+    override fun materialize(nodes: List<HttpNode>, hooks: List<PreStartHooks>): HttpNode {
         val proxyNode = serverRoom.serveHttp("apache-proxy")
         IdempotentAction("Installing and configuring apache load balancer") {
             proxyNode.tcp.ssh.newConnection().use { connection ->
@@ -29,7 +29,7 @@ class ApacheProxyPlan(
         }.retry(2, ExponentialBackoff(Duration.ofSeconds(5)))
         val balancerEndpoint = proxyNode.addressPrivately()
         hooks.forEach { it.insert(InjectProxy(balancerEndpoint)) }
-        return ApacheProxy(balancerEndpoint)
+        return proxyNode
     }
 
     private fun tryToProvision(ssh: SshConnection, nodes: List<HttpNode>, proxyNode: HttpNode) {
@@ -58,12 +58,6 @@ class ApacheProxyPlan(
 
     private fun appendConfig(connection: SshConnection, line: String) {
         connection.execute("echo \"$line\" | sudo tee -a $configPath")
-    }
-
-    private class ApacheProxy(
-        override val uri: URI
-    ) : LoadBalancer {
-        override fun waitUntilHealthy(timeout: Duration) {}
     }
 
     private class InjectProxy(

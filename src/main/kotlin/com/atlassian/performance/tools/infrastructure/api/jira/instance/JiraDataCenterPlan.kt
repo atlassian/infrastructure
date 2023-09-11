@@ -2,16 +2,12 @@ package com.atlassian.performance.tools.infrastructure.api.jira.instance
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApacheProxyPlan
-import com.atlassian.performance.tools.infrastructure.api.loadbalancer.LoadBalancer
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.LoadBalancerPlan
 import com.atlassian.performance.tools.infrastructure.api.network.HttpServerRoom
-import java.net.URI
 import java.time.Duration
-import java.util.function.Consumer
 import kotlin.streams.asStream
 import kotlin.streams.toList
 
@@ -36,7 +32,6 @@ class JiraDataCenterPlan private constructor(
         val started = installed.map { it.start(reports) }
         val instance = JiraDataCenter(started, balancer)
         instanceHooks.postInstance.call(instance, reports)
-        balancer.waitUntilHealthy(loadBalancingPatience)
         return instance
     }
 
@@ -69,10 +64,9 @@ class JiraDataCenterPlan private constructor(
 
     private class JiraDataCenter(
         override val nodes: List<StartedJira>,
-        private val loadBalancer: LoadBalancer
+        loadBalancer: HttpNode
     ) : JiraInstance {
-        override val address: URI
-            get() = loadBalancer.uri
+        override val address = loadBalancer
     }
 
     class Builder(
