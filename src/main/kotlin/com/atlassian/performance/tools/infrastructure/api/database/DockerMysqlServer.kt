@@ -101,7 +101,7 @@ class DockerMysqlServer private constructor(
         override fun call(instance: JiraInstance, hooks: PostInstanceHooks, reports: Reports) {
             ssh.newConnection().use { ssh ->
                 val db = "jiradb"
-                val update = "UPDATE $db.propertystring SET propertyvalue = '${instance.address}'"
+                val update = "UPDATE $db.propertystring SET propertyvalue = '${instance.address.addressPrivately()}'"
                 val where = "WHERE id IN (select id from $db.propertyentry where property_key like '%baseurl%')"
                 client.runSql(ssh, "$update $where;")
             }

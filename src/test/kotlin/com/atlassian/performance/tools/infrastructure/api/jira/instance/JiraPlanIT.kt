@@ -16,9 +16,8 @@ import com.atlassian.performance.tools.infrastructure.api.jvm.AdoptOpenJDK
 import com.atlassian.performance.tools.infrastructure.api.loadbalancer.ApacheProxyPlan
 import com.atlassian.performance.tools.io.api.resolveSafely
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import org.assertj.core.api.Assertions
-import org.assertj.core.api.Assertions.*
-import org.assertj.core.api.SoftAssertions
+import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.catchThrowable
 import org.assertj.core.api.SoftAssertions.assertSoftly
 import org.junit.After
 import org.junit.Before
@@ -85,10 +84,12 @@ class JiraPlanIT {
                 .download(Files.createTempFile("downloaded-config", ".xml"))
             assertThat(serverXml.readText()).contains("<Connector port=\"${installed.http.tcp.port}\"")
             assertThat(node.pid).isPositive()
-            installed.http.tcp.ssh.newConnection().use { ssh ->
-                ssh.execute("wget ${dataCenter.address}")
+            val fakeVu = infrastructure.serveSsh()
+            fakeVu.newConnection().use { ssh ->
+                ssh.execute("wget ${dataCenter.address.addressPrivately()}")
             }
         }
+        dataCenter.address.addressPublicly().toURL().readText()
     }
 
 
