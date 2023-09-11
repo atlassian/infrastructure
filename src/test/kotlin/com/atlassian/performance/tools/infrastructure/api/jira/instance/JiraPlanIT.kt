@@ -76,6 +76,7 @@ class JiraPlanIT {
         val dataCenter = dcPlan.materialize()
 
         // then
+        assertJiraAccessible(dataCenter)
         dataCenter.nodes.forEach { node ->
             val installed = node.installed
             val serverXml = installed
@@ -84,12 +85,7 @@ class JiraPlanIT {
                 .download(Files.createTempFile("downloaded-config", ".xml"))
             assertThat(serverXml.readText()).contains("<Connector port=\"${installed.http.tcp.port}\"")
             assertThat(node.pid).isPositive()
-            val fakeVu = infrastructure.serveSsh()
-            fakeVu.newConnection().use { ssh ->
-                ssh.execute("wget ${dataCenter.address.addressPrivately()}")
-            }
         }
-        dataCenter.address.addressPublicly().toURL().readText()
     }
 
 
@@ -186,6 +182,7 @@ class JiraPlanIT {
         val reports = jiraServerPlan.report().downloadTo(Files.createTempDirectory("jira-server-plan-"))
 
         // then
+        assertJiraAccessible(jiraServer)
         val theNode = jiraServer.nodes.single()
         val serverXml = theNode
             .installed
@@ -213,6 +210,19 @@ class JiraPlanIT {
             it.assertThat(fileTree.filter { it.fileName.toString().startsWith("atlassian-jira-gc") })
                 .`as`("GC logs from $fileTree")
                 .isNotEmpty
+        }
+    }
+
+    private fun assertJiraAccessible(jira: JiraInstance) {
+        val fakeVu = infrastructure.serveSsh()
+        fakeVu.newConnection().use { ssh ->
+            ssh.execute("wget ${jira.address.addressPrivately()}")
+        }
+        try {
+            val response = jira.address.addressPublicly().toURL().readText()
+            assertThat(response).contains("<body")
+        } catch (e: Exception) {
+            throw RuntimeException("Connection to jira at ${jira.address.addressPublicly()} failed", e)
         }
     }
 
