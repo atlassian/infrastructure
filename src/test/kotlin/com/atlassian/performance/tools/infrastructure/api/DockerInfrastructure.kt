@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
-import com.atlassian.performance.tools.infrastructure.api.network.HttpServerRoom
+import com.atlassian.performance.tools.infrastructure.hookapi.network.HttpServerRoom
 import com.atlassian.performance.tools.infrastructure.api.network.Networked
 import com.atlassian.performance.tools.infrastructure.api.network.SshServerRoom
 import com.atlassian.performance.tools.infrastructure.api.network.TcpServerRoom

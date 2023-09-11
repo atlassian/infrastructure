@@ -3,6 +3,8 @@ package com.atlassian.performance.tools.infrastructure.api.jira.install.hook
 import com.atlassian.performance.tools.infrastructure.api.jira.install.HttpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.install.hook.PreInstallHook
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.install.hook.PreInstallHooks
 import com.atlassian.performance.tools.infrastructure.mock.UnimplementedSshConnection
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection

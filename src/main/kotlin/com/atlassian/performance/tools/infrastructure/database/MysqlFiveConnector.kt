@@ -1,13 +1,12 @@
 package com.atlassian.performance.tools.infrastructure.database
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.install.hook.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import java.time.Duration
 import java.time.Duration.ofSeconds
 
 /**

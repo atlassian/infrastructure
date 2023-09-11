@@ -4,7 +4,7 @@ import com.atlassian.performance.tools.infrastructure.api.jira.install.Installed
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.start.JiraStart
 import com.atlassian.performance.tools.infrastructure.api.jira.start.StartedJira
-import com.atlassian.performance.tools.infrastructure.api.jira.start.hook.PreStartHooks
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.start.hook.PreStartHooks
 
 class HookedJiraStart(
     private val start: JiraStart,

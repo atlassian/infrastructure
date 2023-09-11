@@ -2,8 +2,8 @@ package com.atlassian.performance.tools.infrastructure.database
 
 import com.atlassian.performance.tools.infrastructure.api.jira.install.InstalledJira
 import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHook
-import com.atlassian.performance.tools.infrastructure.api.jira.install.hook.PostInstallHooks
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.install.hook.PostInstallHook
+import com.atlassian.performance.tools.infrastructure.hookapi.jira.install.hook.PostInstallHooks
 import com.atlassian.performance.tools.infrastructure.api.jira.report.Reports
 import com.atlassian.performance.tools.infrastructure.api.jira.report.StaticReport
 import com.atlassian.performance.tools.infrastructure.api.os.RemotePath
