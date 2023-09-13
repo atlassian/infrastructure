@@ -113,13 +113,13 @@ class LicenseOverridingMysqlTest {
     private fun generateExpectedCommands(ssh: RememberingSshConnection): List<String> {
         return listOf(
             // essentially, delete all existing licences
-            """mysql -h 127.0.0.1 -u root -e "DELETE FROM jiradb.productlicense;"""",
+            """mysql -h 127.0.0.1 -P 3306 -u root -e "DELETE FROM jiradb.productlicense;"""",
 
             // then import the new ones
             *ssh.uploads
                 .map {
                     listOf(
-                        """mysql -h 127.0.0.1 -u root < ${it.remoteDestination}""",
+                        """mysql -h 127.0.0.1 -P 3306 -u root < ${it.remoteDestination}""",
                         """rm ${it.remoteDestination}"""
                     )
                 }

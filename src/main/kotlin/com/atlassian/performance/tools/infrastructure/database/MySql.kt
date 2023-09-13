@@ -1,15 +1,17 @@
 package com.atlassian.performance.tools.infrastructure.database
 
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
+import com.atlassian.performance.tools.infrastructure.api.jira.install.TcpNode
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.docker.DeadContainerCheck
+import com.atlassian.performance.tools.jvmtasks.api.Backoff
+import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
+import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import java.time.Duration
-import java.time.Instant
+import java.time.Duration.ofSeconds
 
 internal object Mysql {
-    private val logger: Logger = LogManager.getLogger(this::class.java)
     private val ubuntu = Ubuntu()
 
     /**
@@ -29,6 +31,9 @@ internal object Mysql {
         "--innodb-log-file-size=2G"
     )
 
+    private val pollPeriod = Duration.ofMillis(500)
+    private val maxWait = Duration.ofMinutes(15)
+
     fun installClient(ssh: SshConnection): SshSqlClient {
         ubuntu.install(ssh, listOf("mysql-client"))
         return SshMysqlClient()
@@ -37,12 +42,14 @@ internal object Mysql {
     fun container(
         dataDir: String,
         extraParameters: Array<String>,
-        extraArguments: Array<String>
+        extraArguments: Array<String>,
+        host: TcpNode? = null,
+        mysqlVersion: String = "5.7.32"
     ) = DockerContainer.Builder()
-        .imageName("mysql:5.7.32")
+        .imageName("mysql:$mysqlVersion")
         .pullTimeout(Duration.ofMinutes(5))
         .parameters(
-            "-p 3306:3306",
+            host?.port?.let { "-p $it:$it" } ?: "-p 3306:3306",
             "-v `realpath $dataDir`:/var/lib/mysql",
             *extraParameters
         )
@@ -52,14 +59,19 @@ internal object Mysql {
         )
         .build()
 
-    fun awaitDatabase(ssh: SshConnection) {
-        val mysqlStart = Instant.now()
-        while (!ssh.safeExecute("mysql -h 127.0.0.1 -u root -e 'select 1;'").isSuccessful()) {
-            if (Instant.now() > mysqlStart + Duration.ofMinutes(15)) {
-                throw RuntimeException("MySQL didn't start in time")
-            }
-            logger.debug("Waiting for MySQL...")
-            Thread.sleep(Duration.ofSeconds(10).toMillis())
-        }
+    fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient) {
+        val backoff = StaticBackoff(pollPeriod)
+        awaitDatabase(ssh, sqlClient, backoff)
+    }
+
+    fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient, containerName: String) {
+        val backoff = DeadContainerCheck(containerName, ssh, StaticBackoff(pollPeriod))
+        awaitDatabase(ssh, sqlClient, backoff)
+    }
+
+    private fun awaitDatabase(ssh: SshConnection, sqlClient: SshSqlClient, backoff: Backoff) {
+        val maxAttempts = maxWait.toMillis() / pollPeriod.toMillis()
+        IdempotentAction("wait for MySQL start") { sqlClient.runSql(ssh, "select 1;") }
+            .retry(maxAttempts.toInt(), backoff)
     }
 }

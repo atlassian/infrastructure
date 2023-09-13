@@ -20,7 +20,7 @@ class SshMysqlClientTest {
         assertThat(ssh.commands)
                 .`as`("SSH commands")
                 .containsExactly(
-                        "mysql -h 127.0.0.1 -u root -e \"$command\""
+                        "mysql -h 127.0.0.1 -P 3306 -u root -e \"$command\""
                 )
     }
 
@@ -36,7 +36,7 @@ class SshMysqlClientTest {
         assertThat(ssh.commands)
                 .`as`("SSH commands")
                 .containsExactly(
-                        "mysql -h 127.0.0.1 -u root < ${file.name}",
+                        "mysql -h 127.0.0.1 -P 3306 -u root < ${file.name}",
                         "rm ${file.name}"
                 )
     }

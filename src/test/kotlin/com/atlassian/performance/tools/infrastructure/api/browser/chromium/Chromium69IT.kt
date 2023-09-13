@@ -1,10 +1,9 @@
 package com.atlassian.performance.tools.infrastructure.api.browser.chromium
 
-import com.atlassian.performance.tools.infrastructure.toSsh
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
-import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.hamcrest.Matchers
 import org.junit.Assert
 import org.junit.Test
@@ -14,8 +13,8 @@ class Chromium69IT {
 
     @Test
     fun shouldInstallBrowser() {
-        SshUbuntuContainer.Builder().build().start().use { sshUbuntu ->
-            sshUbuntu.toSsh().newConnection().use { connection ->
+        DockerInfrastructure().use { infra ->
+            infra.serveSsh().newConnection().use { connection ->
                 val installedBefore = isChromiumInstalled(connection)
 
                 Chromium69().install(connection)

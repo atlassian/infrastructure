@@ -1,11 +1,11 @@
 package com.atlassian.performance.tools.infrastructure.api.jvm
 
+import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
 import java.net.URI
 import java.time.Duration
-
 
 class OracleJDK : VersionedJavaDevelopmentKit {
     private val logger: Logger = LogManager.getLogger(this::class.java)
@@ -29,6 +29,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
         connection.execute("echo '${use()}' >> ~/.profile")
+        JdkFonts().install(connection)
     }
 
     override fun use(): String = "export PATH=$jreBin:$bin:${'$'}PATH; export JAVA_HOME=$path"
@@ -36,6 +37,7 @@ class OracleJDK : VersionedJavaDevelopmentKit {
     override fun command(options: String) = "${jreBin}java $options"
 
     private fun download(connection: SshConnection) {
+        Ubuntu().install(connection, listOf("curl"))
         val attempts = 0..3
         for (attempt in attempts) {
             try {

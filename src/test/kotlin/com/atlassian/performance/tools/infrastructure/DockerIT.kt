@@ -1,5 +1,6 @@
 package com.atlassian.performance.tools.infrastructure
 
+import com.atlassian.performance.tools.infrastructure.api.DockerInfrastructure
 import com.atlassian.performance.tools.infrastructure.api.docker.DockerContainer
 import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.junit.Test
@@ -26,32 +27,23 @@ class DockerIT {
     }
 
     private fun testDockerInstall(version: String) {
-        SshUbuntuContainer.Builder()
-            .enableDocker()
-            .version(version)
-            .build()
-            .start()
-            .use { ubuntu ->
-                ubuntu.toSsh().newConnection().use { connection ->
-                    DockerContainer.Builder()
-                        .imageName("hello-world")
-                        .build()
-                        .run(connection)
-                }
+        DockerInfrastructure(version).use { infra ->
+            infra.serveSsh().newConnection().use { ssh ->
+                DockerContainer.Builder()
+                    .imageName("hello-world")
+                    .build()
+                    .run(ssh)
             }
+        }
     }
 
     @Test
     fun shouldInstallIdempotently() {
-        SshUbuntuContainer.Builder()
-            .enableDocker()
-            .build()
-            .start()
-            .use { ubuntu ->
-                ubuntu.toSsh().newConnection().use { connection ->
-                    Docker().install(connection)
-                    Docker().install(connection)
-                }
+        DockerInfrastructure().use { infra ->
+            infra.serveSsh().newConnection().use { ssh ->
+                Docker().install(ssh)
+                Docker().install(ssh)
             }
+        }
     }
 }

@@ -54,6 +54,15 @@ class RemotePath(
         return localDestination.toFile()
     }
 
+    fun upload(
+        localSource: File
+    ): RemotePath {
+        Ssh(host, connectivityPatience = 4).newConnection().use { ssh ->
+            ssh.upload(localSource, path)
+        }
+        return this
+    }
+
     override fun toString(): String {
         return "RemotePath(host=$host, path='$path')"
     }
