@@ -26,8 +26,15 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.26.1...master
 
+### Added
+- Add `AsyncProfiler.Builder` to expose more options.
+
+### Deprecated
+- Deprecate `AsyncProfiler.<init>` and `WallClockProfiler` in favor of `AsyncProfiler.Builder`.
+
 ### Fixed
 - Fix `AsyncProfiler` flamegraph file extension from `.svg` to `.html`.
+- Bump `WallClockProfiler` to async-profiler v2.9.
 
 ## [4.26.1] - 2023-07-20
 [4.26.1]: https://github.com/atlassian/infrastructure/compare/release-4.26.0...release-4.26.1

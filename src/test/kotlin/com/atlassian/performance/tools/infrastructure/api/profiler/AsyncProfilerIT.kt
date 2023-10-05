@@ -13,24 +13,34 @@ import com.atlassian.performance.tools.sshubuntu.api.SshUbuntuContainer
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 import java.nio.file.Files.createTempFile
+import java.time.Duration
 import java.util.function.Consumer
 
 class AsyncProfilerIT {
 
     @Test
     fun shouldWorkOnXenial() {
-        testOn("16.04")
+        val profiler = AsyncProfiler.Builder().build()
+        testOn(profiler, "16.04")
     }
 
     @Test
     fun shouldWorkOnFocal() {
-        testOn("20.04")
+        val profiler = AsyncProfiler.Builder().build()
+        testOn(profiler, "20.04")
     }
 
-    private fun testOn(ubuntuVersion: String) {
-        // given
-        val profiler = AsyncProfiler()
+    @Test
+    fun shouldRunInWallClockMode() {
+        val profiler = AsyncProfiler.Builder()
+            .wallClockMode()
+            .interval(Duration.ofMillis(9))
+            .build()
 
+        testOn(profiler, "20.04")
+    }
+
+    private fun testOn(profiler: Profiler, ubuntuVersion: String) {
         testOnInstalledJira(ubuntuVersion) { installedJira ->
             val sshClient = installedJira.server.ssh
             sshClient.newConnection().use { ssh ->
@@ -39,7 +49,7 @@ class AsyncProfilerIT {
                 val startedJira = JiraLaunchScript().start(installedJira)
                 val process = profiler.start(ssh, startedJira.pid)
                 Thread.sleep(5000)
-                process.stop(ssh)
+                process!!.stop(ssh)
 
                 // then
                 val profilerResult = RemotePath(sshClient.host, process.getResultPath())

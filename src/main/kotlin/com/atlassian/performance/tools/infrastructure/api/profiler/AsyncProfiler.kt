@@ -10,7 +10,13 @@ import java.time.Duration.ofSeconds
 /**
  *  Asynchronous profiler. See https://github.com/jvm-profiling-tools/async-profiler#basic-usage
  */
-class AsyncProfiler : Profiler {
+class AsyncProfiler private constructor(
+    private val startParams: List<String>,
+    private val outputFile: String
+) : Profiler {
+
+    @Deprecated("Use AsyncProfiler.Builder instead")
+    constructor() : this(emptyList(), "flamegraph.html")
 
     private val release = "async-profiler-2.9-linux-x64"
 
@@ -27,24 +33,55 @@ class AsyncProfiler : Profiler {
         pid: Int
     ): RemoteMonitoringProcess {
         val script = "./$release/profiler.sh"
+        val params = startParams.joinToString(separator = " ")
         IdempotentAction("start async-profiler") {
-            ssh.execute("$script start $pid")
+            ssh.execute("$script start $params $pid")
         }.retry(2, StaticBackoff(ofSeconds(5)))
-        return ProfilerProcess(script, pid)
+        return ProfilerProcess(script, pid, outputFile)
     }
 
     private class ProfilerProcess(
         private val script: String,
-        private val pid: Int
+        private val pid: Int,
+        private val outputFile: String
     ) : RemoteMonitoringProcess {
-        private val flameGraphFile = "flamegraph.html"
 
         override fun stop(ssh: SshConnection) {
-            ssh.execute("$script stop $pid -o flamegraph > $flameGraphFile", timeout = ofSeconds(50))
+            ssh.execute("$script stop $pid -o flamegraph > $outputFile", timeout = ofSeconds(50))
         }
 
         override fun getResultPath(): String {
-            return flameGraphFile
+            return outputFile
+        }
+    }
+
+    class Builder {
+
+        private var outputFile: String = "flamegraph.html"
+        private val startParams = mutableListOf<String>()
+
+        fun outputFile(outputFile: String) = apply { this.outputFile = outputFile }
+
+        fun wallClockMode() = apply {
+            startParams.add("-e")
+            startParams.add("wall")
+        }
+
+        fun interval(interval: Duration) = apply {
+            startParams.add("-i")
+            if (interval < ofSeconds(1)) {
+                startParams.add(interval.nano.toString())
+            } else {
+                throw Exception("The interval $interval seems to big. Usually it's counted in milliseconds or nanoseconds. Try an interval under a second.")
+            }
+        }
+
+        fun extraParams(vararg extraParams: String) = apply {
+            startParams.addAll(extraParams)
+        }
+
+        fun build(): Profiler {
+            return AsyncProfiler(ArrayList(startParams), outputFile)
         }
     }
 }
