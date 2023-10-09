@@ -13,7 +13,8 @@ class Chrome : Browser {
     private val ubuntu = Ubuntu()
 
     override fun install(ssh: SshConnection) {
-        ubuntu.addKey(ssh, "78BD65473CB3BD13")
+        // Instruction at https://www.google.com/linuxrepositories/
+        ubuntu.addRemoteKey(ssh, "https://dl-ssl.google.com/linux/linux_signing_key.pub")
         ubuntu.addRepository(ssh, "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main", "google-chrome")
         Ubuntu().install(ssh, listOf("google-chrome-stable"), ofMinutes(5))
         val installedMinorVersion = getInstalledBuildVersion(ssh)
