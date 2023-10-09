@@ -102,10 +102,8 @@ class Ubuntu {
         ssh: SshConnection,
         keyUrl: String
     ) {
-        val failSilentlyWithoutOutput = "--fail"
-        val followRedirect = "--location"
         ssh.lockApt {
-            it.execute("curl $failSilentlyWithoutOutput --silent --show-error $followRedirect $keyUrl | sudo apt-key add -")
+            it.execute("wget -q -O - $keyUrl | sudo apt-key add -")
         }
     }
 
