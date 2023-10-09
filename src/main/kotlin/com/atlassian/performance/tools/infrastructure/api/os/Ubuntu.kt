@@ -98,6 +98,17 @@ class Ubuntu {
         }
     }
 
+    fun addRemoteKey(
+        ssh: SshConnection,
+        keyUrl: String
+    ) {
+        val failSilentlyWithoutOutput = "--fail"
+        val followRedirect = "--location"
+        ssh.lockApt {
+            it.execute("curl $failSilentlyWithoutOutput --silent --show-error $followRedirect $keyUrl | sudo apt-key add -")
+        }
+    }
+
     @Deprecated("Use the version with declared file name instead", ReplaceWith("addRepository()"))
     fun addRepository(
         ssh: SshConnection,

@@ -28,6 +28,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Added
 - Add `AsyncProfiler.Builder` to expose more options.
+- Add `Ubuntu.addRemoteKey`.
 
 ### Deprecated
 - Deprecate `AsyncProfiler.<init>` and `WallClockProfiler` in favor of `AsyncProfiler.Builder`.
