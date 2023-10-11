@@ -26,6 +26,14 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.27.0...master
 
+### Added
+- Add `AsyncProfiler.Builder` options:
+  - `.output` to aid in investigation of [JPERF-1390]
+  - `jfr` and `flamegraph` for convenience
+  - `startParams` and `stopParams` for extensibility
+
+[JPERF-1390]: https://ecosystem.atlassian.net/browse/JPERF-1390
+
 ## [4.27.0] - 2023-10-09
 [4.27.0]: https://github.com/atlassian/infrastructure/compare/release-4.26.1...release-4.27.0
 

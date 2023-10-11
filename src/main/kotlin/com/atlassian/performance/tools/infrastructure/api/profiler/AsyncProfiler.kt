@@ -12,11 +12,12 @@ import java.time.Duration.ofSeconds
  */
 class AsyncProfiler private constructor(
     private val startParams: List<String>,
+    private val stopParams: List<String>,
     private val outputFile: String
 ) : Profiler {
 
     @Deprecated("Use AsyncProfiler.Builder instead")
-    constructor() : this(emptyList(), "flamegraph.html")
+    constructor() : this(emptyList(), emptyList(), "flamegraph.html")
 
     private val release = "async-profiler-2.9-linux-x64"
 
@@ -37,17 +38,19 @@ class AsyncProfiler private constructor(
         IdempotentAction("start async-profiler") {
             ssh.execute("$script start $params $pid")
         }.retry(2, StaticBackoff(ofSeconds(5)))
-        return ProfilerProcess(script, pid, outputFile)
+        return ProfilerProcess(script, pid, stopParams, outputFile)
     }
 
     private class ProfilerProcess(
         private val script: String,
         private val pid: Int,
+        private val stopParams: List<String>,
         private val outputFile: String
     ) : RemoteMonitoringProcess {
 
         override fun stop(ssh: SshConnection) {
-            ssh.execute("$script stop $pid -o flamegraph > $outputFile", timeout = ofSeconds(50))
+            val params = stopParams.joinToString(separator = " ")
+            ssh.execute("$script stop $pid $params", timeout = ofSeconds(50))
         }
 
         override fun getResultPath(): String {
@@ -57,10 +60,27 @@ class AsyncProfiler private constructor(
 
     class Builder {
 
+        private var outputFormat: String = "flamegraph"
         private var outputFile: String = "flamegraph.html"
         private val startParams = mutableListOf<String>()
+        private val stopParams = mutableListOf<String>()
 
         fun outputFile(outputFile: String) = apply { this.outputFile = outputFile }
+
+        /**
+         * See [profiler options](https://github.com/async-profiler/async-profiler/tree/v2.9#profiler-options).
+         *
+         * @param outputFormat -o
+         * @param outputFile -f
+         */
+        fun output(outputFormat: String, outputFile: String) = apply {
+            this.outputFormat = outputFormat
+            this.outputFile = outputFile
+        }
+
+        fun jfr(outputFile: String) = output("jfr", outputFile)
+
+        fun flamegraph(outputFile: String) = output("flamegraph", outputFile)
 
         fun wallClockMode() = apply {
             startParams.add("-e")
@@ -76,12 +96,21 @@ class AsyncProfiler private constructor(
             }
         }
 
-        fun extraParams(vararg extraParams: String) = apply {
-            startParams.addAll(extraParams)
+        @Deprecated("use startParams instead", ReplaceWith("startParams(extraParams)"))
+        fun extraParams(vararg extraParams: String) = startParams(*extraParams)
+
+        fun startParams(vararg startParams: String) = apply {
+            this.startParams.addAll(startParams)
+        }
+
+        fun stopParams(vararg extraParams: String) = apply {
+            this.stopParams.addAll(extraParams)
         }
 
         fun build(): Profiler {
-            return AsyncProfiler(ArrayList(startParams), outputFile)
+            val startParamsCopy = startParams + "-o $outputFormat -f $outputFile"
+            val stopParamsCopy =  stopParams + "-o $outputFormat -f $outputFile"
+            return AsyncProfiler(startParamsCopy, stopParamsCopy, outputFile)
         }
     }
 }
