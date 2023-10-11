@@ -98,6 +98,9 @@ class Ubuntu {
         }
     }
 
+    /**
+     * @since 4.27.0
+     */
     fun addRemoteKey(
         ssh: SshConnection,
         keyUrl: String

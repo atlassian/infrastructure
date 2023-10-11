@@ -58,6 +58,9 @@ class AsyncProfiler private constructor(
         }
     }
 
+    /**
+     * @since 4.27.0
+     */
     class Builder {
 
         private var outputFormat: String = "flamegraph"
@@ -72,14 +75,21 @@ class AsyncProfiler private constructor(
          *
          * @param outputFormat -o
          * @param outputFile -f
+         * @since 4.28.0
          */
         fun output(outputFormat: String, outputFile: String) = apply {
             this.outputFormat = outputFormat
             this.outputFile = outputFile
         }
 
+        /**
+         * @since 4.28.0
+         */
         fun jfr(outputFile: String) = output("jfr", outputFile)
 
+        /**
+         * @since 4.28.0
+         */
         fun flamegraph(outputFile: String) = output("flamegraph", outputFile)
 
         fun wallClockMode() = apply {
@@ -99,10 +109,16 @@ class AsyncProfiler private constructor(
         @Deprecated("use startParams instead", ReplaceWith("startParams(extraParams)"))
         fun extraParams(vararg extraParams: String) = startParams(*extraParams)
 
+        /**
+         * @since 4.28.0
+         */
         fun startParams(vararg startParams: String) = apply {
             this.startParams.addAll(startParams)
         }
 
+        /**
+         * @since 4.28.0
+         */
         fun stopParams(vararg stopParams: String) = apply {
             this.stopParams.addAll(stopParams)
         }

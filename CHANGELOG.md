@@ -24,11 +24,14 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.27.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.0...master
+
+## [4.28.0] - 2023-10-11
+[4.28.0]: https://github.com/atlassian/infrastructure/compare/release-4.27.0...release-4.28.0
 
 ### Added
 - Add `AsyncProfiler.Builder` options:
-  - `.output` to aid in investigation of [JPERF-1390]
+  - `output` to aid in investigation of [JPERF-1390]
   - `jfr` and `flamegraph` for convenience
   - `startParams` and `stopParams` for extensibility
 
