@@ -73,7 +73,7 @@ class AsyncProfilerIT {
 
                 // then
                 val profilerResult = RemotePath(sshClient.host, process.getResultPath())
-                    .download(createTempFile("profiler-result", ".svg"))
+                    .download(createTempFile("profiler-result", ".tmp"))
                 resultAssert(profilerResult)
             }
         }

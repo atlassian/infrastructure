@@ -103,8 +103,8 @@ class AsyncProfiler private constructor(
             this.startParams.addAll(startParams)
         }
 
-        fun stopParams(vararg extraParams: String) = apply {
-            this.stopParams.addAll(extraParams)
+        fun stopParams(vararg stopParams: String) = apply {
+            this.stopParams.addAll(stopParams)
         }
 
         fun build(): Profiler {

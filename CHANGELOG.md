@@ -32,6 +32,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
   - `jfr` and `flamegraph` for convenience
   - `startParams` and `stopParams` for extensibility
 
+### Deprecated
+- Deprecate `AsyncProfiler.Builder.extraParams` in favor of `startParams` due to ambiguity with `stopParams`.
+
 [JPERF-1390]: https://ecosystem.atlassian.net/browse/JPERF-1390
 
 ## [4.27.0] - 2023-10-09
