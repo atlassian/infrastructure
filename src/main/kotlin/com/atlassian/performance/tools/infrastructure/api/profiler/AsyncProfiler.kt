@@ -33,7 +33,7 @@ class AsyncProfiler private constructor(
         ssh: SshConnection,
         pid: Int
     ): RemoteMonitoringProcess {
-        val script = "./$release/profiler.sh"
+        val script = "./$release/bin/asprof"
         val params = startParams.joinToString(separator = " ")
         IdempotentAction("start async-profiler") {
             ssh.execute("$script start $params $pid")
