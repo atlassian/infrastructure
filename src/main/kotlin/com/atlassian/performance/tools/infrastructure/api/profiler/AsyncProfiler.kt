@@ -19,11 +19,11 @@ class AsyncProfiler private constructor(
     @Deprecated("Use AsyncProfiler.Builder instead")
     constructor() : this(emptyList(), emptyList(), "flamegraph.html")
 
-    private val release = "async-profiler-2.9-linux-x64"
+    private val release = "async-profiler-2.10-linux-x64"
 
     override fun install(ssh: SshConnection) {
         val tarGz = "$release.tar.gz"
-        ssh.execute("wget -q https://github.com/jvm-profiling-tools/async-profiler/releases/download/v2.9/$tarGz")
+        ssh.execute("wget -q https://github.com/async-profiler/async-profiler/releases/download/v2.10/$tarGz")
         ssh.execute("tar --extract --gzip --file $tarGz")
         ssh.execute("sudo sh -c 'echo 1 > /proc/sys/kernel/perf_event_paranoid'")
         ssh.execute("sudo sh -c 'echo 0 > /proc/sys/kernel/kptr_restrict'")
