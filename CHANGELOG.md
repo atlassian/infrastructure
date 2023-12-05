@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.0...master
 
+### Fixed
+- Bump async-profiler to v2.10.
+
 ## [4.28.0] - 2023-10-11
 [4.28.0]: https://github.com/atlassian/infrastructure/compare/release-4.27.0...release-4.28.0
 
