@@ -28,6 +28,10 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ### Fixed
 - Bump async-profiler to v2.10.
+- Provide a default interval for async-profiler. Workaround for [IDEA-320011]. Help fix [JPERF-1409].
+
+[IDEA-320011]: https://youtrack.jetbrains.com/issue/IDEA-320011
+[JPERF-1409]: https://ecosystem.atlassian.net/browse/JPERF-1409
 
 ## [4.28.0] - 2023-10-11
 [4.28.0]: https://github.com/atlassian/infrastructure/compare/release-4.27.0...release-4.28.0

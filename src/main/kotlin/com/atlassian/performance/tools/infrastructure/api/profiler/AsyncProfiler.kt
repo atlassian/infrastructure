@@ -5,6 +5,7 @@ import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
+import java.time.Duration.ofMillis
 import java.time.Duration.ofSeconds
 
 /**
@@ -67,6 +68,8 @@ class AsyncProfiler private constructor(
         private var outputFile: String = "flamegraph.html"
         private val startParams = mutableListOf<String>()
         private val stopParams = mutableListOf<String>()
+        private var wallClockMode: Boolean = false
+        private var interval: Duration = ofMillis(10)
 
         fun outputFile(outputFile: String) = apply { this.outputFile = outputFile }
 
@@ -93,14 +96,12 @@ class AsyncProfiler private constructor(
         fun flamegraph(outputFile: String) = output("flamegraph", outputFile)
 
         fun wallClockMode() = apply {
-            startParams.add("-e")
-            startParams.add("wall")
+            wallClockMode = true
         }
 
         fun interval(interval: Duration) = apply {
-            startParams.add("-i")
             if (interval < ofSeconds(1)) {
-                startParams.add(interval.nano.toString())
+                this.interval = interval
             } else {
                 throw Exception("The interval $interval seems to big. Usually it's counted in milliseconds or nanoseconds. Try an interval under a second.")
             }
@@ -124,8 +125,14 @@ class AsyncProfiler private constructor(
         }
 
         fun build(): Profiler {
-            val startParamsCopy = startParams + "-o $outputFormat -f $outputFile"
-            val stopParamsCopy =  stopParams + "-o $outputFormat -f $outputFile"
+            val startParamsCopy = (
+                startParams
+                    + (if (wallClockMode) "-e wall" else null)
+                    + "-i ${interval.nano}"
+                    + "-o $outputFormat"
+                    + "-f $outputFile"
+                ).filterNotNull()
+            val stopParamsCopy = stopParams + "-o $outputFormat -f $outputFile"
             return AsyncProfiler(startParamsCopy, stopParamsCopy, outputFile)
         }
     }
