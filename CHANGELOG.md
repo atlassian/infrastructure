@@ -26,6 +26,9 @@ Dropping a requirement of a major version of a dependency is a new contract.
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.1...master
 
+### Fixed
+- Bump Virtual Users JDK to 11. Old Java 8 VU JARs should still work.
+
 ## [4.28.1] - 2023-12-06
 [4.28.1]: https://github.com/atlassian/infrastructure/compare/release-4.28.0...release-4.28.1
 
