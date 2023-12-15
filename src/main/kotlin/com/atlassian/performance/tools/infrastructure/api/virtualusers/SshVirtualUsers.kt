@@ -2,7 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.infrastructure.VirtualUsersJar
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
-import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK
+import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK11
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
@@ -30,7 +30,7 @@ class SshVirtualUsers(
 ) : VirtualUsers {
 
     private val logger = LogManager.getLogger(this::class.java)
-    private val jdk: JavaDevelopmentKit = OpenJDK()
+    private val jdk: JavaDevelopmentKit = OpenJDK11()
 
     override fun applyLoad(
         options: VirtualUserOptions
