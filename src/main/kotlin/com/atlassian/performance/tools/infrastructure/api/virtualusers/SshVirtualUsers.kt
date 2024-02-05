@@ -3,9 +3,13 @@ package com.atlassian.performance.tools.infrastructure.api.virtualusers
 import com.atlassian.performance.tools.infrastructure.VirtualUsersJar
 import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK11
+import com.atlassian.performance.tools.infrastructure.api.os.MonitoringProcess
+import com.atlassian.performance.tools.infrastructure.api.os.OsMetric
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitoringProcess
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -46,7 +50,12 @@ class SshVirtualUsers(
                 Level.DEBUG,
                 Level.DEBUG
             )
-
+            Ubuntu().metrics(it)
+            val process = PidStat().start(it)
+            Thread.sleep(4000)
+            process.stop(it)
+            val artifact = process.getResultPath()
+            it.execute("cat $artifact")
             val testingCommand = VirtualUsersJar().testingCommand(
                 jdk = jdk,
                 jarName = jarName,
@@ -59,6 +68,20 @@ class SshVirtualUsers(
         }
         logger.debug("$name finished applying load")
     }
+
+    class PidStat : OsMetric {
+        private val LOG_PATH: String = "~/jpt-pidstat.log"
+
+        override fun start(connection: SshConnection): RemoteMonitoringProcess {
+            return startMonitoring(connection)
+        }
+
+        override fun startMonitoring(connection: SshConnection): MonitoringProcess {
+            val pidstat = connection.startProcess("pidstat -drsuw -t 2 > $LOG_PATH")
+            return MonitoringProcess(pidstat, LOG_PATH)
+        }
+    }
+
 
     /**
      * Download measurements such as: logs, test metrics using provided [resultsTransport]
