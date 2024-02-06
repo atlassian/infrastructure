@@ -24,8 +24,15 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.2...master
 
+### Added
+- Add `SshVirtualUsers.Builder` to expose more options.
+
+### Deprecated
+- Deprecate `SsshVirtualUsers` constructor in favor of `SshVirtualUsers2.Builder`.
+
+## [4.28.2] - 2023-12-15
 ### Fixed
 - Bump Virtual Users JDK to 11. Old Java 8 VU JARs should still work.
 

@@ -83,6 +83,10 @@ class Ubuntu {
         )
     }
 
+    fun perProcessMetrics(): List<OsMetric> {
+        return listOf(PidStat())
+    }
+
     private fun updatePackageIndex(ssh: SshConnection) {
         ssh.lockApt {
             it.execute("sudo apt-get update -qq", Duration.ofMinutes(3))
