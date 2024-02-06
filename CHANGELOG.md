@@ -24,8 +24,13 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.2...master
+### Fixed
+- Start collecting metrics of SshVirtualUsers node. Aid with [JPERF-1457]
 
+[JPERF-1457]: https://ecosystem.atlassian.net/browse/JPERF-1457
+
+## [4.28.2] - 2023-12-15
 ### Fixed
 - Bump Virtual Users JDK to 11. Old Java 8 VU JARs should still work.
 

@@ -1,6 +1,6 @@
 package com.atlassian.performance.tools.infrastructure.api.os
 
-import com.atlassian.performance.tools.infrastructure.Iostat
+import com.atlassian.performance.tools.infrastructure.os.Iostat
 import com.atlassian.performance.tools.jvmtasks.api.IdempotentAction
 import com.atlassian.performance.tools.jvmtasks.api.JitterBackoff
 import com.atlassian.performance.tools.jvmtasks.api.StaticBackoff
