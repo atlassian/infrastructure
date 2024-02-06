@@ -1,11 +1,15 @@
 package com.atlassian.performance.tools.infrastructure.api.virtualusers
 
 import com.atlassian.performance.tools.infrastructure.VirtualUsersJar
-import com.atlassian.performance.tools.infrastructure.api.jvm.JavaDevelopmentKit
 import com.atlassian.performance.tools.infrastructure.api.jvm.OpenJDK11
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.api.os.Vmstat
+import com.atlassian.performance.tools.infrastructure.api.process.RemoteMonitoringProcess
+import com.atlassian.performance.tools.infrastructure.os.Iostat
+import com.atlassian.performance.tools.infrastructure.os.Pidstat
 import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
+import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
 import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
@@ -30,34 +34,49 @@ class SshVirtualUsers(
 ) : VirtualUsers {
 
     private val logger = LogManager.getLogger(this::class.java)
-    private val jdk: JavaDevelopmentKit = OpenJDK11()
+    private val monitoringProcesses = mutableListOf<RemoteMonitoringProcess>()
 
-    override fun applyLoad(
-        options: VirtualUserOptions
-    ) {
+    override fun applyLoad(options: VirtualUserOptions) {
         logger.debug("Applying load via $name...")
-        ssh.newConnection().use {
-            Ubuntu().install(it, listOf("curl"))
-            jdk.install(it)
-
-            it.safeExecute(
+        ssh.newConnection().use { ssh ->
+            Ubuntu().install(ssh, listOf("curl"))
+            ssh.safeExecute(
                 "curl --head ${options.jiraAddress}",
                 Duration.ofSeconds(30),
                 Level.DEBUG,
                 Level.DEBUG
             )
 
-            val testingCommand = VirtualUsersJar().testingCommand(
-                jdk = jdk,
-                jarName = jarName,
-                options = options
-            )
-            it.execute(
-                testingCommand,
-                options.behavior.load.total + options.behavior.maxOverhead
-            )
+            startCollectingMetrics(ssh)
+            applyLoad(ssh, options)
+            stopCollectingMetrics(ssh)
         }
         logger.debug("$name finished applying load")
+    }
+
+    private fun applyLoad(ssh: SshConnection, options: VirtualUserOptions) {
+        val jdk = OpenJDK11()
+        jdk.install(ssh)
+        val testingCommand = VirtualUsersJar().testingCommand(
+            jdk = jdk,
+            jarName = jarName,
+            options = options
+        )
+        ssh.execute(
+            testingCommand,
+            options.behavior.load.total + options.behavior.maxOverhead
+        )
+    }
+
+    private fun startCollectingMetrics(ssh: SshConnection) {
+        Ubuntu().metrics(ssh)
+        listOf(Iostat(), Vmstat(), Pidstat.Builder().build()).forEach { metric ->
+            monitoringProcesses.add(metric.start(ssh))
+        }
+    }
+
+    private fun stopCollectingMetrics(ssh: SshConnection) {
+        monitoringProcesses.forEach { it.stop(ssh) }
     }
 
     /**
@@ -68,7 +87,7 @@ class SshVirtualUsers(
             val uploadDirectory = "results"
             val resultsDirectory = "$uploadDirectory/virtual-users/$name"
 
-            ssh.newConnection().use { shell ->
+            ssh.newConnection().use { ssh ->
                 listOf(
                     "mkdir -p $resultsDirectory",
                     "mv test-results $resultsDirectory",
@@ -80,17 +99,19 @@ class SshVirtualUsers(
                     "cp /var/log/cloud-init.log $resultsDirectory",
                     "cp /var/log/cloud-init-output.log $resultsDirectory",
                     "find $resultsDirectory -empty -type f -delete"
-                ).forEach { shell.safeExecute(it) }
+                )
+                    .plus(monitoringProcesses.map { it.getResultPath() }.map { "mv $it $resultsDirectory" })
+                    .forEach { ssh.safeExecute(it) }
 
                 resultsTransport.transportResults(
                     targetDirectory = uploadDirectory,
-                    sshConnection = shell
+                    sshConnection = ssh
                 )
             }
         }
     }
 
     override fun toString(): String {
-        return "SshVirtualUsers(name='$name', nodeOrder=$nodeOrder, resultsTransport=$resultsTransport, jarName='$jarName', ssh=$ssh, logger=$logger, jdk=$jdk)"
+        return "SshVirtualUsers(name='$name', nodeOrder=$nodeOrder, resultsTransport=$resultsTransport, jarName='$jarName', ssh=$ssh)"
     }
 }

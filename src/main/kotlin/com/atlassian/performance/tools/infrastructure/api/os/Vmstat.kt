@@ -13,9 +13,7 @@ class Vmstat : OsMetric {
         private val DELAY: Duration = Duration.ofSeconds(2)
     }
 
-    override fun startMonitoring(
-        connection: SshConnection
-    ): MonitoringProcess {
+    override fun startMonitoring(connection: SshConnection): MonitoringProcess {
         val delayInSeconds = DELAY.get(ChronoUnit.SECONDS)
         val process = connection.startProcess("vmstat -t $delayInSeconds > $LOG_PATH")
         return MonitoringProcess(process, LOG_PATH)

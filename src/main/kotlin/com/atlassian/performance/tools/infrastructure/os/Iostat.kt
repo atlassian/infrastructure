@@ -1,4 +1,4 @@
-package com.atlassian.performance.tools.infrastructure
+package com.atlassian.performance.tools.infrastructure.os
 
 import com.atlassian.performance.tools.infrastructure.api.os.MonitoringProcess
 import com.atlassian.performance.tools.infrastructure.api.os.OsMetric
@@ -19,9 +19,7 @@ internal class Iostat : OsMetric {
                 "done"
     }
 
-    override fun startMonitoring(
-        connection: SshConnection
-    ): MonitoringProcess {
+    override fun startMonitoring(connection: SshConnection): MonitoringProcess {
         val seconds = DELAY.get(ChronoUnit.SECONDS)
         val process = connection.startProcess("iostat -d $seconds -x | $ADD_TIME > $LOG_PATH")
         return MonitoringProcess(process, LOG_PATH)
