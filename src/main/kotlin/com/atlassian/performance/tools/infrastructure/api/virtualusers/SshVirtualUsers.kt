@@ -11,9 +11,7 @@ import com.atlassian.performance.tools.jvmtasks.api.TaskTimer.time
 import com.atlassian.performance.tools.ssh.api.Ssh
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import com.atlassian.performance.tools.virtualusers.api.VirtualUserOptions
-import org.apache.logging.log4j.Level
 import org.apache.logging.log4j.LogManager
-import java.time.Duration
 import java.util.*
 
 /**
@@ -39,14 +37,6 @@ class SshVirtualUsers(
     override fun applyLoad(options: VirtualUserOptions) {
         logger.debug("Applying load via $name...")
         ssh.newConnection().use { ssh ->
-            Ubuntu().install(ssh, listOf("curl"))
-            ssh.safeExecute(
-                "curl --head ${options.jiraAddress}",
-                Duration.ofSeconds(30),
-                Level.DEBUG,
-                Level.DEBUG
-            )
-
             startCollectingMetrics(ssh)
             applyLoad(ssh, options)
             stopCollectingMetrics(ssh)
