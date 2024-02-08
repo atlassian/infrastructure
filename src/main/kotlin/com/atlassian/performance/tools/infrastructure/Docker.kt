@@ -71,6 +71,7 @@ internal class Docker {
      * Sometimes it's already running. We don't want stderr spam in that case.
      */
     private fun startDockerIfNecessary(ssh: SshConnection) {
+        dockerUlimitWorkaround(ssh)
         ssh.execute("sudo service docker status || sudo service docker start")
         IdempotentAction("Check if Docker is running") {
             ssh.execute(
@@ -83,5 +84,14 @@ internal class Docker {
             maxAttempts = 10,
             backoff = StaticBackoff(Duration.ofMillis(500))
         )
+    }
+
+    /**
+     * Docker added 'H' parameter to ulimit which makes it an invalid command.
+     * Problem showed up with docker-ce 25.0.0
+     * https://forums.docker.com/t/etc-init-d-docker-62-ulimit-error-setting-limit-invalid-argument-problem/139424
+     */
+    private fun dockerUlimitWorkaround(ssh: SshConnection) {
+        ssh.execute("sudo sed -i 's/ulimit -Hn/ulimit -n/' /etc/init.d/docker")
     }
 }
