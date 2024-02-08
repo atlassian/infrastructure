@@ -24,9 +24,12 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.2...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.3...master
+
+## [4.28.3] - 2024-02-08
 ### Fixed
 - Start collecting metrics of SshVirtualUsers node. Aid with [JPERF-1457]
+- Work around docker 25.0.0 breaking usage of 'ulimits' command
 
 [JPERF-1457]: https://ecosystem.atlassian.net/browse/JPERF-1457
 
