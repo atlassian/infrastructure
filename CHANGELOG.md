@@ -25,6 +25,8 @@ Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.3...master
+### Added
+- Add `VersionedOracleJdk` to support Oracle JDK 11+
 
 ## [4.28.3] - 2024-02-08
 ### Fixed
