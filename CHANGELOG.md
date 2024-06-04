@@ -27,19 +27,23 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.0...master
 
 ## [4.29.0] - 2024-06-04
-[4.29.0]: https://github.com/atlassian/infrastructure/compare/release-4.28.1...release-4.29.0
+[4.29.0]: https://github.com/atlassian/infrastructure/compare/release-4.28.3...release-4.29.0
 
 ### Added
-- Add `VersionedOracleJdk` to support Oracle JDK 11+. Help fix [DCPERF-430]
+- Add `VersionedOracleJdk` to support Oracle JDK 11+.
 
 ## [4.28.3] - 2024-02-08
+[4.28.3]: https://github.com/atlassian/infrastructure/compare/release-4.28.2...release-4.28.3
+
 ### Fixed
-- Start collecting metrics of SshVirtualUsers node. Aid with [JPERF-1457]
-- Work around docker 25.0.0 breaking usage of 'ulimits' command
+- Start collecting metrics of SshVirtualUsers node. Aid with [JPERF-1457].
+- Work around docker 25.0.0 breaking usage of 'ulimits' command.
 
 [JPERF-1457]: https://ecosystem.atlassian.net/browse/JPERF-1457
 
 ## [4.28.2] - 2023-12-15
+[4.28.2]: https://github.com/atlassian/infrastructure/compare/release-4.28.1...release-4.28.2
+
 ### Fixed
 - Bump Virtual Users JDK to 11. Old Java 8 VU JARs should still work.
 
