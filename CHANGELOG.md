@@ -24,9 +24,13 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.28.3...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.0...master
+
+## [4.29.0] - 2024-06-04
+[4.29.0]: https://github.com/atlassian/infrastructure/compare/release-4.28.1...release-4.29.0
+
 ### Added
-- Add `VersionedOracleJdk` to support Oracle JDK 11+
+- Add `VersionedOracleJdk` to support Oracle JDK 11+. Help fix [DCPERF-430]
 
 ## [4.28.3] - 2024-02-08
 ### Fixed
