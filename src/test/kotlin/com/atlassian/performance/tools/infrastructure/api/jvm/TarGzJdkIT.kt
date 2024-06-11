@@ -17,7 +17,7 @@ class TarGzJdkIT {
 
     @Test
     fun shouldHaveJavaHomeSet() {
-        JdkSupport(jdk).shouldHaveJavaHomeSet("/jdk-17.0.11_9")
+        JdkSupport(jdk).shouldHaveJavaHomeSet("/jdk-17.0.11+9")
     }
 
 }

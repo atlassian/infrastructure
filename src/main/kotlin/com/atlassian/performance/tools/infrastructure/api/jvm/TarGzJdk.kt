@@ -6,15 +6,12 @@ import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration.ofSeconds
 
 class TarGzJdk private constructor(
-    private val majorVersion: String,
-    private val minorVersion: String,
-    private val patchVersion: String,
+    private val version: String,
     private val downloadUrl: String
 ) : VersionedJavaDevelopmentKit {
-    private val version = "$majorVersion.$minorVersion.$patchVersion"
-    private val javaHome = "~/jdk-$version"
+    private var javaHome: String? = null
 
-    override fun getMajorVersion() = majorVersion.toInt()
+    override fun getMajorVersion() = version.substringBefore(".").toInt()
 
     override fun install(connection: SshConnection) {
         val archive = "jdk-$version.tar.gz"
@@ -25,43 +22,43 @@ class TarGzJdk private constructor(
             )
         }.retry(3, ExponentialBackoff(ofSeconds(10)))
         connection.execute("mkdir $javaHome")
-        // unzip to javaHome regardless of the main directory name in the archive
+        // unzip to an empty temp dir to get main dir name
         val tempDir = connection.execute("mktemp -d").output.lines().first()
         connection.execute("tar --extract --gunzip --file $archive --directory $tempDir")
-        val extractedDir = connection.execute("ls $tempDir").output.lines().first()
-        connection.execute("mv $tempDir/$extractedDir/* $javaHome")
+        val extractedJdkDir = connection.execute("ls $tempDir").output.lines().first()
+        connection.execute("mv $tempDir/$extractedJdkDir ~")
         connection.execute("rm -rf $tempDir")
+        javaHome = "~/$extractedJdkDir"
         connection.execute("echo '${use()}' >> ~/.profile")
     }
 
-    override fun use(): String = "export PATH=$javaHome/bin:\$PATH; export JAVA_HOME=$javaHome"
+    override fun use(): String {
+        check(javaHome != null) { "JDK needs to be installed first" }
+        return "export PATH=$javaHome/bin:\$PATH; export JAVA_HOME=$javaHome"
+    }
 
-    override fun command(options: String) = "$javaHome/bin/java $options"
+    override fun command(options: String): String {
+        check(javaHome != null) { "JDK needs to be installed first" }
+        return "$javaHome/bin/java $options"
+    }
 
-    override val jstatMonitoring = Jstat("$javaHome/bin/")
+    override val jstatMonitoring: Jstat by lazy {
+        check(javaHome != null) { "JDK needs to be installed first" }
+        Jstat("$javaHome/bin/")
+    }
 
     class Builder {
-        private var majorVersion: String = "17"
-        private var minorVersion: String = "0"
-        private var patchVersion: String = "11_9"
-        private var downloadUrl: String = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz"
+        private var version: String = "17.0.11_9"
+        private var downloadUrl: String =
+            "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz"
 
-        fun version(
-            majorVersion: String,
-            minorVersion: String,
-            patchVersion: String,
-            downloadUrl: String
-        ) = apply {
-            this.majorVersion = majorVersion
-            this.minorVersion = minorVersion
-            this.patchVersion = patchVersion
+        fun version(version: String, downloadUrl: String) = apply {
+            this.version = version
             this.downloadUrl = downloadUrl
         }
 
         fun build(): VersionedJavaDevelopmentKit = TarGzJdk(
-            majorVersion = majorVersion,
-            minorVersion = minorVersion,
-            patchVersion = patchVersion,
+            version = version,
             downloadUrl = downloadUrl
         )
 
