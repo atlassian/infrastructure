@@ -40,12 +40,11 @@ class TarGzJdk private constructor(
 
     override val jstatMonitoring = Jstat("$javaHome/bin/")
 
-    class Builder(
-        private var majorVersion: String,
-        private var minorVersion: String,
-        private var patchVersion: String,
-        private var downloadUrl: String
-    ) {
+    class Builder {
+        private var majorVersion: String = "17"
+        private var minorVersion: String = "0"
+        private var patchVersion: String = "11_9"
+        private var downloadUrl: String = "https://github.com/adoptium/temurin17-binaries/releases/download/jdk-17.0.11%2B9/OpenJDK17U-jdk_x64_linux_hotspot_17.0.11_9.tar.gz"
 
         fun version(
             majorVersion: String,
@@ -59,7 +58,7 @@ class TarGzJdk private constructor(
             this.downloadUrl = downloadUrl
         }
 
-        fun build(): TarGzJdk = TarGzJdk(
+        fun build(): VersionedJavaDevelopmentKit = TarGzJdk(
             majorVersion = majorVersion,
             minorVersion = minorVersion,
             patchVersion = patchVersion,
