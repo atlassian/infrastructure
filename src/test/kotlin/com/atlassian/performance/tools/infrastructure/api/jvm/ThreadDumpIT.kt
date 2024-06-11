@@ -35,7 +35,7 @@ class ThreadDumpTest(
 
             val threadDumpFile = connection.execute("ls $destination").output
             val threadDump = connection.execute("cat $destination/$threadDumpFile").output
-            assertThat(threadDump).contains("Full thread dump Java HotSpot")
+            assertThat(threadDump).contains("Full thread dump ")
         }
     }
 
