@@ -332,6 +332,9 @@ This is an erroneous release. Don't use new APIs from this version, switch to `4
 ### Added
 - Added parametrized `CustomChromium`.
 
+### Added
+- `com.atlassian.performance.tools.infrastructure.api.browser.Browser` KDocs.
+
 ## [4.14.5] - 2020-03-03
 [4.14.5]: https://github.com/atlassian/infrastructure/compare/release-4.14.4...release-4.14.5
 
