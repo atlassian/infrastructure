@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jvm
 
 import com.atlassian.performance.tools.infrastructure.PreinstalledJDK
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.jvm.UbuntuJavaHome
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
@@ -16,13 +17,11 @@ class OpenJDK : VersionedJavaDevelopmentKit {
             listOf("openjdk-8-jdk"),
             Duration.ofMinutes(10)
         )
-        // parse `java-1.8.0-openjdk-arm64       1081       /usr/lib/jvm/java-1.8.0-openjdk-arm64`
-        val javaHome = connection.safeExecute("update-java-alternatives --list").output.split(" ").last().trim()
-        connection.execute("echo 'export JAVA_HOME=$javaHome' >> ~/.profile")
+        UbuntuJavaHome().install(connection)
     }
 
     override fun use(): String {
-        return "source ~/.profile"
+        return UbuntuJavaHome().use()
     }
 
     override fun command(options: String): String {

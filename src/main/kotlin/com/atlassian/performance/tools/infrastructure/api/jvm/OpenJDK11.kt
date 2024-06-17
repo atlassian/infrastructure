@@ -2,6 +2,7 @@ package com.atlassian.performance.tools.infrastructure.api.jvm
 
 import com.atlassian.performance.tools.infrastructure.PreinstalledJDK
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
+import com.atlassian.performance.tools.infrastructure.jvm.UbuntuJavaHome
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
@@ -16,10 +17,11 @@ class OpenJDK11 : VersionedJavaDevelopmentKit {
             listOf("openjdk-11-jdk"),
             Duration.ofMinutes(5)
         )
+        UbuntuJavaHome().install(connection)
     }
 
     override fun use(): String {
-        return ""
+        return UbuntuJavaHome().use()
     }
 
     override fun command(options: String): String {
