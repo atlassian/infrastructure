@@ -1,11 +1,11 @@
-package com.atlassian.performance.tools.infrastructure.api.jvm
+package com.atlassian.performance.tools.infrastructure.jvm
 
 import com.atlassian.performance.tools.infrastructure.PreinstalledJDK
 import com.atlassian.performance.tools.infrastructure.api.os.Ubuntu
 import com.atlassian.performance.tools.ssh.api.SshConnection
 import java.time.Duration
 
-class OpenJDK : VersionedJavaDevelopmentKit {
+class UbuntuJavaHome : VersionedJavaDevelopmentKit {
     override val jstatMonitoring: Jstat = Jstat("")
 
     override fun getMajorVersion() = 8
