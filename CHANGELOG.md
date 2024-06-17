@@ -27,7 +27,7 @@ Dropping a requirement of a major version of a dependency is a new contract.
 [Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.0...master
 
 ### Fixed
-- Fix `JAVA_HOME` in `OpenJDK`
+- Fix `JAVA_HOME` in `OpenJDK` and `OpenJDK11`.
 
 ## [4.29.0] - 2024-06-04
 [4.29.0]: https://github.com/atlassian/infrastructure/compare/release-4.28.3...release-4.29.0

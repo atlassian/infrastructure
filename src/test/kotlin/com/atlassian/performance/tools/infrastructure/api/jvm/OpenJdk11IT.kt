@@ -8,4 +8,9 @@ class OpenJdk11IT {
     fun shouldSupportJstat() {
         JstatSupport(OpenJDK11()).shouldSupportJstat()
     }
+
+    @Test
+    fun shouldHaveJavaHome() {
+        JdkSupport(OpenJDK11()).shouldHaveJavaHomeSet("/usr/lib/jvm/java-1.11.0-openjdk-arm64")
+    }
 }
