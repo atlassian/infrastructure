@@ -12,7 +12,7 @@ class JdkSupport(
             val ssh = ubuntu.toSsh()
             ssh.newConnection().use { connection ->
                 jdk.install(connection)
-                val javaHomeOutput = connection.execute("source ~/.profile; echo \$JAVA_HOME").output
+                val javaHomeOutput = connection.execute("${jdk.use()}; echo \$JAVA_HOME").output
 
                 assertThat(javaHomeOutput).contains(expectedJavaPath)
             }
