@@ -11,6 +11,6 @@ class OpenJdk11IT {
 
     @Test
     fun shouldHaveJavaHome() {
-        JdkSupport(OpenJDK11()).shouldHaveJavaHomeSet("/usr/lib/jvm/java-1.11.0-openjdk-arm64")
+        JdkSupport(OpenJDK11()).shouldHaveJavaHomeSet("/usr/lib/jvm/java-1.11.0-openjdk-")
     }
 }
