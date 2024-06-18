@@ -28,4 +28,9 @@ class VersionedOracleJdkIT {
         ).shouldHaveJavaHomeSet("/jdk-21.0.2")
     }
 
+    @Test
+    fun shouldLoadFont() {
+        JdkSupport(VersionedOracleJdk.Builder().build()).shouldLoadFont()
+    }
+
 }
