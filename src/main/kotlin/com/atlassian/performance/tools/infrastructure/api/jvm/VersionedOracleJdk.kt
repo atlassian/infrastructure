@@ -30,6 +30,7 @@ class VersionedOracleJdk private constructor(
         }.retry(3, ExponentialBackoff(ofSeconds(10)))
         connection.execute("tar --extract --gunzip --file jdk-$version.tar.gz")
         connection.execute("echo '${use()}' >> ~/.profile")
+        JdkFonts().install(connection)
     }
 
     override fun use(): String = "export PATH=$javaHome/bin:\$PATH; export JAVA_HOME=$javaHome"

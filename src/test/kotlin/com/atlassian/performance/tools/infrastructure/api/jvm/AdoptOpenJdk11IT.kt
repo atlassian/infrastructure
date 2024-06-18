@@ -13,4 +13,10 @@ class AdoptOpenJdk11IT {
     fun shouldHaveJavaHomeSet() {
         JdkSupport(AdoptOpenJDK11()).shouldHaveJavaHomeSet("/jdk-11.0.1+13")
     }
+
+    @Test
+    fun shouldLoadFont() {
+        JdkSupport(AdoptOpenJDK11()).shouldLoadFont()
+    }
+
 }

@@ -24,7 +24,13 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.1...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.2...master
+
+### Fixed
+- Install fonts required by `AdoptOpenJDK`, `AdoptOpenJDK11`, `OracleJDK`, `VersionedOracleJdk`. Aid DCPERF-432.
+
+## [4.29.2] - 2024-06-19
+[4.29.1]: https://github.com/atlassian/infrastructure/compare/release-4.29.1...release-4.29.2
 
 ### Fixed
 - Fix remote JVM debugger setup for Jira. Aid DCPERF-432.

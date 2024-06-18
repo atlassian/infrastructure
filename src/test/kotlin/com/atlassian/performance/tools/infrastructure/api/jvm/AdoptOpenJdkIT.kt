@@ -8,8 +8,15 @@ class AdoptOpenJdkIT {
     fun shouldSupportJstat() {
         JstatSupport(AdoptOpenJDK()).shouldSupportJstat()
     }
+
     @Test
     fun shouldHaveJavaHomeSet() {
         JdkSupport(AdoptOpenJDK()).shouldHaveJavaHomeSet("/jdk8u172-b11")
     }
+
+    @Test
+    fun shouldLoadFont() {
+        JdkSupport(AdoptOpenJDK()).shouldLoadFont()
+    }
+
 }

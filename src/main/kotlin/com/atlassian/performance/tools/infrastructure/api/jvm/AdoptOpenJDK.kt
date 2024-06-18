@@ -21,6 +21,7 @@ class AdoptOpenJDK : VersionedJavaDevelopmentKit {
         download(connection)
         connection.execute("tar -xzf $jdkArchive")
         connection.execute("echo '${use()}' >> ~/.profile")
+        JdkFonts().install(connection)
     }
 
     override fun use(): String {

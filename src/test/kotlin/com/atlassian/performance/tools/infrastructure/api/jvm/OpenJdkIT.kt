@@ -13,4 +13,10 @@ class OpenJdkIT {
     fun shouldHaveJavaHome() {
         JdkSupport(OpenJDK()).shouldHaveJavaHomeSet("/usr/lib/jvm/java-1.8.0-openjdk-")
     }
+
+    @Test
+    fun shouldLoadFont() {
+        JdkSupport(OpenJDK()).shouldLoadFont()
+    }
+
 }

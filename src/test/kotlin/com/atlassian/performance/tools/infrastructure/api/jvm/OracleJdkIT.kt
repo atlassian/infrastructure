@@ -18,4 +18,10 @@ class OracleJdkIT {
     fun shouldHaveJavaHomeSet() {
         JdkSupport(OracleJDK()).shouldHaveJavaHomeSet("/jdk1.8.0_131")
     }
+
+    @Test
+    fun shouldLoadFont() {
+        JdkSupport(OracleJDK()).shouldLoadFont()
+    }
+
 }
