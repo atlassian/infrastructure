@@ -14,7 +14,7 @@ class EnabledJvmDebug(
         return listOf(
             JvmArg(
                 key = "-agentlib:jdwp=",
-                value = "transport=dt_socket,server=y,suspend=$suspendFlag,address=$port"
+                value = "transport=dt_socket,server=y,suspend=$suspendFlag,address=*:$port"
             )
         )
     }
