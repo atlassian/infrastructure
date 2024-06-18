@@ -24,7 +24,10 @@ Adding a requirement of a major version of a dependency is breaking a contract.
 Dropping a requirement of a major version of a dependency is a new contract.
 
 ## [Unreleased]
-[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.0...master
+[Unreleased]: https://github.com/atlassian/infrastructure/compare/release-4.29.1...master
+
+## [4.29.1] - 2024-06-17
+[4.29.1]: https://github.com/atlassian/infrastructure/compare/release-4.29.0...release-4.29.1
 
 ### Fixed
 - Fix `JAVA_HOME` in `OpenJDK` and `OpenJDK11`.
